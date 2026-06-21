@@ -1,0 +1,202 @@
+<div
+  class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md antialiased"
+>
+  <main class="flex-grow w-full max-w-[1280px] mx-auto px-gutter py-xl">
+    <div class="flex items-center gap-sm text-secondary font-body-sm text-body-sm mb-lg">
+      <a class="hover:text-primary transition-colors" href="#">Solicitudes</a>
+      <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      <span class="text-on-background font-medium">Pago de Servicio</span>
+    </div>
+
+    <div class="mb-lg">
+      <h1 class="font-h1 text-h1 text-on-background">Procesar Pago</h1>
+      <p class="font-body-lg text-body-lg text-secondary mt-xs">
+        Seleccione el método de pago para completar su solicitud de servicio.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+      <div class="lg:col-span-4 flex flex-col gap-md">
+        <div
+          class="bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-lg sticky top-32 transition-shadow hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+        >
+          <h2 class="font-h3 text-h3 text-on-surface mb-md pb-sm border-b border-[#E2E8F0]">
+            Resumen de Solicitud
+          </h2>
+          <div class="flex flex-col gap-md">
+            <div>
+              <span class="font-label-caps text-label-caps text-secondary block mb-unit"
+                >SERVICIO</span
+              >
+              <span class="font-body-md text-body-md text-on-surface font-medium"
+                >Asesoría Legal Corporativa</span
+              >
+            </div>
+            <div>
+              <span class="font-label-caps text-label-caps text-secondary block mb-unit"
+                >FECHA</span
+              >
+              <span class="font-body-md text-body-md text-on-surface">15 de Noviembre, 2024</span>
+            </div>
+            <div>
+              <span class="font-label-caps text-label-caps text-secondary block mb-unit"
+                >SOLICITANTE</span
+              >
+              <span class="font-body-md text-body-md text-on-surface">Empresa XYZ C.A.</span>
+            </div>
+            <div class="pt-sm mt-sm border-t border-[#E2E8F0]">
+              <span class="font-label-caps text-label-caps text-secondary block mb-unit"
+                >TOTAL A PAGAR</span
+              >
+              <span class="font-h2 text-h2 text-primary font-bold">$450.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-8 flex flex-col gap-lg">
+        <div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-lg">
+          <h3 class="font-h3 text-h3 text-on-surface mb-md">Métodos de Pago</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+            <label class="cursor-pointer relative group">
+              <input class="peer sr-only" name="payment_method" type="radio" value="crypto" />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="currency_bitcoin"
+                  >currency_bitcoin</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Criptomonedas</span
+                >
+              </div>
+            </label>
+            <label class="cursor-pointer relative group">
+              <input class="peer sr-only" name="payment_method" type="radio" value="tai" />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="account_balance"
+                  >account_balance</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Pago_TAI</span
+                >
+              </div>
+            </label>
+            <label class="cursor-pointer relative group">
+              <input class="peer sr-only" name="payment_method" type="radio" value="pagomovil" />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="phone_iphone"
+                  >phone_iphone</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Pago Movil</span
+                >
+              </div>
+            </label>
+            <label class="cursor-pointer relative group">
+              <input class="peer sr-only" name="payment_method" type="radio" value="zelle" />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="send_money"
+                  >send_money</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Zelle</span
+                >
+              </div>
+            </label>
+            <label class="cursor-pointer relative group">
+              <input class="peer sr-only" name="payment_method" type="radio" value="efectivo" />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="payments"
+                  >payments</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Efectivo</span
+                >
+              </div>
+            </label>
+            <label class="cursor-pointer relative group">
+              <input
+                checked=""
+                class="peer sr-only"
+                name="payment_method"
+                type="radio"
+                value="tarjeta"
+              />
+              <div
+                class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+              >
+                <span
+                  class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors"
+                  data-icon="credit_card"
+                  >credit_card</span
+                >
+                <span class="font-body-md text-body-md text-on-surface text-center font-medium"
+                  >Tarjeta</span
+                >
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-md mt-sm">
+          <button
+            class="bg-surface-container-lowest text-secondary border border-[#E2E8F0] font-body-md text-body-md font-medium py-sm px-lg rounded-DEFAULT hover:bg-surface-container-low transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            class="bg-primary text-white font-body-md text-body-md font-medium py-sm px-lg rounded-DEFAULT hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-[0px_4px_6px_rgba(0,0,0,0.05)]"
+          >
+            Continuar al Pago
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer
+    class="bg-white dark:bg-slate-950 font-['Inter'] text-sm tracking-normal w-full border-t border-slate-200 dark:border-slate-800 flat no-shadows mt-auto"
+  >
+    <div class="max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center">
+      <div class="text-slate-600 dark:text-slate-400">
+        © 2024 UCAB SERVICES. Universidad Católica Andrés Bello.
+      </div>
+      <div class="flex items-center gap-6">
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none focus:text-green-700"
+          href="#"
+          >Aviso Legal</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none focus:text-green-700"
+          href="#"
+          >Privacidad</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none focus:text-green-700"
+          href="#"
+          >Términos y Condiciones</a
+        >
+      </div>
+    </div>
+  </footer>
+</div>

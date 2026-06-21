@@ -1,0 +1,255 @@
+<div class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+  <main class="flex-grow w-full max-w-[1280px] mx-auto px-6 py-8">
+    <nav aria-label="Breadcrumb" class="flex text-body-sm text-secondary mb-6">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a class="inline-flex items-center hover:text-primary" href="#">
+            <span class="material-symbols-outlined text-sm mr-1">dashboard</span>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+            <a class="hover:text-primary ml-1 md:ml-2" href="#">Directorio</a>
+          </div>
+        </li>
+        <li aria-current="page">
+          <div class="flex items-center">
+            <span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+            <span class="text-on-surface ml-1 md:ml-2 font-medium">Consultar Miembro</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <section
+      class="bg-surface rounded-xl border border-outline-variant p-6 mb-8 flex flex-col md:flex-row items-center gap-6 shadow-sm"
+    >
+      <div
+        class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high shrink-0"
+      >
+        <img
+          alt="Profile photo of Andrés Eduardo Pérez Gómez"
+          class="w-full h-full object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZlm_iFO7lUuYFFMs40SL47vyWVXLjBF-0Gfgz_3TFlGf_kRMjhR9KvzHFOjPRVm8qURXhOEfB1NwEQ0vqdSwDN4GMMtKv-g3EKfKyhxmh1fJ7FuoQ1M7yGwL6TiU6DY4LnLvo_YbxYenVIGH366sMQ8MWg1ROldDf3SlCfPNxYZY2eRYPnG2QgjU9xf5YlwfmB1KHchOssijG5EA_cYz4dHBflBVYxkus21YqkDtY04XruUcZcxppIb5ObHsRV3igVtrpkbxs-tV8"
+        />
+      </div>
+      <div class="flex-grow text-center md:text-left">
+        <h1 class="font-h2 text-h2 text-on-surface mb-2">Andrés Eduardo Pérez Gómez</h1>
+        <p class="font-body-lg text-body-lg text-secondary mb-3">V- 27.564.892</p>
+        <div class="flex flex-wrap justify-center md:justify-start gap-2">
+          <span
+            class="bg-surface-container-high text-primary font-label-caps text-label-caps px-3 py-1 rounded-full border border-primary-container/30"
+            >ESTUDIANTE</span
+          >
+          <span
+            class="bg-primary-container/20 text-primary font-label-caps text-label-caps px-3 py-1 rounded-full border border-primary-container/30 flex items-center gap-1"
+          >
+            <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+            ACTIVO
+          </span>
+        </div>
+      </div>
+      <div class="shrink-0">
+        <button
+          class="bg-primary hover:bg-surface-tint text-on-primary font-body-md text-body-md px-6 py-2 rounded shadow-sm transition-colors flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined">edit</span>
+          Editar Miembro
+        </button>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section class="bg-surface rounded-xl border border-outline-variant p-6 shadow-sm">
+        <div class="flex items-center gap-2 mb-6 border-b border-outline-variant pb-3">
+          <span class="material-symbols-outlined text-primary filled">person</span>
+          <h2 class="font-h3 text-h3 text-on-surface">Información Personal</h2>
+        </div>
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >PRIMER NOMBRE</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                Andrés
+              </div>
+            </div>
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >SEGUNDO NOMBRE</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                Eduardo
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >PRIMER APELLIDO</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                Pérez
+              </div>
+            </div>
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >SEGUNDO APELLIDO</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                Gómez
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block font-label-caps text-label-caps text-secondary mb-1"
+              >CÉDULA DE IDENTIDAD</label
+            >
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+            >
+              27564892
+            </div>
+          </div>
+          <div>
+            <label class="block font-label-caps text-label-caps text-secondary mb-1"
+              >CORREO INSTITUCIONAL</label
+            >
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+            >
+              aperez@est.ucab.edu.ve
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-surface rounded-xl border border-outline-variant p-6 shadow-sm">
+        <div class="flex items-center gap-2 mb-6 border-b border-outline-variant pb-3">
+          <span class="material-symbols-outlined text-primary filled">school</span>
+          <h2 class="font-h3 text-h3 text-on-surface">Datos Académicos</h2>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block font-label-caps text-label-caps text-secondary mb-1"
+              >ROL INSTITUCIONAL</label
+            >
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+            >
+              Estudiante de Pregrado
+            </div>
+          </div>
+          <div>
+            <label class="block font-label-caps text-label-caps text-secondary mb-1"
+              >ESCUELA / FACULTAD</label
+            >
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+            >
+              Ingeniería Informática
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >SEMESTRE ACTUAL</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                8vo Semestre
+              </div>
+            </div>
+            <div>
+              <label class="block font-label-caps text-label-caps text-secondary mb-1"
+                >NÚMERO CARNET TAI</label
+              >
+              <div
+                class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md"
+              >
+                TAI-984-221
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block font-label-caps text-label-caps text-secondary mb-1"
+              >ESTADO DE INSCRIPCIÓN</label
+            >
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-on-surface font-body-md text-body-md flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-primary-container text-sm"
+                >check_circle</span
+              >
+              Inscrito - Período 2024-2025
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="mt-8 flex justify-end gap-4 border-t border-outline-variant pt-6">
+      <button
+        class="bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant text-secondary font-body-md text-body-md px-6 py-2 rounded shadow-sm transition-colors"
+      >
+        Volver
+      </button>
+    </div>
+  </main>
+
+  <nav
+    class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:hidden active:scale-95 transition-transform"
+  >
+    <a
+      class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 text-[11px] font-medium font-inter hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded"
+      href="#"
+    >
+      <span class="material-symbols-outlined mb-1">dashboard</span>
+      Home
+    </a>
+    <a
+      class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 text-[11px] font-medium font-inter hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded"
+      href="#"
+    >
+      <span class="material-symbols-outlined mb-1">inventory_2</span>
+      Catalog
+    </a>
+    <a
+      class="flex flex-col items-center justify-center text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-1 text-[11px] font-inter"
+      href="#"
+    >
+      <span class="material-symbols-outlined mb-1 filled">person</span>
+      Account
+    </a>
+  </nav>
+
+  <footer
+    class="w-full border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 mt-auto hidden md:block"
+  >
+    <div
+      class="w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center max-w-[1280px] mx-auto"
+    >
+      <div class="text-sm font-inter text-gray-600 dark:text-gray-400 mb-4 md:mb-0">
+        <span class="font-bold text-green-700 dark:text-green-500 mr-2">UCAB SERVICES</span>
+        © 2024 UCAB Services. Academic Excellence.
+      </div>
+      <div class="flex gap-6 text-sm font-inter text-gray-500">
+        <a class="hover:text-green-600 transition-colors" href="#">Privacy Policy</a>
+        <a class="hover:text-green-600 transition-colors" href="#">Terms of Service</a>
+        <a class="hover:text-green-600 transition-colors" href="#">Help Desk</a>
+      </div>
+    </div>
+  </footer>
+</div>

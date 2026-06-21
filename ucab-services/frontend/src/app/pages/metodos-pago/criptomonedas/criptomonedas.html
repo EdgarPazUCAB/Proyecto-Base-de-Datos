@@ -1,0 +1,240 @@
+<div class="bg-background text-on-background font-body-md flex flex-col min-h-screen">
+  <main
+    class="flex-grow flex items-center justify-center py-xl px-4 md:px-lg w-full max-w-[1728px] mx-auto"
+  >
+    <div
+      class="w-full max-w-container-max bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_4px_6px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col lg:flex-row"
+    >
+      <section
+        class="w-full lg:w-5/12 bg-surface-container p-lg lg:p-xl border-b lg:border-b-0 lg:border-r border-outline-variant flex flex-col justify-between"
+      >
+        <div>
+          <h2 class="font-h3 text-h3 text-on-surface mb-lg">Resumen del Servicio</h2>
+          <div class="flex gap-md items-start mb-xl pb-md border-b border-outline-variant/50">
+            <div
+              class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-variant border border-outline-variant"
+            >
+              <img
+                alt="Proyecto de grado"
+                class="w-full h-full object-cover object-center"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG9_cuOzQE-PkbDuttZTXoYfDsQnri4NdQHKJjNZe_M6CNoz1cNGlxNtsB8VY3VvNidFeS0iiytI6bMy9WpySwHUGOaMioXSUw3fucY7g12LBCCRauDBRefxk-b0H21XbNW4xkM5Bmxnmr6wmTgfotOnSz9xmRgT50idxQoJuz2HxTVdaP_CmWERUMOgNR-3Jm7YlzgxqT9Yy8RchWVBscLy5uLmwjFUgPFmrl-UPfxd4K5ff9PGKNBNuj6t9dgW5ukZTHVEeUeL4G"
+              />
+            </div>
+            <div class="flex flex-col">
+              <h3 class="font-body-lg text-body-lg text-on-surface font-semibold mb-xs">
+                Asesoría de Proyecto de Grado
+              </h3>
+              <p class="font-body-sm text-body-sm text-secondary mb-xs">Facultad de Ingeniería</p>
+              <span
+                class="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant font-label-caps text-label-caps px-2 py-1 rounded w-max mt-sm"
+              >
+                <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                15 Oct, 2024
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-sm">
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-secondary">Subtotal</span>
+            <span class="font-body-md text-body-md text-on-surface">$150.00 USD</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-secondary">Impuestos (IVA 16%)</span>
+            <span class="font-body-md text-body-md text-on-surface">$24.00 USD</span>
+          </div>
+          <div
+            class="flex justify-between items-center pt-md mt-sm border-t border-outline-variant"
+          >
+            <span class="font-body-lg text-body-lg text-on-surface font-semibold"
+              >Total a Pagar</span
+            >
+            <span class="font-h3 text-h3 text-primary font-bold">$174.00 USD</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="w-full lg:w-7/12 bg-surface-container-lowest p-lg lg:p-xl flex flex-col">
+        <h1 class="font-h2 text-h2 text-on-surface mb-md">Método de Pago</h1>
+        <p class="font-body-sm text-body-sm text-secondary mb-xl">
+          Seleccione su método preferido para completar la transacción de manera segura.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-xl">
+          <label class="cursor-pointer">
+            <input class="peer sr-only" name="payment_method" type="radio" value="card" />
+            <div
+              class="h-full border border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-sm text-secondary hover:bg-surface-container transition-colors peer-checked:border-primary peer-checked:bg-surface-container-low peer-checked:text-primary"
+            >
+              <span class="material-symbols-outlined text-[28px]">credit_card</span>
+              <span class="font-label-caps text-label-caps text-center"
+                >Tarjeta Crédito/Débito</span
+              >
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input
+              checked=""
+              class="peer sr-only"
+              name="payment_method"
+              type="radio"
+              value="crypto"
+            />
+            <div
+              class="h-full border-2 border-primary rounded-lg p-md flex flex-col items-center justify-center gap-sm bg-surface-container-low text-primary transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[28px]"
+                style="font-variation-settings: 'FILL' 1"
+                >currency_bitcoin</span
+              >
+              <span class="font-label-caps text-label-caps text-center">Criptomonedas</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input class="peer sr-only" name="payment_method" type="radio" value="bank" />
+            <div
+              class="h-full border border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-sm text-secondary hover:bg-surface-container transition-colors peer-checked:border-primary peer-checked:bg-surface-container-low peer-checked:text-primary"
+            >
+              <span class="material-symbols-outlined text-[28px]">account_balance</span>
+              <span class="font-label-caps text-label-caps text-center"
+                >Transferencia Bancaria</span
+              >
+            </div>
+          </label>
+        </div>
+
+        <div class="flex flex-col gap-lg flex-grow">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <div class="flex flex-col gap-xs">
+              <label class="font-label-caps text-label-caps text-on-surface-variant" for="network"
+                >Red de Blockchain</label
+              >
+              <div class="relative">
+                <select
+                  class="w-full appearance-none bg-surface border border-outline text-on-surface font-body-md text-body-md rounded-lg px-md py-[10px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+                  id="network"
+                  name="network"
+                >
+                  <option value="tron">TRON (TRC20) - USDT</option>
+                  <option value="bsc">Binance Smart Chain (BEP20) - USDT</option>
+                  <option value="ethereum">Ethereum (ERC20) - USDT</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-md text-secondary"
+                >
+                  <span class="material-symbols-outlined">expand_more</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-xs">
+              <label class="font-label-caps text-label-caps text-on-surface-variant"
+                >Tasa de Conversión</label
+              >
+              <div
+                class="bg-surface-container px-md py-[10px] rounded-lg border border-outline-variant flex items-center justify-between"
+              >
+                <span class="font-body-md text-body-md text-on-surface">1.00 USDT</span>
+                <span class="material-symbols-outlined text-secondary text-[16px]">sync_alt</span>
+                <span class="font-body-md text-body-md text-on-surface">$1.00 USD</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-xs">
+            <label class="font-label-caps text-label-caps text-on-surface-variant"
+              >Dirección de Billetera (Destino)</label
+            >
+            <div class="flex gap-md items-start">
+              <div
+                class="flex-grow flex bg-surface border border-outline rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-shadow"
+              >
+                <input
+                  class="w-full bg-transparent border-none text-on-surface font-body-md text-body-md px-md py-[10px] focus:ring-0 text-ellipsis"
+                  readonly=""
+                  type="text"
+                  value="TJCnKyYw3k2v6J...mPv7bX9q1R"
+                />
+                <button
+                  class="bg-surface-container hover:bg-surface-container-high text-primary px-md py-[10px] border-l border-outline transition-colors flex items-center gap-xs"
+                  title="Copiar Dirección"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                  <span class="font-label-caps text-label-caps hidden sm:inline">Copiar</span>
+                </button>
+              </div>
+              <div
+                class="w-12 h-12 flex-shrink-0 bg-surface-container border border-outline-variant rounded-lg flex items-center justify-center text-secondary cursor-pointer hover:bg-surface-variant transition-colors"
+                title="Mostrar QR"
+              >
+                <span class="material-symbols-outlined">qr_code_2</span>
+              </div>
+            </div>
+            <p class="font-body-sm text-body-sm text-secondary mt-1">
+              Envíe exactamente 174.00 USDT a esta dirección a través de la red TRC20.
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-xs">
+            <label class="font-label-caps text-label-caps text-on-surface-variant" for="dxid"
+              >DXID / Hash de Transacción <span class="text-error">*</span></label
+            >
+            <input
+              class="w-full bg-surface border border-outline text-on-surface font-body-md text-body-md rounded-lg px-md py-[10px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+              id="dxid"
+              name="dxid"
+              placeholder="Pegue aquí el ID de su transacción para verificar"
+              type="text"
+            />
+          </div>
+        </div>
+
+        <div
+          class="mt-xl pt-lg border-t border-outline-variant flex flex-col-reverse sm:flex-row justify-end items-center gap-md"
+        >
+          <button
+            class="w-full sm:w-auto bg-surface-container-lowest border border-outline text-secondary hover:bg-surface-variant font-label-caps text-label-caps px-lg py-md rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button
+            class="w-full sm:w-auto bg-primary text-on-primary hover:bg-on-primary-fixed-variant font-label-caps text-label-caps px-lg py-md rounded-lg transition-colors flex items-center justify-center gap-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            type="button"
+          >
+            Verificar Pago
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer
+    class="w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-['Inter'] text-sm tracking-normal flat no-shadows"
+  >
+    <div class="max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center">
+      <p class="text-slate-600 dark:text-slate-400">
+        © 2024 UCAB SERVICES. Universidad Católica Andrés Bello.
+      </p>
+      <div class="flex gap-6">
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Aviso Legal</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Privacidad</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Términos y Condiciones</a
+        >
+      </div>
+    </div>
+  </footer>
+</div>

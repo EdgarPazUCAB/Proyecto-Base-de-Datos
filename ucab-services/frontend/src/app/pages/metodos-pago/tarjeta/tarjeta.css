@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Efecto Glassmorphism utilizado en tus tarjetas de diseño */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Gradiente corporativo oscuro para elementos destacados */
+.cc-gradient {
+  background: linear-gradient(135deg, #0b1c30 0%, #213145 100%);
+}

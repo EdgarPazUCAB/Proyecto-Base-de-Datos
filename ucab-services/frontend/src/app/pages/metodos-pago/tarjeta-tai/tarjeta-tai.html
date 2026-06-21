@@ -1,0 +1,246 @@
+<div class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+  <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl">
+    <div class="mb-lg">
+      <h1 class="font-h2 text-h2 text-on-surface">Procesar Pago</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-sm">
+        Complete los detalles de su método de pago para finalizar la solicitud.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-xl items-start">
+      <div class="lg:col-span-8 flex flex-col gap-lg">
+        <section>
+          <h2 class="font-h3 text-h3 text-on-surface mb-md">Método de Pago</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+            <div
+              class="border-2 border-primary bg-surface-container-low rounded-xl p-md flex flex-col items-start cursor-pointer relative shadow-[0_4px_6px_rgba(0,0,0,0.02)] transition-all"
+            >
+              <div class="absolute top-md right-md text-primary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1"
+                  >check_circle</span
+                >
+              </div>
+              <span class="material-symbols-outlined text-[32px] text-primary mb-sm"
+                >credit_card</span
+              >
+              <span class="font-body-md text-body-md font-semibold text-on-surface"
+                >Tarjeta TAI</span
+              >
+              <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
+                >Pago institucional</span
+              >
+            </div>
+
+            <div
+              class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
+            >
+              <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"
+                >account_balance</span
+              >
+              <span class="font-body-md text-body-md font-medium text-on-surface"
+                >Transferencia</span
+              >
+              <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
+                >Bancos Nacionales</span
+              >
+            </div>
+
+            <div
+              class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
+            >
+              <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"
+                >payments</span
+              >
+              <span class="font-body-md text-body-md font-medium text-on-surface">Zelle</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
+                >Moneda extranjera</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="bg-surface border border-outline-variant rounded-xl p-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)]"
+        >
+          <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
+            <span class="material-symbols-outlined text-primary text-[28px]"
+              >account_balance_wallet</span
+            >
+            <h3 class="font-h3 text-h3 text-on-surface">Detalles de Tarjeta TAI</h3>
+          </div>
+
+          <div class="grid grid-cols-1 gap-lg">
+            <div class="flex flex-col gap-xs">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                for="pos-digital"
+                >POS Digital</label
+              >
+              <div class="relative">
+                <span
+                  class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant"
+                  >point_of_sale</span
+                >
+                <input
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-md pl-[48px] pr-md font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                  id="pos-digital"
+                  placeholder="Ingrese el código del POS Digital"
+                  type="text"
+                />
+              </div>
+              <span class="font-body-sm text-body-sm text-on-surface-variant"
+                >El código de 6 a 8 dígitos generado por su terminal.</span
+              >
+            </div>
+
+            <div class="flex flex-col gap-xs">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                for="recibo-digital"
+                >Recibo Digital</label
+              >
+              <div
+                class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all cursor-pointer group"
+              >
+                <span
+                  class="material-symbols-outlined text-[40px] text-on-surface-variant group-hover:text-primary mb-sm transition-colors"
+                  >upload_file</span
+                >
+                <span class="font-body-md text-body-md font-medium text-on-surface"
+                  >Haga clic para subir o arrastre el archivo</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
+                  >Formatos soportados: PDF, JPG, PNG (Max. 5MB)</span
+                >
+              </div>
+            </div>
+
+            <div
+              class="bg-secondary-container rounded-xl p-lg flex flex-col gap-md mt-sm border border-secondary-fixed-dim"
+            >
+              <div class="flex items-center gap-sm text-on-secondary-container">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1"
+                  >info</span
+                >
+                <span class="font-body-md text-body-md font-medium">Proyección de Saldo</span>
+              </div>
+              <div class="flex flex-col gap-sm">
+                <div
+                  class="flex justify-between items-center border-b border-on-secondary-container/20 pb-sm"
+                >
+                  <span class="font-body-md text-body-md text-on-secondary-container opacity-80"
+                    >Saldo Actual en TAI</span
+                  >
+                  <span class="font-body-md text-body-md font-medium text-on-secondary-container"
+                    >$1,250.00</span
+                  >
+                </div>
+                <div
+                  class="flex justify-between items-center border-b border-on-secondary-container/20 pb-sm"
+                >
+                  <span class="font-body-md text-body-md text-on-secondary-container opacity-80"
+                    >Monto de la Solicitud</span
+                  >
+                  <span class="font-body-md text-body-md font-medium text-error">-$450.00</span>
+                </div>
+                <div class="flex justify-between items-center pt-xs">
+                  <span class="font-h3 text-h3 text-on-secondary-container">Saldo Restante</span>
+                  <span class="font-h3 text-h3 text-primary-fixed-variant font-bold">$800.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="lg:col-span-4">
+        <aside
+          class="bg-surface border border-outline-variant rounded-xl p-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)] sticky top-xl"
+        >
+          <h2 class="font-h3 text-h3 text-on-surface border-b border-outline-variant pb-md mb-md">
+            Resumen de la Solicitud
+          </h2>
+          <div class="flex flex-col gap-md mb-xl">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-body-md text-body-md font-medium text-on-surface block"
+                  >Renovación de Credenciales</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface-variant block mt-xs"
+                  >Servicio Administrativo</span
+                >
+              </div>
+              <span class="font-body-md text-body-md text-on-surface">$400.00</span>
+            </div>
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-body-md text-body-md font-medium text-on-surface block"
+                  >Gastos de Procesamiento TAI</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface-variant block mt-xs"
+                  >Tarifa fija de plataforma</span
+                >
+              </div>
+              <span class="font-body-md text-body-md text-on-surface">$50.00</span>
+            </div>
+          </div>
+
+          <div class="border-t border-outline-variant pt-md mb-xl">
+            <div class="flex justify-between items-end">
+              <span class="font-body-lg text-body-lg font-medium text-on-surface"
+                >Total a Pagar</span
+              >
+              <span class="font-h2 text-h2 text-primary font-bold tracking-tight">$450.00</span>
+            </div>
+          </div>
+
+          <button
+            class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md font-medium py-md rounded-lg flex items-center justify-center gap-sm transition-all focus:ring-4 focus:ring-primary/30 outline-none"
+          >
+            <span class="material-symbols-outlined">lock</span>
+            Confirmar Pago
+          </button>
+
+          <p
+            class="font-body-sm text-body-sm text-center text-on-surface-variant mt-md flex items-center justify-center gap-xs"
+          >
+            <span class="material-symbols-outlined text-[16px]">verified_user</span>
+            Transacción encriptada y segura.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer
+    class="w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 mt-auto border-t border-slate-100 dark:border-slate-900 flat no-shadows"
+  >
+    <div class="max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center">
+      <div class="flex flex-col gap-sm">
+        <span class="text-lg font-bold text-green-600 dark:text-green-400 font-['Inter']"
+          >UCAB SERVICES</span
+        >
+        <span class="text-slate-600 dark:text-slate-400 font-['Inter'] text-sm tracking-normal"
+          >© 2024 UCAB SERVICES. Universidad Católica Andrés Bello.</span
+        >
+      </div>
+      <nav class="flex gap-lg">
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Aviso Legal</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Privacidad</a
+        >
+        <a
+          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
+          href="#"
+          >Términos y Condiciones</a
+        >
+      </nav>
+    </div>
+  </footer>
+</div>

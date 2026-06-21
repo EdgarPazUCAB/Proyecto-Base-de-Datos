@@ -1,0 +1,233 @@
+<div class="bg-surface min-h-screen flex flex-col text-on-surface antialiased">
+  <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl">
+    <div class="mb-xl text-center md:text-left">
+      <h1 class="font-h1 text-h1 text-on-surface mb-xs">Pago Seguro</h1>
+      <p
+        class="font-body-lg text-body-lg text-on-surface-variant flex items-center justify-center md:justify-start gap-xs"
+      >
+        <span class="material-symbols-outlined text-[20px] text-primary">lock</span>
+        Completa los detalles para procesar tu solicitud.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+      <div class="lg:col-span-8 flex flex-col gap-lg">
+        <section
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm"
+        >
+          <h2 class="font-h3 text-h3 text-on-surface mb-md">Método de Pago</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <div
+              class="border-2 border-primary bg-surface-container-low rounded-lg p-md flex items-center justify-between cursor-pointer relative overflow-hidden"
+            >
+              <div
+                class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded-bl-lg"
+              >
+                SELECCIONADO
+              </div>
+              <div class="flex items-center gap-md">
+                <div
+                  class="w-12 h-8 bg-surface-container-lowest rounded border border-outline-variant flex items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined">credit_card</span>
+                </div>
+                <span class="font-body-md text-body-md font-semibold text-on-surface">Tarjeta</span>
+              </div>
+              <span
+                class="material-symbols-outlined text-primary"
+                style="font-variation-settings: 'FILL' 1"
+                >radio_button_checked</span
+              >
+            </div>
+
+            <div
+              class="border border-outline-variant hover:border-outline bg-surface-container-lowest rounded-lg p-md flex items-center justify-between cursor-pointer transition-colors opacity-60"
+            >
+              <div class="flex items-center gap-md">
+                <div
+                  class="w-12 h-8 bg-surface-container rounded border border-outline-variant flex items-center justify-center text-secondary"
+                >
+                  <span class="material-symbols-outlined">account_balance</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface-variant">Transferencia</span>
+              </div>
+              <span class="material-symbols-outlined text-outline-variant"
+                >radio_button_unchecked</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm relative overflow-hidden"
+        >
+          <div
+            class="absolute -right-24 -top-24 w-64 h-64 bg-surface-container rounded-full blur-3xl opacity-50 pointer-events-none"
+          ></div>
+          <h2 class="font-h3 text-h3 text-on-surface mb-lg">Detalles de la Tarjeta</h2>
+          <form class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md relative z-10">
+            <div class="md:col-span-2">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant block mb-unit uppercase"
+                for="cardNumber"
+                >Número de la tarjeta</label
+              >
+              <div class="relative">
+                <span
+                  class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline"
+                  >credit_card</span
+                >
+                <input
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-sm pl-xl pr-sm font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
+                  id="cardNumber"
+                  placeholder="0000 0000 0000 0000"
+                  type="text"
+                />
+              </div>
+            </div>
+
+            <div class="md:col-span-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant block mb-unit uppercase"
+                for="networkType"
+                >Tipo de red</label
+              >
+              <div class="relative">
+                <select
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-sm px-md font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                  id="networkType"
+                >
+                  <option disabled="" selected="" value="">Seleccione...</option>
+                  <option value="visa">Visa</option>
+                  <option value="mastercard">Mastercard</option>
+                </select>
+                <span
+                  class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-outline pointer-events-none"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+
+            <div class="md:col-span-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant block mb-unit uppercase"
+                for="company"
+                >Compañía</label
+              >
+              <input
+                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-sm px-md font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
+                id="company"
+                placeholder="Ej. Banco Mercantil"
+                type="text"
+              />
+            </div>
+
+            <div class="md:col-span-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant block mb-unit uppercase"
+                for="expDate"
+                >Fecha de Vencimiento</label
+              >
+              <input
+                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-sm px-md font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
+                id="expDate"
+                placeholder="MM/AA"
+                type="text"
+              />
+            </div>
+
+            <div class="md:col-span-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant block mb-unit uppercase"
+                for="cvv"
+                >CVV</label
+              >
+              <div class="relative">
+                <input
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-sm px-md font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
+                  id="cvv"
+                  maxlength="4"
+                  placeholder="•••"
+                  type="password"
+                />
+                <span
+                  class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-outline cursor-help"
+                  title="Código de seguridad en el reverso de la tarjeta"
+                  >help</span
+                >
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="lg:col-span-4">
+        <div
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm sticky top-xl flex flex-col h-full max-h-[800px]"
+        >
+          <div class="p-lg border-b border-outline-variant bg-surface-container-low rounded-t-xl">
+            <h2 class="font-h3 text-h3 text-on-surface flex items-center gap-sm">
+              <span class="material-symbols-outlined text-primary">receipt_long</span>
+              Resumen de la solicitud
+            </h2>
+          </div>
+          <div class="p-lg flex-grow overflow-y-auto">
+            <ul class="flex flex-col gap-md">
+              <li class="flex justify-between items-start">
+                <div>
+                  <p class="font-body-md text-body-md font-medium text-on-surface">
+                    Asesoría Académica
+                  </p>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Facultad de Ingeniería
+                  </p>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">$45.00</span>
+              </li>
+              <li class="flex justify-between items-start">
+                <div>
+                  <p class="font-body-md text-body-md font-medium text-on-surface">
+                    Emisión de Constancia
+                  </p>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">Trámite express</p>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">$15.00</span>
+              </li>
+            </ul>
+            <div class="mt-xl pt-md border-t border-dashed border-outline-variant">
+              <div class="flex justify-between items-center mb-xs">
+                <span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+                <span class="font-body-md text-body-md text-on-surface">$60.00</span>
+              </div>
+              <div class="flex justify-between items-center mb-md">
+                <span class="font-body-md text-body-md text-on-surface-variant"
+                  >Impuestos (IVA 16%)</span
+                >
+                <span class="font-body-md text-body-md text-on-surface">$9.60</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-lg bg-surface-container rounded-b-xl mt-auto">
+            <div class="flex justify-between items-end mb-lg">
+              <span class="font-h3 text-h3 text-on-surface">Total a Pagar</span>
+              <span class="font-h2 text-h2 text-primary font-bold">$69.60</span>
+            </div>
+            <button
+              class="w-full bg-primary text-on-primary font-body-lg text-body-lg rounded-lg py-md hover:bg-primary-fixed-variant transition-colors flex justify-center items-center gap-sm shadow-sm font-semibold mb-md"
+              type="button"
+            >
+              <span class="material-symbols-outlined">lock</span>
+              Procesar Pago Seguro
+            </button>
+            <p
+              class="font-body-sm text-body-sm text-on-surface-variant text-center flex items-center justify-center gap-xs"
+            >
+              <span class="material-symbols-outlined text-[16px]">verified_user</span>
+              Tus datos están encriptados y seguros
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
