@@ -17,6 +17,7 @@ import { FolioConsumo } from './pages/folio-consumo/folio-consumo';
 import { OfertasLaborales } from './pages/ofertas-laborales/ofertas-laborales';
 import { OfertaLaboralDetalle } from './pages/oferta-laboral-detalle/oferta-laboral-detalle';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { CatalogoServicios } from './pages/catalogo-servicios/catalogo-servicios';
 
 
 export const routes: Routes = [
@@ -38,5 +39,6 @@ export const routes: Routes = [
   { path: 'folio-consumo', component: FolioConsumo },
   { path: 'ofertas-laborales', component: OfertasLaborales },
   { path: 'oferta-laboral-detalle', component: OfertaLaboralDetalle },
-  { path: 'dashboard', component: Dashboard }
+  { path: 'dashboard', component: Dashboard },
+  { path: 'catalogo-servicios', component: CatalogoServicios }
 ];
