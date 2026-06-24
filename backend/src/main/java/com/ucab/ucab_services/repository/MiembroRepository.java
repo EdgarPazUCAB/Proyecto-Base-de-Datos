@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +17,17 @@ public interface MiembroRepository extends JpaRepository<Miembro, String> {
     Optional<Miembro> findByCorreoInstitucional(String correoInstitucional);
 
     boolean existsByCorreoInstitucional(String correoInstitucional);
+
+    /**
+     * Búsqueda flexible por nombre o apellido (insensible a mayúsculas),
+     * para la pantalla "consultar-miembro". Usa ILIKE de PostgreSQL.
+     */
+    @Query(value = """
+            SELECT * FROM miembro
+            WHERE nombres_completos ILIKE CONCAT('%', :texto, '%')
+               OR apellidos_completos ILIKE CONCAT('%', :texto, '%')
+            """, nativeQuery = true)
+    List<Miembro> buscarPorNombreOApellido(@Param("texto") String texto);
 
     // ────────────────────────────────────────────────────────────
     // Llamadas a las funciones de seguridad de PostgreSQL.
@@ -43,4 +55,23 @@ public interface MiembroRepository extends JpaRepository<Miembro, String> {
      */
     @Query(value = "SELECT fn_verificar_codigo_mfa(:cedula, :codigo)", nativeQuery = true)
     boolean verificarCodigoMfa(@Param("cedula") String cedula, @Param("codigo") String codigo);
+
+    /**
+     * Llama a fn_establecer_clave(cedula, clave_plana) -> void.
+     * Genera el hash bcrypt y lo guarda en Clave_Hash, actualizando
+     * también Fecha_Cambio_Clave. Se usa al crear un miembro nuevo
+     * o cuando alguien cambia su contraseña.
+     *
+     * NOTA IMPORTANTE: aunque la función SQL retorna VOID, se ejecuta
+     * como un SELECT, así que el driver JDBC de PostgreSQL siempre
+     * devuelve un result set (aunque con una sola fila de valor void).
+     * Por eso NO se usa @Modifying aquí — @Modifying espera un
+     * executeUpdate() sin result set (como un INSERT/UPDATE/DELETE
+     * real), y eso es justamente lo que rompía con error "Se retornó
+     * un resultado cuando no se esperaba ninguno". Tratándolo como
+     * una consulta normal (sin @Modifying), Hibernate sí acepta que
+     * venga un resultado, y simplemente lo descarta.
+     */
+    @Query(value = "SELECT fn_establecer_clave(:cedula, :clavePlana)", nativeQuery = true)
+    void establecerClave(@Param("cedula") String cedula, @Param("clavePlana") String clavePlana);
 }
