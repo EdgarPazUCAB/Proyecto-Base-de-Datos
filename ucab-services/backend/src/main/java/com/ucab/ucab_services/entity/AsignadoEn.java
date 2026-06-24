@@ -21,14 +21,14 @@ public class AsignadoEn {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "nombre_edif", referencedColumnName = "nombre_edif"),
-            @JoinColumn(name = "direccion_interna", referencedColumnName = "direccion_interna"),
-            @JoinColumn(name = "num_identificador", referencedColumnName = "num_identificador")
+            @JoinColumn(name = "nombre_edif", referencedColumnName = "nombre_edif", insertable = false, updatable = false),
+            @JoinColumn(name = "direccion_interna", referencedColumnName = "direccion_interna", insertable = false, updatable = false),
+            @JoinColumn(name = "num_identificador", referencedColumnName = "num_identificador", insertable = false, updatable = false)
     })
     private EspacioFisico espacioFisico;
 
     @ManyToOne
-    @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio")
+    @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio", insertable = false, updatable = false)
     private Servicio servicio;
 
 }

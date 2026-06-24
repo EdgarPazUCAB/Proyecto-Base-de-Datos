@@ -19,7 +19,7 @@ public class AuditoriaSesion {
     @EmbeddedId
     private AuditoriaSesionId id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro", insertable = false, updatable = false)
     private Miembro miembro;
 

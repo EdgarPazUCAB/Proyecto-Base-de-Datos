@@ -1,6 +1,7 @@
 package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity; // ✅ IMPORTACIÓN AÑADIDA
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -12,6 +13,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Entity // ✅ ANOTACIÓN FALTANTE AÑADIDA
 @Table(name = "paso_actividad")
 @Getter @Setter @NoArgsConstructor
 @IdClass(PasoActividadId.class)

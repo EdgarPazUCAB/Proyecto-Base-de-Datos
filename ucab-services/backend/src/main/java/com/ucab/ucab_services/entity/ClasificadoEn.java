@@ -21,13 +21,13 @@ public class ClasificadoEn {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "perfil_solicitante", referencedColumnName = "perfil_solicitante"),
-            @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio")
+            @JoinColumn(name = "perfil_solicitante", referencedColumnName = "perfil_solicitante", insertable = false, updatable = false),
+            @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio", insertable = false, updatable = false)
     })
     private TarifaServicio tarifaServicio;
 
     @ManyToOne
-    @JoinColumn(name = "tipo_categoria", referencedColumnName = "tipo_categoria")
+    @JoinColumn(name = "tipo_categoria", referencedColumnName = "tipo_categoria", insertable = false, updatable = false)
     private CategoriaFidelidad categoriaFidelidad;
 
 }

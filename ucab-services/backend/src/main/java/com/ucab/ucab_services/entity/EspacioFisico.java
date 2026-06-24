@@ -29,15 +29,14 @@ public class EspacioFisico {
     @Column(name = "tipo_inmobiliario", length = 50, nullable = false)
     private String tipoInmobiliario;
 
-    @Column(name = "estatus", length = 30, nullable = false)
-    private String estatus;
+   @Column(name = "estatus", length = 30, nullable = false)
+   private String estatus;
 
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "nombre_edif", referencedColumnName = "nombre_edif"),
-            @JoinColumn(name = "direccion_interna", referencedColumnName = "direccion_interna"),
-            @JoinColumn(name = "nombre_sede", referencedColumnName = "nombre_sede")
+   @ManyToOne
+   @JoinColumns({
+            @JoinColumn(name = "nombre_edif", referencedColumnName = "nombre_edif", insertable = false, updatable = false),
+            @JoinColumn(name = "direccion_interna", referencedColumnName = "direccion_interna", insertable = false, updatable = false)
     })
-    private Edificacion edificacion;
+   private Edificacion edificacion;
 
 }

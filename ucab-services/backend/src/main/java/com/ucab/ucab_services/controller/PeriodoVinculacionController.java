@@ -13,7 +13,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/periodos-vinculacion")
 public class PeriodoVinculacionController {
-
     @Autowired
     private PeriodoVinculacionService periodoVinculacionService;
 
@@ -22,8 +21,12 @@ public class PeriodoVinculacionController {
         return periodoVinculacionService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PeriodoVinculacion> getPeriodoVinculacionById(@PathVariable PeriodoVinculacionId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<PeriodoVinculacion> getPeriodoVinculacionById(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Date fechaInicio) {
+        PeriodoVinculacionId id = new PeriodoVinculacionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaInicio(fechaInicio);
         Optional<PeriodoVinculacion> periodoVinculacion = periodoVinculacionService.findById(id);
         return periodoVinculacion.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +36,12 @@ public class PeriodoVinculacionController {
         return periodoVinculacionService.save(periodoVinculacion);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PeriodoVinculacion> updatePeriodoVinculacion(@PathVariable PeriodoVinculacionId id, @RequestBody PeriodoVinculacion periodoVinculacionDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<PeriodoVinculacion> updatePeriodoVinculacion(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Date fechaInicio, @RequestBody PeriodoVinculacion periodoVinculacionDetails) {
+        PeriodoVinculacionId id = new PeriodoVinculacionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaInicio(fechaInicio);
         Optional<PeriodoVinculacion> periodoVinculacionOptional = periodoVinculacionService.findById(id);
         if (periodoVinculacionOptional.isPresent()) {
             PeriodoVinculacion periodoVinculacion = periodoVinculacionOptional.get();
@@ -46,8 +53,12 @@ public class PeriodoVinculacionController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePeriodoVinculacion(@PathVariable PeriodoVinculacionId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deletePeriodoVinculacion(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Date fechaInicio) {
+        PeriodoVinculacionId id = new PeriodoVinculacionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaInicio(fechaInicio);
         if (periodoVinculacionService.existsById(id)) {
             periodoVinculacionService.deleteById(id);
             return ResponseEntity.noContent().build();

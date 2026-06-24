@@ -21,13 +21,13 @@ public class SugeridaA {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "id_entidad_externa", referencedColumnName = "id_entidad_externa"),
-            @JoinColumn(name = "cargo_laboral", referencedColumnName = "cargo_laboral")
+            @JoinColumn(name = "id_entidad_externa", referencedColumnName = "id_entidad_externa", insertable = false, updatable = false),
+            @JoinColumn(name = "cargo_laboral", referencedColumnName = "cargo_laboral", insertable = false, updatable = false)
     })
     private OfertaLaboral ofertaLaboral;
 
     @ManyToOne
-    @JoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro")
+    @JoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro", insertable = false, updatable = false)
     private Egresado egresado;
 
 }

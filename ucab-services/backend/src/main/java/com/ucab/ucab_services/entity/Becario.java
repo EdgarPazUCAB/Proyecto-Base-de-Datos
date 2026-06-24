@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "becario")
@@ -22,6 +23,6 @@ public class Becario extends Estudiante {
     private String estatusBeneficio;
 
     @Column(name = "indice_mantenimiento", precision = 4, scale = 2)
-    private Double indiceMantenimiento;
+    private BigDecimal indiceMantenimiento;
 
 }

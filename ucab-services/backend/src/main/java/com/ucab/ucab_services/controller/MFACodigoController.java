@@ -6,14 +6,12 @@ import com.ucab.ucab_services.service.MFACodigoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/mfa-codigos")
 public class MFACodigoController {
-
     @Autowired
     private MFACodigoService mfaCodigoService;
 
@@ -22,8 +20,12 @@ public class MFACodigoController {
         return mfaCodigoService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MFACodigo> getMFACodigoById(@PathVariable MFACodigoId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<MFACodigo> getMFACodigoById(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaGenerado) {
+        MFACodigoId id = new MFACodigoId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaGenerado(fechaGenerado);
         Optional<MFACodigo> mfaCodigo = mfaCodigoService.findById(id);
         return mfaCodigo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +35,12 @@ public class MFACodigoController {
         return mfaCodigoService.save(mfaCodigo);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MFACodigo> updateMFACodigo(@PathVariable MFACodigoId id, @RequestBody MFACodigo mfaCodigoDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<MFACodigo> updateMFACodigo(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaGenerado, @RequestBody MFACodigo mfaCodigoDetails) {
+        MFACodigoId id = new MFACodigoId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaGenerado(fechaGenerado);
         Optional<MFACodigo> mfaCodigoOptional = mfaCodigoService.findById(id);
         if (mfaCodigoOptional.isPresent()) {
             MFACodigo mfaCodigo = mfaCodigoOptional.get();
@@ -46,8 +52,12 @@ public class MFACodigoController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMFACodigo(@PathVariable MFACodigoId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deleteMFACodigo(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaGenerado) {
+        MFACodigoId id = new MFACodigoId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaGenerado(fechaGenerado);
         if (mfaCodigoService.existsById(id)) {
             mfaCodigoService.deleteById(id);
             return ResponseEntity.noContent().build();

@@ -5,13 +5,11 @@ import com.ucab.ucab_services.repository.BilleteraTaiRepository;
 import com.ucab.ucab_services.service.BilleteraTaiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class BilleteraTaiServiceImpl implements BilleteraTaiService {
-
     @Autowired
     private BilleteraTaiRepository billeteraTaiRepository;
 
@@ -26,8 +24,8 @@ public class BilleteraTaiServiceImpl implements BilleteraTaiService {
     }
 
     @Override
-    public BilleteraTai findByCedulaMiembro(String cedulaMiembro) {
-        return billeteraTaiRepository.findByCedulaMiembro(cedulaMiembro);
+    public BilleteraTai findByMiembroCedulaMiembro(String cedulaMiembro) {
+        return billeteraTaiRepository.findByMiembroCedulaMiembro(cedulaMiembro);
     }
 
     @Override

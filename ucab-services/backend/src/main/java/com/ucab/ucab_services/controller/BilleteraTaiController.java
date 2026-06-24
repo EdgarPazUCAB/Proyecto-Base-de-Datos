@@ -29,7 +29,8 @@ public class BilleteraTaiController {
 
     @GetMapping("/miembro/{cedula}")
     public ResponseEntity<BilleteraTai> getBilleteraTaiByMiembro(@PathVariable String cedula) {
-        BilleteraTai billeteraTai = billeteraTaiService.findByCedulaMiembro(cedula);
+        // ✅ CAMBIO AQUÍ: Llamado al nuevo nombre del método
+        BilleteraTai billeteraTai = billeteraTaiService.findByMiembroCedulaMiembro(cedula);
         return billeteraTai != null ? ResponseEntity.ok(billeteraTai) : ResponseEntity.notFound().build();
     }
 

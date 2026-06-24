@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "preparador")
@@ -19,6 +20,6 @@ public class Preparador extends Estudiante {
     private String asignaturaAsignada;
 
     @Column(name = "horas_ayudantia", precision = 5, scale = 2)
-    private Double horasAyudantia;
+    private BigDecimal horasAyudantia;
 
 }

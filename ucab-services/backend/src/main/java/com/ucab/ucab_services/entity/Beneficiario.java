@@ -20,7 +20,7 @@ public class Beneficiario {
     @Column(name = "documento_identidad", length = 30, nullable = false, unique = true)
     private String documentoIdentidad;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro", nullable = false)
     private Miembro miembro;
 

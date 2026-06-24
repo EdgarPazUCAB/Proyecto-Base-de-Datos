@@ -1,6 +1,5 @@
 package com.ucab.ucab_services.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -19,7 +18,7 @@ public class Edificacion {
     private EdificacionId id;
 
     @ManyToOne
-    @JoinColumn(name = "nombre_sede", referencedColumnName = "nombre_sede", insertable = false, updatable = false)
+    @JoinColumn(name = "nombre_sede", referencedColumnName = "nombre_sede", nullable = false)
     private Sede sede;
 
 }

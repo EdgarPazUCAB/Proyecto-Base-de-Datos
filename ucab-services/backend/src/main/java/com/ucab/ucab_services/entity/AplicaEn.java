@@ -18,14 +18,14 @@ public class AplicaEn {
 
     @EmbeddedId
     private AplicaEnId id;
-
+    
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio"),
-            @JoinColumn(name = "perfil_solicitante", referencedColumnName = "perfil_solicitante")
+            @JoinColumn(name = "perfil_solicitante", referencedColumnName = "perfil_solicitante", insertable = false, updatable = false),
+            @JoinColumn(name = "codigo_servicio", referencedColumnName = "codigo_servicio", insertable = false, updatable = false)
     })
     private TarifaServicio tarifaServicio;
-
+    
     @Column(name = "precio_base", precision = 10, scale = 2, nullable = false)
     private java.math.BigDecimal precioBase;
 

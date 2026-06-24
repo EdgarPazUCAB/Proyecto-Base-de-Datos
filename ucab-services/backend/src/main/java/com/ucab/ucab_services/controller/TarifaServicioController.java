@@ -6,14 +6,12 @@ import com.ucab.ucab_services.service.TarifaServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tarifas-servicio")
 public class TarifaServicioController {
-
     @Autowired
     private TarifaServicioService tarifaServicioService;
 
@@ -22,8 +20,13 @@ public class TarifaServicioController {
         return tarifaServicioService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TarifaServicio> getTarifaServicioById(@PathVariable TarifaServicioId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<TarifaServicio> getTarifaServicioById(@RequestParam String perfilSolicitante,
+            @RequestParam String codigoServicio) {
+        TarifaServicioId id = new TarifaServicioId();
+
+        id.setPerfilSolicitante(perfilSolicitante);
+        id.setCodigoServicio(codigoServicio);
         Optional<TarifaServicio> tarifaServicio = tarifaServicioService.findById(id);
         return tarifaServicio.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +36,12 @@ public class TarifaServicioController {
         return tarifaServicioService.save(tarifaServicio);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TarifaServicio> updateTarifaServicio(@PathVariable TarifaServicioId id, @RequestBody TarifaServicio tarifaServicioDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<TarifaServicio> updateTarifaServicio(@RequestParam String perfilSolicitante,
+            @RequestParam String codigoServicio, @RequestBody TarifaServicio tarifaServicioDetails) {
+        TarifaServicioId id = new TarifaServicioId();
+        id.setPerfilSolicitante(perfilSolicitante);
+        id.setCodigoServicio(codigoServicio);
         Optional<TarifaServicio> tarifaServicioOptional = tarifaServicioService.findById(id);
         if (tarifaServicioOptional.isPresent()) {
             TarifaServicio tarifaServicio = tarifaServicioOptional.get();
@@ -46,8 +53,12 @@ public class TarifaServicioController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTarifaServicio(@PathVariable TarifaServicioId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deleteTarifaServicio(@RequestParam String perfilSolicitante,
+            @RequestParam String codigoServicio) {
+        TarifaServicioId id = new TarifaServicioId();
+        id.setPerfilSolicitante(perfilSolicitante);
+        id.setCodigoServicio(codigoServicio);
         if (tarifaServicioService.existsById(id)) {
             tarifaServicioService.deleteById(id);
             return ResponseEntity.noContent().build();

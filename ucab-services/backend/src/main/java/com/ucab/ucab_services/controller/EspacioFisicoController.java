@@ -6,14 +6,12 @@ import com.ucab.ucab_services.service.EspacioFisicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/espacios-fisicos")
 public class EspacioFisicoController {
-
     @Autowired
     private EspacioFisicoService espacioFisicoService;
 
@@ -22,8 +20,13 @@ public class EspacioFisicoController {
         return espacioFisicoService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EspacioFisico> getEspacioFisicoById(@PathVariable EspacioFisicoId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<EspacioFisico> getEspacioFisicoById(@RequestParam String nombreEdif,
+            @RequestParam String direccionInterna, @RequestParam Integer numIdentificador) {
+        EspacioFisicoId id = new EspacioFisicoId();
+        id.setNombreEdif(nombreEdif);
+        id.setDireccionInterna(direccionInterna);
+        id.setNumIdentificador(numIdentificador);
         Optional<EspacioFisico> espacioFisico = espacioFisicoService.findById(id);
         return espacioFisico.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +36,14 @@ public class EspacioFisicoController {
         return espacioFisicoService.save(espacioFisico);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EspacioFisico> updateEspacioFisico(@PathVariable EspacioFisicoId id, @RequestBody EspacioFisico espacioFisicoDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<EspacioFisico> updateEspacioFisico(@RequestParam String nombreEdif,
+            @RequestParam String direccionInterna, @RequestParam Integer numIdentificador,
+            @RequestBody EspacioFisico espacioFisicoDetails) {
+        EspacioFisicoId id = new EspacioFisicoId();
+        id.setNombreEdif(nombreEdif);
+        id.setDireccionInterna(direccionInterna);
+        id.setNumIdentificador(numIdentificador);
         Optional<EspacioFisico> espacioFisicoOptional = espacioFisicoService.findById(id);
         if (espacioFisicoOptional.isPresent()) {
             EspacioFisico espacioFisico = espacioFisicoOptional.get();
@@ -46,13 +55,19 @@ public class EspacioFisicoController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEspacioFisico(@PathVariable EspacioFisicoId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deleteEspacioFisico(@RequestParam String nombreEdif,
+            @RequestParam String direccionInterna, @RequestParam Integer numIdentificador) {
+        EspacioFisicoId id = new EspacioFisicoId();
+        id.setNombreEdif(nombreEdif);
+        id.setDireccionInterna(direccionInterna);
+        id.setNumIdentificador(numIdentificador);
         if (espacioFisicoService.existsById(id)) {
             espacioFisicoService.deleteById(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
+
         }
     }
 }

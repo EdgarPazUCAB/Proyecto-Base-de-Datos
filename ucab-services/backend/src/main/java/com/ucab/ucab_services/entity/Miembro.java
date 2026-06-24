@@ -69,7 +69,7 @@ public class Miembro {
     @ColumnDefault("CURRENT_DATE")
     private Date fechaApertura;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "tipo_categoria", referencedColumnName = "tipo_categoria")
     private CategoriaFidelidad tipoCategoria;
 

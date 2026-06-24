@@ -21,7 +21,7 @@ public class MFACodigo {
     @EmbeddedId
     private MFACodigoId id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro", insertable = false, updatable = false)
     private Miembro miembro;
 

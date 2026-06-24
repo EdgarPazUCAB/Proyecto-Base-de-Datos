@@ -6,14 +6,12 @@ import com.ucab.ucab_services.service.AplicaEnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/aplica-en")
 public class AplicaEnController {
-
     @Autowired
     private AplicaEnService aplicaEnService;
 
@@ -22,8 +20,13 @@ public class AplicaEnController {
         return aplicaEnService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AplicaEn> getAplicaEnById(@PathVariable AplicaEnId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<AplicaEn> getAplicaEnById(@RequestParam String nombreSede,
+            @RequestParam String codigoServicio, @RequestParam String perfilSolicitante) {
+        AplicaEnId id = new AplicaEnId();
+        id.setNombreSede(nombreSede);
+        id.setCodigoServicio(codigoServicio);
+        id.setPerfilSolicitante(perfilSolicitante);
         Optional<AplicaEn> aplicaEn = aplicaEnService.findById(id);
         return aplicaEn.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +36,13 @@ public class AplicaEnController {
         return aplicaEnService.save(aplicaEn);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AplicaEn> updateAplicaEn(@PathVariable AplicaEnId id, @RequestBody AplicaEn aplicaEnDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<AplicaEn> updateAplicaEn(@RequestParam String nombreSede, @RequestParam String codigoServicio,
+            @RequestParam String perfilSolicitante, @RequestBody AplicaEn aplicaEnDetails) {
+        AplicaEnId id = new AplicaEnId();
+        id.setNombreSede(nombreSede);
+        id.setCodigoServicio(codigoServicio);
+        id.setPerfilSolicitante(perfilSolicitante);
         Optional<AplicaEn> aplicaEnOptional = aplicaEnService.findById(id);
         if (aplicaEnOptional.isPresent()) {
             AplicaEn aplicaEn = aplicaEnOptional.get();
@@ -46,8 +54,13 @@ public class AplicaEnController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAplicaEn(@PathVariable AplicaEnId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deleteAplicaEn(@RequestParam String nombreSede, @RequestParam String codigoServicio,
+            @RequestParam String perfilSolicitante) {
+        AplicaEnId id = new AplicaEnId();
+        id.setNombreSede(nombreSede);
+        id.setCodigoServicio(codigoServicio);
+        id.setPerfilSolicitante(perfilSolicitante);
         if (aplicaEnService.existsById(id)) {
             aplicaEnService.deleteById(id);
             return ResponseEntity.noContent().build();

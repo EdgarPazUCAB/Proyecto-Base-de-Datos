@@ -7,6 +7,7 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -20,6 +21,6 @@ public class PersonalAdministrativo extends Miembro {
     private String cargoAdministrativo;
 
     @Column(name = "carga_semanal", precision = 4, scale = 2)
-    private Double cargaSemanal;
+    private BigDecimal cargaSemanal;
 
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "oferta_laboral")
@@ -41,6 +42,6 @@ public class OfertaLaboral {
     private String estatusVacante;
 
     @Column(name = "indice_academico_min", precision = 4, scale = 2)
-    private Double indiceAcademicoMin;
+    private BigDecimal indiceAcademicoMin;
 
 }

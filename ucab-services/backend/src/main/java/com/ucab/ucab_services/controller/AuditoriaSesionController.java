@@ -6,14 +6,12 @@ import com.ucab.ucab_services.service.AuditoriaSesionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auditoria-sesiones")
 public class AuditoriaSesionController {
-
     @Autowired
     private AuditoriaSesionService auditoriaSesionService;
 
@@ -22,8 +20,12 @@ public class AuditoriaSesionController {
         return auditoriaSesionService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AuditoriaSesion> getAuditoriaSesionById(@PathVariable AuditoriaSesionId id) {
+    @GetMapping("/buscar")
+    public ResponseEntity<AuditoriaSesion> getAuditoriaSesionById(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaHoraAcceso) {
+        AuditoriaSesionId id = new AuditoriaSesionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaHoraAcceso(fechaHoraAcceso);
         Optional<AuditoriaSesion> auditoriaSesion = auditoriaSesionService.findById(id);
         return auditoriaSesion.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,8 +35,12 @@ public class AuditoriaSesionController {
         return auditoriaSesionService.save(auditoriaSesion);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AuditoriaSesion> updateAuditoriaSesion(@PathVariable AuditoriaSesionId id, @RequestBody AuditoriaSesion auditoriaSesionDetails) {
+    @PutMapping("/actualizar")
+    public ResponseEntity<AuditoriaSesion> updateAuditoriaSesion(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaHoraAcceso, @RequestBody AuditoriaSesion auditoriaSesionDetails) {
+        AuditoriaSesionId id = new AuditoriaSesionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaHoraAcceso(fechaHoraAcceso);
         Optional<AuditoriaSesion> auditoriaSesionOptional = auditoriaSesionService.findById(id);
         if (auditoriaSesionOptional.isPresent()) {
             AuditoriaSesion auditoriaSesion = auditoriaSesionOptional.get();
@@ -46,12 +52,17 @@ public class AuditoriaSesionController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuditoriaSesion(@PathVariable AuditoriaSesionId id) {
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Void> deleteAuditoriaSesion(@RequestParam String cedulaMiembro,
+            @RequestParam java.sql.Timestamp fechaHoraAcceso) {
+        AuditoriaSesionId id = new AuditoriaSesionId();
+        id.setCedulaMiembro(cedulaMiembro);
+        id.setFechaHoraAcceso(fechaHoraAcceso);
         if (auditoriaSesionService.existsById(id)) {
             auditoriaSesionService.deleteById(id);
             return ResponseEntity.noContent().build();
         } else {
+
             return ResponseEntity.notFound().build();
         }
     }

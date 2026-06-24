@@ -1,5 +1,7 @@
 package com.ucab.ucab_services.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -20,6 +22,6 @@ public class Docente extends Miembro {
     private String escalafonDocente;
 
     @Column(name = "carga_semanal", precision = 4, scale = 2)
-    private Double cargaSemanal;
+    private java.math.BigDecimal cargaSemanal;
 
 }
