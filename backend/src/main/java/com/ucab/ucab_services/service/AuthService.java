@@ -5,6 +5,7 @@ import com.ucab.ucab_services.dto.LoginResponse;
 import com.ucab.ucab_services.dto.MiembroSesionDTO;
 import com.ucab.ucab_services.dto.VerificarMfaRequest;
 import com.ucab.ucab_services.entity.Miembro;
+import com.ucab.ucab_services.entity.RolMiembro;
 import com.ucab.ucab_services.exception.AutenticacionException;
 import com.ucab.ucab_services.repository.MiembroRepository;
 import org.springframework.stereotype.Service;
@@ -98,13 +99,16 @@ public class AuthService {
                 ? miembro.getCategoriaFidelidad().getTipoCategoria()
                 : null;
 
+        RolMiembro rol = RolMiembro.detectarDesdeCorreo(miembro.getCorreoInstitucional());
+
         return new MiembroSesionDTO(
                 miembro.getCedulaMiembro(),
                 miembro.getNombresCompletos(),
                 miembro.getApellidosCompletos(),
                 miembro.getCorreoInstitucional(),
                 miembro.getEstadoCuenta(),
-                tipoCategoria
+                tipoCategoria,
+                rol
         );
     }
 }
