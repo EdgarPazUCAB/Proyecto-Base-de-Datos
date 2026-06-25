@@ -2,31 +2,26 @@ package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "criptomonedas")
 @Getter @Setter @NoArgsConstructor
-@PrimaryKeyJoinColumn(name = "numero_control_factura", referencedColumnName = "numero_control_factura")
-@PrimaryKeyJoinColumn(name = "fecha_operacion", referencedColumnName = "fecha_operacion")
 public class Criptomonedas extends Pago {
 
-    @Column(name = "dxid", length = 100)
+    @Column(name = "dxid", length = 100, nullable = false)
     private String dxid;
 
-    @Column(name = "red_blockchain", length = 50)
+    @Column(name = "red_blockchain", length = 50, nullable = false)
     private String redBlockchain;
 
-    @Column(name = "billetera", length = 200)
+    @Column(name = "billetera", length = 100, nullable = false)
     private String billetera;
 
-    @Column(name = "tasa_conversion", precision = 18, scale = 8)
-    private java.math.BigDecimal tasaConversion;
-
+    @Column(name = "tasa_conversion", precision = 10, scale = 2, nullable = false)
+    private BigDecimal tasaConversion;
 }

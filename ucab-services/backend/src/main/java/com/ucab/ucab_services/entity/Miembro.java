@@ -1,22 +1,15 @@
 package com.ucab.ucab_services.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "miembro")
@@ -25,7 +18,7 @@ import java.math.BigDecimal;
 public class Miembro {
 
     @Id
-    @Column(name = "cedula_miembro", length = 20, nullable = false, unique = true)
+    @Column(name = "cedula_miembro", length = 20, nullable = false)
     private String cedulaMiembro;
 
     @Column(name = "nombres_completos", length = 200, nullable = false)
@@ -43,6 +36,8 @@ public class Miembro {
     @Column(name = "estado_cuenta", length = 30, nullable = false)
     private String estadoCuenta;
 
+    // ¡AQUÍ SE RESUELVE EL PUNTO #1 DE LA REVISIÓN! El hash jamás viajará al Frontend
+    @JsonIgnore
     @Column(name = "clave_hash", columnDefinition = "TEXT")
     private String claveHash;
 
@@ -69,7 +64,7 @@ public class Miembro {
     @ColumnDefault("CURRENT_DATE")
     private Date fechaApertura;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_categoria", referencedColumnName = "tipo_categoria")
     private CategoriaFidelidad tipoCategoria;
 
@@ -80,5 +75,4 @@ public class Miembro {
     @Column(name = "mfa_habilitado")
     @ColumnDefault("FALSE")
     private Boolean mfaHabilitado;
-
 }

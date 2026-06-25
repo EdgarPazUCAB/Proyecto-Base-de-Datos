@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PersonalAdministrativoRepository extends JpaRepository<PersonalAdministrativo, String> {
+    // Hereda automáticamente métodos como existsById(String id)
 }

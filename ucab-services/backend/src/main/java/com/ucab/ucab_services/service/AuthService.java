@@ -1,12 +1,19 @@
 package com.ucab.ucab_services.service;
 
-import com.ucab.ucab_services.dto.LoginResponse;
-import com.ucab.ucab_services.dto.MiembroSesionDTO;
 import com.ucab.ucab_services.entity.Miembro;
+import com.ucab.ucab_services.dto.LoginRequest;
+import com.ucab.ucab_services.dto.LoginResponse;
 import com.ucab.ucab_services.repository.MiembroRepository;
+import com.ucab.ucab_services.repository.EstudianteRepository;
+import com.ucab.ucab_services.repository.DocenteRepository;
+import com.ucab.ucab_services.repository.PersonalAdministrativoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -15,97 +22,70 @@ public class AuthService {
     private MiembroRepository miembroRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private EstudianteRepository estudianteRepository;
 
-    /**
-     * Intenta autenticar al usuario con su cédula y clave.
-     * Si la autenticación es exitosa y el MFA está habilitado, genera y devuelve un código MFA.
-     * Si el MFA no está habilitado, devuelve los datos de la sesión del miembro.
-     *
-     * @param cedula   Cédula del miembro
-     * @param clave    Clave en texto plano
-     * @return Respuesta de inicio de sesión
-     */
-    public LoginResponse login(String cedula, String clave) {
-        // Verificar la credencial usando la función de la base de datos
-        Boolean credencialValida = jdbcTemplate.queryForObject(
-                "SELECT fn_verificar_clave(?, ?)", Boolean.class, cedula, clave);
+    @Autowired
+    private DocenteRepository docenteRepository;
 
-        if (Boolean.TRUE.equals(credencialValida)) {
-            // Obtener el miembro
-            Miembro miembro = miembroRepository.findById(cedula).orElse(null);
-            if (miembro != null) {
-                // Resetear intentos fallidos (opcional, pero podemos hacerlo aquí)
-                miembro.setIntentosFallidos(0);
-                miembroRepository.save(miembro);
+    @Autowired
+    private PersonalAdministrativoRepository personalAdministrativoRepository;
 
-                // Verificar si MFA está habilitado
-                if (miembro.getMfaHabilitado()) {
-                    // Generar código MFA
-                    String codigoMfa = jdbcTemplate.queryForObject(
-                            "SELECT fn_generar_codigo_mfa(?)", String.class, cedula);
-                    return new LoginResponse(true, "MFA requerido", codigoMfa);
-                } else {
-                    // MFA no habilitado, devolver datos de sesión
-                    MiembroSesionDTO sesionDto = new MiembroSesionDTO(
-                            miembro.getCedulaMiembro(),
-                            miembro.getNombresCompletos() + " " + miembro.getApellidosCompletos(),
-                            miembro.getCorreoInstitucional(),
-                            miembro.getEstadoCuenta()
-                    );
-                    return new LoginResponse(true, "Inicio de sesión exitoso", sesionDto);
-                }
-            } else {
-                return new LoginResponse(false, "Miembro no encontrado", null);
-            }
-        } else {
-            // Credenciales inválidas, incrementar intentos fallidos
-            Miembro miembro = miembroRepository.findById(cedula).orElse(null);
-            if (miembro != null) {
-                int intentosActuales = miembro.getIntentosFallidos();
-                miembro.setIntentosFallidos(intentosActuales + 1);
-                miembroRepository.save(miembro);
-            }
-            return new LoginResponse(false, "Credenciales inválidas", null);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Nota: Si manejas un servicio para JWT, inyéctalo aquí
+    // @Autowired
+    // private JwtService jwtService;
+
+    public LoginResponse authenticate(LoginRequest request) {
+        // 1. Buscar al miembro base por su correo electrónico institucional
+        Miembro miembro = miembroRepository.findByCorreoInstitucional(request.getCorreo())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado en el sistema"));
+
+        // 2. Validar que la contraseña coincida con el hash BCrypt guardado (claveHash)
+        if (!passwordEncoder.matches(request.getClave(), miembro.getClaveHash())) {
+            throw new RuntimeException("Credenciales inválidas");
         }
+
+        // 3. Obtener el rol restringido a los 3 tipos permitidos
+        List<String> roles = determinarRoles(miembro.getCedulaMiembro());
+
+        // 4. Mapear los datos a la respuesta esperada por Angular
+        LoginResponse response = new LoginResponse();
+
+        // Simulación de Token (Sustitúyelo por tu generador de JWT si aplica)
+        // response.setToken(jwtService.generateToken(miembro, roles));
+        response.setToken("dummy-jwt-token-generado");
+
+        response.setRoles(roles);
+
+        // Se concatena nombre y apellido para enviarlo al Frontend
+        response.setNombre(miembro.getNombresCompletos() + " " + miembro.getApellidosCompletos());
+
+        // Se extrae el correo usando el getter correcto de la entidad
+        response.setCorreo(miembro.getCorreoInstitucional());
+
+        return response;
     }
 
     /**
-     * Verifica el código MFA ingresado por el usuario.
-     * Si es válido, devuelve los datos de la sesión del miembro.
-     *
-     * @param cedula   Cédula del miembro
-     * @param codigo   Código MFA ingresado
-     * @return Respuesta de inicio de sesión
+     * Evalúa la cédula de forma restrictiva.
+     * Solo permite los roles de Estudiante, Docente o Personal Administrativo.
      */
-    public LoginResponse verificarCodigoMfa(String cedula, String codigo) {
-        // Verificar el código MFA usando la función de la base de datos
-        Boolean codigoValido = jdbcTemplate.queryForObject(
-                "SELECT fn_verificar_codigo_mfa(?, ?)", Boolean.class, cedula, codigo);
+    private List<String> determinarRoles(String cedula) {
+        List<String> roles = new ArrayList<>();
 
-        if (Boolean.TRUE.equals(codigoValido)) {
-            // Código válido, obtener el miembro y devolver datos de sesión
-            Miembro miembro = miembroRepository.findById(cedula).orElse(null);
-            if (miembro != null) {
-                MiembroSesionDTO sesionDto = new MiembroSesionDTO(
-                        miembro.getCedulaMiembro(),
-                        miembro.getNombresCompletos() + " " + miembro.getApellidosCompletos(),
-                        miembro.getCorreoInstitucional(),
-                        miembro.getEstadoCuenta()
-                );
-                return new LoginResponse(true, "MFA verificado correctamente", sesionDto);
-            } else {
-                return new LoginResponse(false, "Miembro no encontrado", null);
-            }
+        if (estudianteRepository.existsById(cedula)) {
+            roles.add("ESTUDIANTE");
+        } else if (docenteRepository.existsById(cedula)) {
+            roles.add("DOCENTE");
+        } else if (personalAdministrativoRepository.existsById(cedula)) {
+            roles.add("PERSONAL_ADMINISTRATIVO");
         } else {
-            // Código inválido, incrementar intentos fallidos (opcional)
-            Miembro miembro = miembroRepository.findById(cedula).orElse(null);
-            if (miembro != null) {
-                int intentosActuales = miembro.getIntentosFallidos();
-                miembro.setIntentosFallidos(intentosActuales + 1);
-                miembroRepository.save(miembro);
-            }
-            return new LoginResponse(false, "Código MFA inválido", null);
+            // Si el usuario existe en la tabla general pero no en estas tres tablas
+            throw new RuntimeException("Acceso denegado: Su rol no tiene permisos para ingresar a la aplicación Web.");
         }
+
+        return roles;
     }
 }
