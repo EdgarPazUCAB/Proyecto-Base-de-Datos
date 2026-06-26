@@ -9,6 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLO CONSULTA: Categoria_Fidelidad (descuentos, prioridades de
+ * reservación) es un dato institucional que la UCAB define
+ * directamente en la base de datos — no se crea, edita ni elimina
+ * desde la app web. La reclasificación automática de un miembro
+ * dentro de una categoría existente ocurre vía trigger en PostgreSQL,
+ * no por edición manual de las categorías mismas.
+ */
 @RestController
 @RequestMapping("/api/categorias-fidelidad")
 public class CategoriaFidelidadController {
@@ -25,37 +33,5 @@ public class CategoriaFidelidadController {
     public ResponseEntity<CategoriaFidelidad> getCategoriaFidelidadById(@PathVariable String id) {
         Optional<CategoriaFidelidad> categoriaFidelidad = categoriaFidelidadService.findById(id);
         return categoriaFidelidad.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public CategoriaFidelidad createCategoriaFidelidad(@RequestBody CategoriaFidelidad categoriaFidelidad) {
-        return categoriaFidelidadService.save(categoriaFidelidad);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoriaFidelidad> updateCategoriaFidelidad(@PathVariable String id, @RequestBody CategoriaFidelidad categoriaFidelidadDetails) {
-        Optional<CategoriaFidelidad> categoriaFidelidadOptional = categoriaFidelidadService.findById(id);
-        if (categoriaFidelidadOptional.isPresent()) {
-            CategoriaFidelidad categoriaFidelidad = categoriaFidelidadOptional.get();
-            // Update fields (excluding the ID which shouldn't change)
-            categoriaFidelidad.setTipoCategoria(categoriaFidelidadDetails.getTipoCategoria());
-            categoriaFidelidad.setRangoIndiceMin(categoriaFidelidadDetails.getRangoIndiceMin());
-            categoriaFidelidad.setRangoIndiceMax(categoriaFidelidadDetails.getRangoIndiceMax());
-            categoriaFidelidad.setDescuentoGlobal(categoriaFidelidadDetails.getDescuentoGlobal());
-            categoriaFidelidad.setPrioridadReservacion(categoriaFidelidadDetails.getPrioridadReservacion());
-            return ResponseEntity.ok(categoriaFidelidadService.save(categoriaFidelidad));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoriaFidelidad(@PathVariable String id) {
-        if (categoriaFidelidadService.existsById(id)) {
-            categoriaFidelidadService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

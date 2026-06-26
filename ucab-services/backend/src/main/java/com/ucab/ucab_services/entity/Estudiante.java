@@ -2,17 +2,32 @@ package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
 
+/**
+ * Mapea la tabla Estudiante. Especialización de Miembro vía
+ * composición (@OneToOne + @MapsId), NO herencia de Java — mismo
+ * estándar usado en EntidadPrestadora/Interna/Externa.
+ */
 @Entity
 @Getter @Setter @NoArgsConstructor
-@PrimaryKeyJoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro")
-public class Estudiante extends Miembro {
+public class Estudiante {
+
+    @Id
+    @Column(name = "cedula_miembro", length = 20)
+    private String cedulaMiembro;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "cedula_miembro")
+    private Miembro miembro;
 
     @Column(name = "promedio", precision = 4, scale = 2)
     private BigDecimal promedio;

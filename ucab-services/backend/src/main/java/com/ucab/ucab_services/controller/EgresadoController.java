@@ -37,16 +37,21 @@ public class EgresadoController {
         Optional<Egresado> egresadoOptional = egresadoService.findById(id);
         if (egresadoOptional.isPresent()) {
             Egresado egresado = egresadoOptional.get();
-            // Update fields (excluding the ID which shouldn't change)
-            // In a real application, you might want to validate which fields can be updated
-            egresado.setNombresCompletos(egresadoDetails.getNombresCompletos());
-            egresado.setApellidosCompletos(egresadoDetails.getApellidosCompletos());
-            egresado.setFechaNacimiento(egresadoDetails.getFechaNacimiento());
-            egresado.setSexo(egresadoDetails.getSexo());
-            egresado.setDireccionHabitacion(egresadoDetails.getDireccionHabitacion());
-            egresado.setTelefonoPersonal(egresadoDetails.getTelefonoPersonal());
-            egresado.setCorreoInstitucional(egresadoDetails.getCorreoInstitucional());
-            egresado.setFechaApertura(egresadoDetails.getFechaApertura());
+            // Update fields via miembro composition
+            if (egresadoDetails.getMiembro() != null) {
+                if (egresado.getMiembro() == null) {
+                    egresado.setMiembro(egresadoDetails.getMiembro());
+                } else {
+                    egresado.getMiembro().setNombresCompletos(egresadoDetails.getMiembro().getNombresCompletos());
+                    egresado.getMiembro().setApellidosCompletos(egresadoDetails.getMiembro().getApellidosCompletos());
+                    egresado.getMiembro().setFechaNacimiento(egresadoDetails.getMiembro().getFechaNacimiento());
+                    egresado.getMiembro().setSexo(egresadoDetails.getMiembro().getSexo());
+                    egresado.getMiembro().setDireccionHabitacion(egresadoDetails.getMiembro().getDireccionHabitacion());
+                    egresado.getMiembro().setTelefonoPersonal(egresadoDetails.getMiembro().getTelefonoPersonal());
+                    egresado.getMiembro().setCorreoInstitucional(egresadoDetails.getMiembro().getCorreoInstitucional());
+                    egresado.getMiembro().setFechaApertura(egresadoDetails.getMiembro().getFechaApertura());
+                }
+            }
             egresado.setTitulo(egresadoDetails.getTitulo());
             egresado.setAnoGraduacion(egresadoDetails.getAnoGraduacion());
             egresado.setIndiceAcademico(egresadoDetails.getIndiceAcademico());

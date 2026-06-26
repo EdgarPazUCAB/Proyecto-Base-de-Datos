@@ -2,18 +2,32 @@ package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Mapea la tabla Externa. Aliados comerciales o concesionarios
+ * externos a la UCAB (RIF, razón social, contrato de concesión).
+ */
 @Entity
+@Table(name = "externa")
 @Getter @Setter @NoArgsConstructor
-@PrimaryKeyJoinColumn(name = "id_entidad", referencedColumnName = "id_entidad")
-public class Externa extends EntidadPrestadora {
+public class Externa {
 
-    @Column(name = "tipo_entidad", length = 10, nullable = false, insertable = false, updatable = false)
-    private String tipoEntidad;
+    @Id
+    @Column(name = "id_entidad")
+    private Integer idEntidad;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id_entidad")
+    private EntidadPrestadora entidadPrestadora;
 
     @Column(name = "rif", length = 50, nullable = false, unique = true)
     private String rif;

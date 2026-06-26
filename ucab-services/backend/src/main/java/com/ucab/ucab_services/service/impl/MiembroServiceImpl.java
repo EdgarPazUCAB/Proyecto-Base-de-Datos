@@ -1,67 +1,77 @@
 package com.ucab.ucab_services.service.impl;
 
+import com.ucab.ucab_services.dto.MiembroDetalleDTO;
 import com.ucab.ucab_services.entity.Miembro;
 import com.ucab.ucab_services.repository.MiembroRepository;
 import com.ucab.ucab_services.service.MiembroService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
+/**
+ * Gestión de Miembro. No existe creación vía API pública.
+ *
+ * DECISIÓN DE ARQUITECTURA: el hash de contraseña se genera SIEMPRE
+ * vía fn_establecer_clave() (PostgreSQL/pgcrypto) — NO se usa
+ * BCryptPasswordEncoder de Java aquí. Esto evita tener dos sistemas
+ * de hash compitiendo con formatos potencialmente incompatibles.
+ */
 @Service
 public class MiembroServiceImpl implements MiembroService {
 
     @Autowired
     private MiembroRepository miembroRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     @Override
-    public List<Miembro> findAll() {
-        return miembroRepository.findAll();
+    @Transactional(readOnly = true)
+    public MiembroDetalleDTO buscarPorCedula(String cedula) {
+        Miembro miembro = miembroRepository.findById(cedula)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No se encontró ningún miembro con la cédula " + cedula));
+        return aDetalleDTO(miembro);
     }
 
     @Override
-    public Optional<Miembro> findById(String id) {
-        return miembroRepository.findById(id);
+    @Transactional(readOnly = true)
+    public MiembroDetalleDTO buscarPorCorreo(String correo) {
+        Miembro miembro = miembroRepository.findByCorreoInstitucional(correo)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No se encontró ningún miembro con el correo " + correo));
+        return aDetalleDTO(miembro);
     }
 
     @Override
-    public Miembro save(Miembro miembro) {
-        if (miembroRepository.existsById(miembro.getCedulaMiembro()) && miembro.getFechaApertura() == null) {
-            throw new RuntimeException("El miembro con cédula " + miembro.getCedulaMiembro() + " ya existe.");
-        }
-
-        if (miembro.getClaveHash() != null && !miembro.getClaveHash().startsWith("$2a$")) {
-            String hash = passwordEncoder.encode(miembro.getClaveHash());
-            miembro.setClaveHash(hash);
-        }
-
-        if (miembro.getEstadoCuenta() == null) {
-            miembro.setEstadoCuenta("ACTIVO");
-        }
-        if (miembro.getIntentosFallidos() == null) {
-            miembro.setIntentosFallidos(0);
-        }
-
-        return miembroRepository.save(miembro);
+    @Transactional(readOnly = true)
+    public List<MiembroDetalleDTO> buscarPorNombreOApellido(String texto) {
+        return miembroRepository.buscarPorNombreOApellido(texto)
+                .stream()
+                .map(this::aDetalleDTO)
+                .toList();
     }
 
-    @Override
-    public void deleteById(String id) {
-        miembroRepository.deleteById(id);
-    }
+    private MiembroDetalleDTO aDetalleDTO(Miembro miembro) {
+        String tipoCategoria = miembro.getTipoCategoria() != null
+                ? miembro.getTipoCategoria().getTipoCategoria()
+                : null;
 
-    // ✅ MÉTODOS OBLIGATORIOS AÑADIDOS
-    @Override
-    public boolean existsById(String id) {
-        return miembroRepository.existsById(id);
-    }
-
-    @Override
-    public long count() {
-        return miembroRepository.count();
+        return new MiembroDetalleDTO(
+                miembro.getCedulaMiembro(),
+                miembro.getNombresCompletos(),
+                miembro.getApellidosCompletos(),
+                miembro.getSexo(),
+                miembro.getFechaNacimiento() != null ? miembro.getFechaNacimiento().toLocalDate() : null,
+                miembro.getEstadoCuenta(),
+                miembro.getDireccionHabitacion(),
+                miembro.getCorreoInstitucional(),
+                miembro.getTelefonoPersonal(),
+                miembro.getUltimaConexion() != null ? miembro.getUltimaConexion().toLocalDateTime() : null,
+                miembro.getIndiceRecurrencia(),
+                miembro.getFechaApertura() != null ? miembro.getFechaApertura().toLocalDate() : null,
+                tipoCategoria,
+                null
+        );
     }
 }

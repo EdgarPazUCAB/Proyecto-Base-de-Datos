@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLO CONSULTA: Edificacion representa infraestructura física real
+ * que no se crea, edita ni elimina desde la aplicación web — solo
+ * cambia por eventos físicos (construcción, demolición, remodelación)
+ * gestionados directamente en la base de datos.
+ */
 @RestController
 @RequestMapping("/api/edificaciones")
 public class EdificacionController {
@@ -29,42 +35,5 @@ public class EdificacionController {
         id.setDireccionInterna(direccionInterna);
         Optional<Edificacion> edificacion = edificacionService.findById(id);
         return edificacion.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Edificacion createEdificacion(@RequestBody Edificacion edificacion) {
-        return edificacionService.save(edificacion);
-    }
-
-    @PutMapping("/actualizar")
-    public ResponseEntity<Edificacion> updateEdificacion(@RequestParam String nombreEdif,
-            @RequestParam String direccionInterna, @RequestBody Edificacion edificacionDetails) {
-        EdificacionId id = new EdificacionId();
-        id.setNombreEdif(nombreEdif);
-        id.setDireccionInterna(direccionInterna);
-        Optional<Edificacion> edificacionOptional = edificacionService.findById(id);
-        if (edificacionOptional.isPresent()) {
-            Edificacion edificacion = edificacionOptional.get();
-            // Update fields (excluding the composite ID which shouldn't change)
-            // In a real application, you might want to validate which fields can be updated
-            return ResponseEntity.ok(edificacionService.save(edificacion));
-        } else {
-
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/eliminar")
-    public ResponseEntity<Void> deleteEdificacion(@RequestParam String nombreEdif,
-            @RequestParam String direccionInterna) {
-        EdificacionId id = new EdificacionId();
-        id.setNombreEdif(nombreEdif);
-        id.setDireccionInterna(direccionInterna);
-        if (edificacionService.existsById(id)) {
-            edificacionService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

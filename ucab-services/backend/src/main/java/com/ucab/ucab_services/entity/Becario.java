@@ -2,19 +2,33 @@ package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
 
+/**
+ * Mapea la tabla Becario. Especialización de Estudiante (no de
+ * Miembro directamente) vía composición.
+ */
 @Entity
 @Table(name = "becario")
 @Getter @Setter @NoArgsConstructor
-@PrimaryKeyJoinColumn(name = "cedula_miembro", referencedColumnName = "cedula_miembro")
-public class Becario extends Estudiante {
+public class Becario {
+
+    @Id
+    @Column(name = "cedula_miembro", length = 20)
+    private String cedulaMiembro;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "cedula_miembro")
+    private Estudiante estudiante;
 
     @Column(name = "tipo_beca", length = 50)
     private String tipoBeca;

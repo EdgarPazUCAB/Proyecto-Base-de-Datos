@@ -1,76 +1,160 @@
-<div class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
-  <!-- Header / Brand Anchor -->
+<div class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface w-full">
+  
   <header class="w-full bg-primary py-lg px-8 flex justify-center items-center shadow-sm z-10 relative border-b border-primary-container">
     <h1 class="font-h1 text-h1 text-on-primary tracking-wider uppercase font-black">
       UCAB SERVICES
     </h1>
   </header>
-  <!-- Main Content Canvas -->
+
   <main class="flex-grow flex items-center justify-center p-8 relative overflow-hidden">
-    <!-- Decorative Background Element (Subtle, Academic) -->
+    
     <div class="absolute inset-0 z-0 opacity-30 pointer-events-none overflow-hidden flex items-center justify-center">
       <div class="w-[800px] h-[800px] bg-gradient-to-br from-surface-container-high to-background rounded-full blur-3xl opacity-50 transform -translate-x-1/2 -translate-y-1/4 absolute top-0 left-0"></div>
       <div class="w-[600px] h-[600px] bg-gradient-to-tl from-primary-fixed-dim/20 to-transparent rounded-full blur-3xl opacity-40 transform translate-x-1/4 translate-y-1/3 absolute bottom-0 right-0"></div>
     </div>
-    <!-- Login Container -->
-    <div class="w-full max-w-[480px] bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm z-10 overflow-hidden flex flex-col relative transition-all duration-300 hover:shadow-md">
-      <!-- Top Color Bar -->
+
+    <div class="w-full max-w-[480px] bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm z-10 overflow-hidden flex flex-col relative transition-all duration-300 hover:shadow-md fade-in-card">
       <div class="h-2 w-full bg-primary"></div>
+      
       <div class="p-xl flex flex-col items-center">
-        <!-- Icon/Avatar Placeholder -->
-        <div class="w-24 h-24 bg-surface-container-low rounded-full mb-8 flex items-center justify-center border-4 border-surface-container-lowest shadow-sm relative -mt-16">
-          <span class="material-symbols-outlined text-[48px] text-primary" data-icon="school" style="font-variation-settings: 'FILL' 1">
-            school
-          </span>
-        </div>
-        <div class="text-center mb-10 w-full">
-          <h2 class="font-h2 text-h2 text-on-surface mb-2">Iniciar Sesión</h2>
-          <p class="font-body-md text-body-md text-on-surface-variant">
-            Acceso a los servicios académicos y administrativos
-          </p>
-        </div>
-        <!-- Login Form -->
-        <form action="#" class="w-full flex flex-col gap-6" method="POST">
-          <!-- Email Field -->
-          <div class="flex flex-col gap-xs relative">
-            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase ml-1" for="email">Correo electrónico</label>
-            <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none" data-icon="mail">
-                mail
-              </span>
-              <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md h-12" id="email" name="email" placeholder="usuario@ucab.edu.ve" required="" type="email" />
-            </div>
+        
+        @if (errorMessage) {
+          <div class="w-full bg-red-50 border border-red-200 text-red-700 p-md rounded-lg mb-6 flex items-center gap-2 text-body-sm font-medium animate-pulse">
+            <span class="material-symbols-outlined text-[20px]">error</span>
+            <span>{{ errorMessage }}</span>
           </div>
-          <!-- Password Field -->
-          <div class="flex flex-col gap-xs relative">
-            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase ml-1" for="password">Contraseña</label>
-            <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none" data-icon="lock">
-                lock
-              </span>
-              <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md h-12" id="password" name="password" placeholder="••••••••" required="" type="password" />
-            </div>
+        }
+
+        @if (step === 1) {
+          <div class="w-24 h-24 bg-surface-container-low rounded-full mb-8 flex items-center justify-center border-4 border-surface-container-lowest shadow-sm relative -mt-16">
+            <span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 1;">
+              school
+            </span>
           </div>
-          <!-- Actions -->
-          <div class="flex flex-col gap-4 mt-4 w-full">
-            <button class="w-full bg-primary hover:bg-primary/90 text-on-primary font-h3 text-body-lg h-14 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm" type="submit">
-              <span>Iniciar Sesión</span>
-              <span class="material-symbols-outlined" data-icon="arrow_forward">
-                arrow_forward
-              </span>
-            </button>
-            <div class="text-center mt-2">
-              <a class="font-body-sm text-body-sm text-primary hover:text-primary-container transition-colors hover:underline" href="#">
-                ¿Olvidó su contraseña?
-              </a>
-            </div>
+
+          <div class="text-center mb-10 w-full">
+            <h2 class="font-h2 text-h2 text-on-surface mb-2">Iniciar Sesión</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">Acceso a los servicios académicos y administrativos</p>
           </div>
-        </form>
+
+          <form (ngSubmit)="onLogin()" class="w-full flex flex-col gap-6">
+            <div class="flex flex-col gap-xs relative">
+              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase ml-1" for="email">Correo electrónico</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">
+                  mail
+                </span>
+                <input 
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md h-12" 
+                  id="email" 
+                  name="correo" 
+                  [(ngModel)]="credentials.correo"
+                  placeholder="usuario@ucab.edu.ve" 
+                  required 
+                  type="email"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-xs relative">
+              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase ml-1" for="password">Contraseña</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">
+                  lock
+                </span>
+                <input 
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md h-12" 
+                  id="password" 
+                  name="clave" 
+                  [(ngModel)]="credentials.clave"
+                  placeholder="••••••••" 
+                  required 
+                  type="password"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4 mt-4 w-full">
+              <button 
+                class="w-full bg-primary hover:bg-primary/90 disabled:opacity-60 text-on-primary font-h3 text-body-lg h-14 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer" 
+                type="submit"
+                [disabled]="isLoading"
+              >
+                <span>{{ isLoading ? 'Procesando...' : 'Iniciar Sesión' }}</span>
+                @if (!isLoading) {
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                }
+              </button>
+              <div class="text-center mt-2">
+                <a class="font-body-sm text-body-sm text-primary hover:text-primary-container transition-colors hover:underline" href="#">
+                  ¿Olvidó su contraseña?
+                </a>
+              </div>
+            </div>
+          </form>
+        }
+
+        @if (step === 2) {
+          <div class="w-24 h-24 bg-amber-50 rounded-full mb-8 flex items-center justify-center border-4 border-surface-container-lowest shadow-sm relative -mt-16">
+            <span class="material-symbols-outlined text-[48px] text-amber-600" style="font-variation-settings: 'FILL' 1;">
+              gpp_good
+            </span>
+          </div>
+
+          <div class="text-center mb-10 w-full">
+            <h2 class="font-h2 text-h2 text-on-surface mb-2">Código de Seguridad</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant px-2">Su cuenta requiere un segundo factor de autenticación. Ingrese el código enviado.</p>
+          </div>
+
+          <form (ngSubmit)="onVerifyMfa()" class="w-full flex flex-col gap-6">
+            <div class="flex flex-col gap-xs relative">
+              <label class="font-label-caps text-label-caps text-on-surface-variant uppercase ml-1 text-center" for="mfaCode">Código de Acceso (6 dígitos)</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">
+                  dialpad
+                </span>
+                <input 
+                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-h2 text-h3 text-center tracking-[0.5em] font-bold h-14" 
+                  id="mfaCode" 
+                  name="mfaCode" 
+                  [(ngModel)]="mfaCode"
+                  placeholder="000000" 
+                  maxlength="6"
+                  required 
+                  type="text"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-4 w-full">
+              <button 
+                class="w-full bg-primary hover:bg-primary/90 disabled:opacity-60 text-on-primary font-h3 text-body-lg h-14 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer" 
+                type="submit"
+                [disabled]="isLoading"
+              >
+                <span>{{ isLoading ? 'Verificando...' : 'Confirmar Código' }}</span>
+                @if (!isLoading) {
+                  <span class="material-symbols-outlined">check_circle</span>
+                }
+              </button>
+
+              <button 
+                type="button" 
+                (click)="step = 1" 
+                [disabled]="isLoading"
+                class="w-full bg-transparent text-primary py-sm font-medium rounded-md hover:bg-primary/5 transition-all text-center text-body-sm cursor-pointer underline"
+              >
+                Volver atrás
+              </button>
+            </div>
+          </form>
+        }
+
       </div>
-      <!-- Bottom Helper / Security Notice -->
+
       <div class="bg-surface-container-low p-4 text-center border-t border-outline-variant">
         <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-[16px]" data-icon="verified_user">
+          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">
             verified_user
           </span>
           Conexión segura institucional
@@ -78,16 +162,16 @@
       </div>
     </div>
   </main>
-  <!-- Footer Component from JSON -->
-  <footer class="w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-['Inter'] text-sm tracking-normal z-10 relative border-t border-slate-100 dark:border-slate-900 max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center text-slate-600 dark:text-slate-400">
-    <div>
-      <span class="text-lg font-bold text-green-600 dark:text-green-400">UCAB</span>
-      <span class="ml-2">© 2024 UCAB SERVICES. Universidad Católica Andrés Bello.</span>
+
+  <footer class="w-full bg-white border-t border-slate-200 mx-auto px-12 py-6 flex flex-col md:flex-row justify-between items-center text-slate-600 gap-4 z-10 relative">
+    <div class="text-center md:text-left">
+      <span class="text-lg font-bold text-green-600">UCAB</span>
+      <span class="ml-2 text-body-sm">© 2026 UCAB SERVICES. Universidad Católica Andrés Bello.</span>
     </div>
-    <div class="flex gap-6">
-      <a class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus: outline-none text-green-700" href="#">Aviso Legal</a>
-      <a class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus: outline-none text-green-700" href="#">Privacidad</a>
-      <a class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 hover:underline transition-all focus: outline-none text-green-700" href="#">Términos y Condiciones</a>
+    <div class="flex gap-6 text-body-sm flex-wrap justify-center">
+      <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Aviso Legal</a>
+      <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Privacidad</a>
+      <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Términos y Condiciones</a>
     </div>
   </footer>
 </div>

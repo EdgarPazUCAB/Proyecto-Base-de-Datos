@@ -1,14 +1,27 @@
 package com.ucab.ucab_services.controller;
 
-import com.ucab.ucab_services.entity.Miembro;
+import com.ucab.ucab_services.dto.MiembroDetalleDTO;
 import com.ucab.ucab_services.service.MiembroService;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+/**
+ * Endpoints de gestión de Miembro.
+ *
+ * GET  /api/miembros/{cedula}        -> consultar por cédula
+ * GET  /api/miembros/correo/{correo} -> consultar por correo
+ * GET  /api/miembros/buscar?texto=.. -> consultar por nombre/apellido
+ *
+ * No hay PUT/DELETE genéricos de "actualizar cualquier campo": antes
+ * permitían mandar un claveHash arbitrario desde el cliente porque
+ * recibían la entidad Miembro completa. La edición de perfil del
+ * usuario se debe manejar con endpoints específicos más adelante.
+ */
 @RestController
 @RequestMapping("/api/miembros")
 public class MiembroController {
@@ -16,48 +29,26 @@ public class MiembroController {
     @Autowired
     private MiembroService miembroService;
 
-    @GetMapping
-    public List<Miembro> getAllMiembros() {
-        return miembroService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Miembro> getMiembroById(@PathVariable String id) {
-        Optional<Miembro> optionalMiembro = miembroService.findById(id);
-        return optionalMiembro.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Miembro createMiembro(@RequestBody Miembro miembro) {
-        return miembroService.save(miembro);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Miembro> updateMiembro(@PathVariable String id, @RequestBody Miembro miembroDetails) {
-        Optional<Miembro> optionalMiembro = miembroService.findById(id);
-        if (optionalMiembro.isPresent()) {
-            Miembro miembro = optionalMiembro.get();
-            // Update fields
-            miembro.setNombresCompletos(miembroDetails.getNombresCompletos());
-            miembro.setApellidosCompletos(miembroDetails.getApellidosCompletos());
-            miembro.setSexo(miembroDetails.getSexo());
-            miembro.setFechaNacimiento(miembroDetails.getFechaNacimiento());
-            miembro.setEstadoCuenta(miembroDetails.getEstadoCuenta());
-            // We'll set a few for brevity, but in reality we should set all.
-            // For simplicity, we'll update a few.
-            miembro.setDireccionHabitacion(miembroDetails.getDireccionHabitacion());
-            miembro.setCorreoInstitucional(miembroDetails.getCorreoInstitucional());
-            miembro.setTelefonoPersonal(miembroDetails.getTelefonoPersonal());
-            Miembro updatedMiembro = miembroService.save(miembro);
-            return ResponseEntity.ok(updatedMiembro);
-        } else {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/{cedula}")
+    public ResponseEntity<?> buscarPorCedula(@PathVariable String cedula) {
+        try {
+            return ResponseEntity.ok(miembroService.buscarPorCedula(cedula));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMiembro(@PathVariable String id) {
-        miembroService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/correo/{correo}")
+    public ResponseEntity<?> buscarPorCorreo(@PathVariable String correo) {
+        try {
+            return ResponseEntity.ok(miembroService.buscarPorCorreo(correo));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<MiembroDetalleDTO>> buscarPorNombreOApellido(@RequestParam String texto) {
+        return ResponseEntity.ok(miembroService.buscarPorNombreOApellido(texto));
     }
 }

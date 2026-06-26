@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 @Component({
   selector: 'app-root',
@@ -8,5 +8,5 @@ import { Navbar } from './navbar/navbar';
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('ucab-services-ui');
+  protected readonly router = inject(Router);
 }

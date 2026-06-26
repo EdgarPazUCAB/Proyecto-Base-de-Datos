@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
+import { LoginComponent } from './pages/login/login';
 import { Profile } from './pages/profile/profile';
-import { ModificarMiembro } from './pages/modificar-miembro/modificar-miembro';
 import { ConsultarMiembro } from './pages/consultar-miembro/consultar-miembro';
 import { AnadirVinculoFamiliar } from './pages/anadir-vinculo-familiar/anadir-vinculo-familiar';
 import { SolicitarServicio } from './pages/solicitar-servicio/solicitar-servicio';
@@ -20,10 +19,9 @@ import { CatalogoServicios } from './pages/catalogo-servicios/catalogo-servicios
 
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
+  { path: 'login', component: LoginComponent },
   { path: 'profile', component: Profile },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'modificar-miembro', component: ModificarMiembro },
   { path: 'consultar-miembro', component: ConsultarMiembro },
   { path: 'anadir-vinculo-familiar', component: AnadirVinculoFamiliar },
   { path: 'solicitar-servicio', component: SolicitarServicio },

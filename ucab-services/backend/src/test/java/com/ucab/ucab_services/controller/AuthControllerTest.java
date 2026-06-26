@@ -3,9 +3,9 @@ package com.ucab.ucab_services.controller;
 import com.ucab.ucab_services.dto.LoginRequest;
 import com.ucab.ucab_services.dto.LoginResponse;
 import com.ucab.ucab_services.dto.VerificarMfaRequest;
-import com.ucab.ucab_services.dto.MiembroSesionDTO;
 import com.ucab.ucab_services.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +13,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import tools.jackson.databind.ObjectMapper;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,41 +36,42 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                 .setControllerAdvice(new GlobalExceptionHandler())
+                .setValidator(validator)
                 .build();
     }
 
     @Test
     void testLoginSuccess() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setCedula("12345678");
+        loginRequest.setCorreo("juan.perez@ucab.edu.ve");
         loginRequest.setClave("password123");
 
-        MiembroSesionDTO sesionDTO = new MiembroSesionDTO();
-        sesionDTO.setCedulaMiembro("12345678");
-        sesionDTO.setNombresCompletos("Juan");
-        sesionDTO.setApellidosCompletos("Perez");
-        sesionDTO.setCorreoInstitucional("juan.perez@ucab.edu.ve");
-        sesionDTO.setEstadoCuenta("Activo");
-        sesionDTO.setRol("ESTUDIANTE");
-
         LoginResponse expectedResponse = new LoginResponse();
-        expectedResponse.setSuccess(true);
-        expectedResponse.setMessage("Login successful");
-        expectedResponse.setUsuario(sesionDTO);
+        expectedResponse.setToken("dummy-jwt-token");
+        expectedResponse.setRoles(List.of("ESTUDIANTE"));
+        expectedResponse.setNombre("Juan Perez");
+        expectedResponse.setCorreo("juan.perez@ucab.edu.ve");
+        expectedResponse.setCedulaMiembro("12345678");
+        expectedResponse.setRequiereMfa(false);
+        expectedResponse.setMensaje("Login successful");
 
-        // ✅ Se cambia a any(LoginRequest.class)
         when(authService.login(any(LoginRequest.class))).thenReturn(expectedResponse);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Login successful"))
-                .andExpect(jsonPath("$.usuario.cedulaMiembro").value("12345678"))
-                .andExpect(jsonPath("$.usuario.nombresCompletos").value("Juan"));
+                .andExpect(jsonPath("$.token").value("dummy-jwt-token"))
+                .andExpect(jsonPath("$.roles[0]").value("ESTUDIANTE"))
+                .andExpect(jsonPath("$.nombre").value("Juan Perez"))
+                .andExpect(jsonPath("$.correo").value("juan.perez@ucab.edu.ve"))
+                .andExpect(jsonPath("$.cedulaMiembro").value("12345678"))
+                .andExpect(jsonPath("$.requiereMfa").value(false))
+                .andExpect(jsonPath("$.mensaje").value("Login successful"));
     }
 
     @Test
@@ -80,7 +82,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.cedula").exists())
+                .andExpect(jsonPath("$.correo").exists())
                 .andExpect(jsonPath("$.clave").exists());
     }
 }

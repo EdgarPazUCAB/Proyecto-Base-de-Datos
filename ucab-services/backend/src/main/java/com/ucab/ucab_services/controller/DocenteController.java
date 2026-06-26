@@ -37,16 +37,21 @@ public class DocenteController {
         Optional<Docente> docenteOptional = docenteService.findById(id);
         if (docenteOptional.isPresent()) {
             Docente docente = docenteOptional.get();
-            // Update fields (excluding the ID which shouldn't change)
-            // In a real application, you might want to validate which fields can be updated
-            docente.setNombresCompletos(docenteDetails.getNombresCompletos());
-            docente.setApellidosCompletos(docenteDetails.getApellidosCompletos());
-            docente.setFechaNacimiento(docenteDetails.getFechaNacimiento());
-            docente.setSexo(docenteDetails.getSexo());
-            docente.setDireccionHabitacion(docenteDetails.getDireccionHabitacion());
-            docente.setTelefonoPersonal(docenteDetails.getTelefonoPersonal());
-            docente.setCorreoInstitucional(docenteDetails.getCorreoInstitucional());
-            docente.setFechaApertura(docenteDetails.getFechaApertura());
+            // Update fields via miembro composition
+            if (docenteDetails.getMiembro() != null) {
+                if (docente.getMiembro() == null) {
+                    docente.setMiembro(docenteDetails.getMiembro());
+                } else {
+                    docente.getMiembro().setNombresCompletos(docenteDetails.getMiembro().getNombresCompletos());
+                    docente.getMiembro().setApellidosCompletos(docenteDetails.getMiembro().getApellidosCompletos());
+                    docente.getMiembro().setFechaNacimiento(docenteDetails.getMiembro().getFechaNacimiento());
+                    docente.getMiembro().setSexo(docenteDetails.getMiembro().getSexo());
+                    docente.getMiembro().setDireccionHabitacion(docenteDetails.getMiembro().getDireccionHabitacion());
+                    docente.getMiembro().setTelefonoPersonal(docenteDetails.getMiembro().getTelefonoPersonal());
+                    docente.getMiembro().setCorreoInstitucional(docenteDetails.getMiembro().getCorreoInstitucional());
+                    docente.getMiembro().setFechaApertura(docenteDetails.getMiembro().getFechaApertura());
+                }
+            }
             docente.setCodigoInvestigador(docenteDetails.getCodigoInvestigador());
             docente.setEscalafonDocente(docenteDetails.getEscalafonDocente());
             docente.setCargaSemanal(docenteDetails.getCargaSemanal());

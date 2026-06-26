@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "miembro")
-@Inheritance(strategy = InheritanceType.JOINED)
 @Getter @Setter @NoArgsConstructor
 public class Miembro {
 

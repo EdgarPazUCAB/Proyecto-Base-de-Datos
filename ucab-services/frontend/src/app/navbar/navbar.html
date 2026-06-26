@@ -3,37 +3,20 @@
     <div class="flex items-center gap-xl">
       <span class="font-h3 text-h3 font-bold text-on-primary">UCAB SERVICES</span>
       <nav class="hidden md:flex gap-lg">
-        <a
-          class="text-on-primary border-b-2 border-on-primary pb-1 font-bold font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80"
-          href="#"
-          >Dashboard</a
-        >
-        <a
-          class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80"
-          href="#"
-          >Services</a
-        >
-        <a
-          class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80"
-          href="#"
-          >Requests</a
-        >
-        <a
-          class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80"
-          href="#"
-          >Profile</a
-        >
+        <a class="text-on-primary border-b-2 border-on-primary pb-1 font-bold font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80" href="#">Dashboard</a>
+        <a class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80" href="#">Services</a>
+        <a class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80" href="#">Requests</a>
+        <a class="text-on-primary/80 hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-primary-container/10 transition-all cursor-pointer active:opacity-80" href="#">Profile</a>
       </nav>
     </div>
+    
     <div class="flex items-center gap-md text-on-primary">
-      <button
-        class="hover:bg-primary-container/10 p-sm rounded-full transition-all cursor-pointer active:opacity-80"
-      >
+      <span class="font-bold font-body-md mr-2">Hola, {{ nombreUsuario }}</span>
+      
+      <button class="hover:bg-primary-container/10 p-sm rounded-full transition-all cursor-pointer active:opacity-80">
         <span class="material-symbols-outlined">notifications</span>
       </button>
-      <button
-        class="hover:bg-primary-container/10 p-sm rounded-full transition-all cursor-pointer active:opacity-80"
-      >
+      <button class="hover:bg-primary-container/10 p-sm rounded-full transition-all cursor-pointer active:opacity-80">
         <span class="material-symbols-outlined">settings</span>
       </button>
     </div>

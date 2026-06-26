@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLO CONSULTA: Entidad_Prestadora (Interna/Externa) es un dato
+ * institucional gestionado directamente en la base de datos — no se
+ * crea, edita ni elimina desde la app web.
+ */
 @RestController
 @RequestMapping("/api/entidades-prestadoras")
 public class EntidadPrestadoraController {
@@ -25,33 +30,5 @@ public class EntidadPrestadoraController {
     public ResponseEntity<EntidadPrestadora> getEntidadPrestadoraById(@PathVariable Integer id) {
         Optional<EntidadPrestadora> entidadPrestadora = entidadPrestadoraService.findById(id);
         return entidadPrestadora.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public EntidadPrestadora createEntidadPrestadora(@RequestBody EntidadPrestadora entidadPrestadora) {
-        return entidadPrestadoraService.save(entidadPrestadora);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<EntidadPrestadora> updateEntidadPrestadora(@PathVariable Integer id, @RequestBody EntidadPrestadora entidadPrestadoraDetails) {
-        Optional<EntidadPrestadora> entidadPrestadoraOptional = entidadPrestadoraService.findById(id);
-        if (entidadPrestadoraOptional.isPresent()) {
-            EntidadPrestadora entidadPrestadora = entidadPrestadoraOptional.get();
-            // Update fields (excluding the ID which shouldn't change)
-            // In a real application, you might want to validate which fields can be updated
-            return ResponseEntity.ok(entidadPrestadoraService.save(entidadPrestadora));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEntidadPrestadora(@PathVariable Integer id) {
-        if (entidadPrestadoraService.existsById(id)) {
-            entidadPrestadoraService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 }

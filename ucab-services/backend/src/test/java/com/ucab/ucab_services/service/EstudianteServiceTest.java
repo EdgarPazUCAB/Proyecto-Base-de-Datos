@@ -34,14 +34,20 @@ class EstudianteServiceTest {
     void testFindAll() {
         Estudiante estudiante1 = new Estudiante();
         estudiante1.setCedulaMiembro("12345678");
-        estudiante1.setNombresCompletos("Juan");
-        estudiante1.setApellidosCompletos("Perez");
+        com.ucab.ucab_services.entity.Miembro miembro1 = new com.ucab.ucab_services.entity.Miembro();
+        miembro1.setCedulaMiembro("12345678");
+        miembro1.setNombresCompletos("Juan");
+        miembro1.setApellidosCompletos("Perez");
+        estudiante1.setMiembro(miembro1);
         estudiante1.setPromedio(new BigDecimal("4.5")); // ✅ CORREGIDO A BIGDECIMAL
 
         Estudiante estudiante2 = new Estudiante();
         estudiante2.setCedulaMiembro("87654321");
-        estudiante2.setNombresCompletos("Maria");
-        estudiante2.setApellidosCompletos("Gonzalez");
+        com.ucab.ucab_services.entity.Miembro miembro2 = new com.ucab.ucab_services.entity.Miembro();
+        miembro2.setCedulaMiembro("87654321");
+        miembro2.setNombresCompletos("Maria");
+        miembro2.setApellidosCompletos("Gonzalez");
+        estudiante2.setMiembro(miembro2);
         estudiante2.setPromedio(new BigDecimal("3.8")); // ✅ CORREGIDO A BIGDECIMAL
 
         List<Estudiante> estudiantes = Arrays.asList(estudiante1, estudiante2);
@@ -58,8 +64,11 @@ class EstudianteServiceTest {
     void testFindById() {
         Estudiante estudiante = new Estudiante();
         estudiante.setCedulaMiembro("12345678");
-        estudiante.setNombresCompletos("Juan");
-        estudiante.setApellidosCompletos("Perez");
+        com.ucab.ucab_services.entity.Miembro miembro = new com.ucab.ucab_services.entity.Miembro();
+        miembro.setCedulaMiembro("12345678");
+        miembro.setNombresCompletos("Juan");
+        miembro.setApellidosCompletos("Perez");
+        estudiante.setMiembro(miembro);
         estudiante.setPromedio(new BigDecimal("4.5")); // ✅ CORREGIDO A BIGDECIMAL
 
         when(estudianteRepository.findById("12345678")).thenReturn(Optional.of(estudiante));
@@ -75,8 +84,11 @@ class EstudianteServiceTest {
     void testSave() {
         Estudiante estudiante = new Estudiante();
         estudiante.setCedulaMiembro("12345678");
-        estudiante.setNombresCompletos("Juan");
-        estudiante.setApellidosCompletos("Perez");
+        com.ucab.ucab_services.entity.Miembro miembro3 = new com.ucab.ucab_services.entity.Miembro();
+        miembro3.setCedulaMiembro("12345678");
+        miembro3.setNombresCompletos("Juan");
+        miembro3.setApellidosCompletos("Perez");
+        estudiante.setMiembro(miembro3);
         estudiante.setPromedio(new BigDecimal("4.5"));
 
         when(estudianteRepository.save(any(Estudiante.class))).thenReturn(estudiante);

@@ -39,14 +39,20 @@ public class EstudianteController {
             Estudiante estudiante = estudianteOptional.get();
             // Update fields (excluding the ID which shouldn't change)
             // In a real application, you might want to validate which fields can be updated
-            estudiante.setNombresCompletos(estudianteDetails.getNombresCompletos());
-            estudiante.setApellidosCompletos(estudianteDetails.getApellidosCompletos());
-            estudiante.setFechaNacimiento(estudianteDetails.getFechaNacimiento());
-            estudiante.setSexo(estudianteDetails.getSexo());
-            estudiante.setDireccionHabitacion(estudianteDetails.getDireccionHabitacion());
-            estudiante.setTelefonoPersonal(estudianteDetails.getTelefonoPersonal());
-            estudiante.setCorreoInstitucional(estudianteDetails.getCorreoInstitucional());
-            estudiante.setFechaApertura(estudianteDetails.getFechaApertura());
+            if (estudianteDetails.getMiembro() != null) {
+                if (estudiante.getMiembro() == null) {
+                    estudiante.setMiembro(estudianteDetails.getMiembro());
+                } else {
+                    estudiante.getMiembro().setNombresCompletos(estudianteDetails.getMiembro().getNombresCompletos());
+                    estudiante.getMiembro().setApellidosCompletos(estudianteDetails.getMiembro().getApellidosCompletos());
+                    estudiante.getMiembro().setFechaNacimiento(estudianteDetails.getMiembro().getFechaNacimiento());
+                    estudiante.getMiembro().setSexo(estudianteDetails.getMiembro().getSexo());
+                    estudiante.getMiembro().setDireccionHabitacion(estudianteDetails.getMiembro().getDireccionHabitacion());
+                    estudiante.getMiembro().setTelefonoPersonal(estudianteDetails.getMiembro().getTelefonoPersonal());
+                    estudiante.getMiembro().setCorreoInstitucional(estudianteDetails.getMiembro().getCorreoInstitucional());
+                    estudiante.getMiembro().setFechaApertura(estudianteDetails.getMiembro().getFechaApertura());
+                }
+            }
             Estudiante updatedEstudiante = estudianteService.save(estudiante);
             return ResponseEntity.ok(updatedEstudiante);
         } else {

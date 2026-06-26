@@ -2,18 +2,32 @@ package com.ucab.ucab_services.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Mapea la tabla Interna. Entidades prestadoras propias de la UCAB
+ * (identificadas por código presupuestario y director de oficina).
+ */
 @Entity
+@Table(name = "interna")
 @Getter @Setter @NoArgsConstructor
-@PrimaryKeyJoinColumn(name = "id_entidad", referencedColumnName = "id_entidad")
-public class Interna extends EntidadPrestadora {
+public class Interna {
 
-    @Column(name = "tipo_entidad", length = 10, nullable = false, insertable = false, updatable = false)
-    private String tipoEntidad;
+    @Id
+    @Column(name = "id_entidad")
+    private Integer idEntidad;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id_entidad")
+    private EntidadPrestadora entidadPrestadora;
 
     @Column(name = "codigo_presu", length = 50, nullable = false, unique = true)
     private String codigoPresu;

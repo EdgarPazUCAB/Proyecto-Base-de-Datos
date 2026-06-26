@@ -1,5 +1,6 @@
 package com.ucab.ucab_services.service;
 
+import com.ucab.ucab_services.dto.MiembroDetalleDTO;
 import com.ucab.ucab_services.entity.Miembro;
 import com.ucab.ucab_services.repository.MiembroRepository;
 import com.ucab.ucab_services.service.impl.MiembroServiceImpl;
@@ -9,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +30,47 @@ class MiembroServiceTest {
     }
 
     @Test
-    void testFindAll() {
-        // Arrange
+    void testBuscarPorCedula() {
+        Miembro miembro = new Miembro();
+        miembro.setCedulaMiembro("12345678");
+        miembro.setNombresCompletos("Juan");
+        miembro.setApellidosCompletos("Perez");
+        miembro.setCorreoInstitucional("juan.perez@ucab.edu");
+
+        when(miembroRepository.findById("12345678")).thenReturn(Optional.of(miembro));
+
+        MiembroDetalleDTO result = miembroService.buscarPorCedula("12345678");
+
+        assertNotNull(result);
+        assertEquals("12345678", result.getCedulaMiembro());
+        assertEquals("Juan", result.getNombresCompletos());
+        assertEquals("Perez", result.getApellidosCompletos());
+        assertEquals("juan.perez@ucab.edu", result.getCorreoInstitucional());
+        verify(miembroRepository, times(1)).findById("12345678");
+    }
+
+    @Test
+    void testBuscarPorCorreo() {
+        Miembro miembro = new Miembro();
+        miembro.setCedulaMiembro("12345678");
+        miembro.setNombresCompletos("Juan");
+        miembro.setApellidosCompletos("Perez");
+        miembro.setCorreoInstitucional("juan.perez@ucab.edu");
+
+        when(miembroRepository.findByCorreoInstitucional("juan.perez@ucab.edu")).thenReturn(Optional.of(miembro));
+
+        MiembroDetalleDTO result = miembroService.buscarPorCorreo("juan.perez@ucab.edu");
+
+        assertNotNull(result);
+        assertEquals("12345678", result.getCedulaMiembro());
+        assertEquals("Juan", result.getNombresCompletos());
+        assertEquals("Perez", result.getApellidosCompletos());
+        assertEquals("juan.perez@ucab.edu", result.getCorreoInstitucional());
+        verify(miembroRepository, times(1)).findByCorreoInstitucional("juan.perez@ucab.edu");
+    }
+
+    @Test
+    void testBuscarPorNombreOApellido() {
         Miembro miembro1 = new Miembro();
         miembro1.setCedulaMiembro("12345678");
         miembro1.setNombresCompletos("Juan");
@@ -42,99 +81,14 @@ class MiembroServiceTest {
         miembro2.setNombresCompletos("Maria");
         miembro2.setApellidosCompletos("Gonzalez");
 
-        List<Miembro> miembros = Arrays.asList(miembro1, miembro2);
-        when(miembroRepository.findAll()).thenReturn(miembros);
+        when(miembroRepository.buscarPorNombreOApellido("Juan")).thenReturn(List.of(miembro1, miembro2));
 
-        // Act
-        List<Miembro> result = miembroService.findAll();
+        List<MiembroDetalleDTO> result = miembroService.buscarPorNombreOApellido("Juan");
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals("12345678", result.get(0).getCedulaMiembro());
         assertEquals("87654321", result.get(1).getCedulaMiembro());
-        verify(miembroRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testFindById() {
-        // Arrange
-        Miembro miembro = new Miembro();
-        miembro.setCedulaMiembro("12345678");
-        miembro.setNombresCompletos("Juan");
-        miembro.setApellidosCompletos("Perez");
-
-        when(miembroRepository.findById("12345678")).thenReturn(Optional.of(miembro));
-
-        // Act
-        Optional<Miembro> result = miembroService.findById("12345678");
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals("12345678", result.get().getCedulaMiembro());
-        assertEquals("Juan", result.get().getNombresCompletos());
-        assertEquals("Perez", result.get().getApellidosCompletos());
-        verify(miembroRepository, times(1)).findById("12345678");
-    }
-
-    @Test
-    void testSave() {
-        // Arrange
-        Miembro miembro = new Miembro();
-        miembro.setCedulaMiembro("12345678");
-        miembro.setNombresCompletos("Juan");
-        miembro.setApellidosCompletos("Perez");
-
-        when(miembroRepository.save(any(Miembro.class))).thenReturn(miembro);
-
-        // Act
-        Miembro result = miembroService.save(miembro);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("12345678", result.getCedulaMiembro());
-        assertEquals("Juan", result.getNombresCompletos());
-        assertEquals("Perez", result.getApellidosCompletos());
-        verify(miembroRepository, times(1)).save(miembro);
-    }
-
-    @Test
-    void testDeleteById() {
-        // Arrange
-        String cedula = "12345678";
-        doNothing().when(miembroRepository).deleteById(cedula);
-
-        // Act
-        miembroService.deleteById(cedula);
-
-        // Assert
-        verify(miembroRepository, times(1)).deleteById(cedula);
-    }
-
-    @Test
-    void testExistsById() {
-        // Arrange
-        String cedula = "12345678";
-        when(miembroRepository.existsById(cedula)).thenReturn(true);
-
-        // Act
-        boolean result = miembroService.existsById(cedula);
-
-        // Assert
-        assertTrue(result);
-        verify(miembroRepository, times(1)).existsById(cedula);
-    }
-
-    @Test
-    void testCount() {
-        // Arrange
-        when(miembroRepository.count()).thenReturn(5L);
-
-        // Act
-        long result = miembroService.count();
-
-        // Assert
-        assertEquals(5, result);
-        verify(miembroRepository, times(1)).count();
+        verify(miembroRepository, times(1)).buscarPorNombreOApellido("Juan");
     }
 }

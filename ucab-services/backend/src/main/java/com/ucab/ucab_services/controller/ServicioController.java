@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * SOLO CONSULTA: Servicio es un dato institucional que la UCAB
+ * gestiona directamente en la base de datos (qué servicios existen,
+ * quién los presta) — no se crea, edita ni elimina desde la app web.
+ */
 @RestController
 @RequestMapping("/api/servicios")
 public class ServicioController {
@@ -24,32 +29,5 @@ public class ServicioController {
     public ResponseEntity<Servicio> getServicioById(@PathVariable String id) {
         Servicio servicio = servicioService.findById(id);
         return servicio != null ? ResponseEntity.ok(servicio) : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping
-    public Servicio createServicio(@RequestBody Servicio servicio) {
-        return servicioService.save(servicio);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Servicio> updateServicio(@PathVariable String id, @RequestBody Servicio servicioDetails) {
-        Servicio servicio = servicioService.findById(id);
-        if (servicio == null) {
-            return ResponseEntity.notFound().build();
-        }
-        servicio.setCodigoServicio(servicioDetails.getCodigoServicio());
-        servicio.setDescripcionDetallada(servicioDetails.getDescripcionDetallada());
-        servicio.setRequisitos(servicioDetails.getRequisitos());
-        servicio.setEstadoServicio(servicioDetails.getEstadoServicio());
-        servicio.setPerfilSolicitante(servicioDetails.getPerfilSolicitante());
-        // Note: entidadPrestadora is a relationship, we might need to set it by id, but for simplicity we leave it as is.
-        Servicio updatedServicio = servicioService.save(servicio);
-        return ResponseEntity.ok(updatedServicio);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteServicio(@PathVariable String id) {
-        servicioService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }
