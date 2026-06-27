@@ -1,29 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Necesario para algunas directivas si las usas
-import { AuthService } from '../services/auth.service'; // Ajusta la ruta a tu proyecto
+import { CommonModule } from '@angular/common'; 
+import { RouterModule, Router } from '@angular/router'; // <-- Necesario para la navegación
+import { AuthService } from '../services/auth.service'; 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // <-- Agregamos RouterModule aquí
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
   nombreUsuario: string = 'Usuario'; 
+  isMenuOpen: boolean = false; // <-- Controla si el menú de tuerca está abierto
 
-  constructor(private authService: AuthService) {}
+  // Inyectamos también el Router de Angular
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     const usuario = this.authService.obtenerUsuarioActual();
     
-    // Imprimirá: { token: "...", nombre: "Ana García", correo: "...", ... }
     console.log('Datos de Sesión mapeados:', usuario); 
 
     if (usuario && usuario.nombre) {
-      // El nombre viene completo desde Spring Boot (ej. "Ana García").
-      // .split(' ') lo separa en un arreglo ["Ana", "García"] y [0] toma el primer elemento.
       this.nombreUsuario = usuario.nombre.trim().split(' ')[0];
     }
+  }
+
+  // Abre y cierra el menú de configuración
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  // Borra la sesión y devuelve al usuario al Login
+  cerrarSesion(): void {
+    localStorage.removeItem('user_session'); // Borramos el caché
+    this.isMenuOpen = false;
+    this.router.navigate(['/login']); // Redirigimos
   }
 }

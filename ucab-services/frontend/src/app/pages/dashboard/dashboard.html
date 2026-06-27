@@ -1,38 +1,46 @@
 <div class="bg-background min-h-screen flex flex-col">
   <main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl flex flex-col gap-xl">
     <section class="flex flex-col gap-sm">
-      <h1 class="text-h2 font-bold text-on-surface">Bienvenido, {{ nombreUsuario }}</h1>
+      <h1 class="font-h1 text-h1 text-on-background">Bienvenido de nuevo, {{ nombreUsuario }}</h1>
       <p class="font-body-lg text-body-lg text-on-surface-variant">
         Gestión académica y administrativa UCAB
       </p>
     </section>
 
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-      <div
-        class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between shadow-[0px_4px_6px_rgba(0,0,0,0.05)] relative overflow-hidden"
-      >
-        <div
-          class="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-10 rounded-bl-full pointer-events-none"
-        ></div>
+      
+      <div class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between shadow-[0px_4px_6px_rgba(0,0,0,0.05)] relative overflow-hidden">
         <div class="flex items-center gap-sm mb-lg">
           <span class="material-symbols-outlined text-primary text-[32px]">credit_card</span>
           <h2 class="font-h3 text-h3 text-on-surface">Tarjeta TAI</h2>
         </div>
+        
         <div class="flex flex-col gap-md">
           <div>
             <p class="font-label-caps text-label-caps text-on-surface-variant uppercase">
               Saldo Actual
             </p>
-            <p class="font-h1 text-h1 text-primary font-bold">$25.50</p>
+            <p class="font-h1 text-h1 text-primary font-bold">
+              @if (cargandoBilletera) {
+                <span class="text-h3 text-on-surface-variant animate-pulse">Cargando...</span>
+              } @else {
+                ${{ saldoTai | number:'1.2-2' }}
+              }
+            </p>
           </div>
           <div>
             <p class="font-label-caps text-label-caps text-on-surface-variant uppercase">UID</p>
-            <p class="font-body-md text-body-md text-on-surface font-mono">88:77:66:55</p>
+            <p class="font-body-md text-body-md text-on-surface font-mono">
+              @if (cargandoBilletera) {
+                <span class="text-on-surface-variant">---</span>
+              } @else {
+                {{ uidTai }}
+              }
+            </p>
           </div>
         </div>
-        <button
-          class="mt-lg w-full bg-primary text-on-primary font-body-md text-body-md py-sm rounded-lg hover:bg-surface-tint transition-colors"
-        >
+        
+        <button class="mt-lg w-full bg-primary text-on-primary font-body-md text-body-md py-sm rounded-lg hover:bg-surface-tint transition-colors cursor-pointer">
           Recargar Saldo
         </button>
       </div>
@@ -40,77 +48,45 @@
       <div class="col-span-1 md:col-span-8 flex flex-col gap-md">
         <h3 class="font-h3 text-h3 text-on-background">Acciones Rápidas</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter h-full">
-          <button
-            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group"
-          >
-            <div
-              class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors"
-            >
+          <button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group cursor-pointer">
+            <div class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors">
               <span class="material-symbols-outlined text-primary text-[32px]">event</span>
             </div>
-            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm"
-              >Consultar Eventos</span
-            >
-            <span class="font-body-sm text-body-sm text-on-surface-variant"
-              >Ver calendario académico y actividades</span
-            >
+            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm">Consultar Eventos</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Ver calendario académico y actividades</span>
           </button>
 
-          <button
-            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group"
-          >
-            <div
-              class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors"
-            >
+          <button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group cursor-pointer">
+            <div class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors">
               <span class="material-symbols-outlined text-primary text-[32px]">meeting_room</span>
             </div>
-            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm"
-              >Reservar Espacio</span
-            >
-            <span class="font-body-sm text-body-sm text-on-surface-variant"
-              >Aulas, laboratorios y canchas</span
-            >
+            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm">Reservar Espacio</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Aulas, laboratorios y canchas</span>
           </button>
 
-          <button
-            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group"
-          >
-            <div
-              class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors"
-            >
+          <button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group cursor-pointer">
+            <div class="bg-surface-container-low p-md rounded-full group-hover:bg-primary-container/20 transition-colors">
               <span class="material-symbols-outlined text-primary text-[32px]">payments</span>
             </div>
-            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm"
-              >Pagar Servicios</span
-            >
-            <span class="font-body-sm text-body-sm text-on-surface-variant"
-              >Aranceles, biblioteca y otros</span
-            >
+            <span class="font-body-md text-body-md text-on-surface font-bold mt-sm">Pagar Servicios</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Aranceles, biblioteca y otros</span>
           </button>
         </div>
       </div>
 
-      <div
-        class="col-span-1 md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md"
-      >
+      <div class="col-span-1 md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md">
         <div class="flex justify-between items-center mb-sm">
           <h3 class="font-h3 text-h3 text-on-background">Próximos Eventos</h3>
           <a class="font-body-sm text-body-sm text-primary hover:underline" href="#">Ver todos</a>
         </div>
         <div class="flex flex-col gap-sm">
-          <div
-            class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors border border-transparent hover:border-outline-variant cursor-pointer"
-          >
-            <div
-              class="flex flex-col items-center justify-center bg-primary-container/10 text-primary rounded-lg p-sm min-w-[60px]"
-            >
+          <div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors border border-transparent hover:border-outline-variant cursor-pointer">
+            <div class="flex flex-col items-center justify-center bg-primary-container/10 text-primary rounded-lg p-sm min-w-[60px]">
               <span class="font-label-caps text-label-caps uppercase">NOV</span>
               <span class="font-h3 text-h3 font-bold">15</span>
             </div>
             <div class="flex flex-col">
-              <span class="font-body-md text-body-md font-bold text-on-surface"
-                >Simposio de Innovación Tecnológica</span
-              >
+              <span class="font-body-md text-body-md font-bold text-on-surface">Simposio de Innovación Tecnológica</span>
               <div class="flex items-center gap-xs text-on-surface-variant mt-xs">
                 <span class="material-symbols-outlined text-[16px]">schedule</span>
                 <span class="font-body-sm text-body-sm">09:00 AM - 12:00 PM</span>
@@ -122,19 +98,13 @@
             </div>
           </div>
 
-          <div
-            class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors border border-transparent hover:border-outline-variant cursor-pointer"
-          >
-            <div
-              class="flex flex-col items-center justify-center bg-primary-container/10 text-primary rounded-lg p-sm min-w-[60px]"
-            >
+          <div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors border border-transparent hover:border-outline-variant cursor-pointer">
+            <div class="flex flex-col items-center justify-center bg-primary-container/10 text-primary rounded-lg p-sm min-w-[60px]">
               <span class="font-label-caps text-label-caps uppercase">NOV</span>
               <span class="font-h3 text-h3 font-bold">18</span>
             </div>
             <div class="flex flex-col">
-              <span class="font-body-md text-body-md font-bold text-on-surface"
-                >Feria de Empleo UCAB</span
-              >
+              <span class="font-body-md text-body-md font-bold text-on-surface">Feria de Empleo UCAB</span>
               <div class="flex items-center gap-xs text-on-surface-variant mt-xs">
                 <span class="material-symbols-outlined text-[16px]">schedule</span>
                 <span class="font-body-sm text-body-sm">10:00 AM - 04:00 PM</span>
@@ -148,9 +118,7 @@
         </div>
       </div>
 
-      <div
-        class="col-span-1 md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md"
-      >
+      <div class="col-span-1 md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md">
         <div class="flex justify-between items-center mb-sm">
           <h3 class="font-h3 text-h3 text-on-background">Mis Solicitudes</h3>
           <a class="font-body-sm text-body-sm text-primary hover:underline" href="#">Gestionar</a>
@@ -158,49 +126,54 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr
-                class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase"
-              >
+              <tr class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase">
                 <th class="py-sm font-semibold">Solicitud</th>
                 <th class="py-sm font-semibold">Fecha</th>
                 <th class="py-sm font-semibold text-right">Estado</th>
               </tr>
             </thead>
+            
             <tbody class="font-body-sm text-body-sm text-on-surface">
-              <tr
-                class="border-b border-surface-variant hover:bg-surface-container-low transition-colors"
-              >
-                <td class="py-md pr-sm font-medium">Reserva de Aula - A23</td>
-                <td class="py-md px-sm text-on-surface-variant">12 Nov 2024</td>
-                <td class="py-md text-right">
-                  <span
-                    class="inline-block bg-primary-container/20 text-on-primary-container px-sm py-xs rounded-full font-label-caps text-label-caps"
-                    >Aprobada</span
-                  >
-                </td>
-              </tr>
-              <tr
-                class="border-b border-surface-variant hover:bg-surface-container-low transition-colors"
-              >
-                <td class="py-md pr-sm font-medium">Constancia de Estudios</td>
-                <td class="py-md px-sm text-on-surface-variant">10 Nov 2024</td>
-                <td class="py-md text-right">
-                  <span
-                    class="inline-block bg-surface-container-highest text-on-surface px-sm py-xs rounded-full font-label-caps text-label-caps"
-                    >Procesando</span
-                  >
-                </td>
-              </tr>
-              <tr class="hover:bg-surface-container-low transition-colors">
-                <td class="py-md pr-sm font-medium">Préstamo Libro Biblioteca</td>
-                <td class="py-md px-sm text-on-surface-variant">08 Nov 2024</td>
-                <td class="py-md text-right">
-                  <span
-                    class="inline-block bg-surface-container-highest text-on-surface px-sm py-xs rounded-full font-label-caps text-label-caps"
-                    >Activo</span
-                  >
-                </td>
-              </tr>
+              
+              @if (cargandoSolicitudes) {
+                <tr>
+                  <td colspan="3" class="py-md text-center text-on-surface-variant animate-pulse">
+                    Cargando tu historial de solicitudes...
+                  </td>
+                </tr>
+              } 
+              
+              @else if (misSolicitudes.length === 0) {
+                <tr>
+                  <td colspan="3" class="py-md text-center text-on-surface-variant">
+                    No tienes solicitudes registradas.
+                  </td>
+                </tr>
+              } 
+              
+              @else {
+                @for (solicitud of misSolicitudes; track solicitud.identificador) {
+                  <tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+                    
+                    <td class="py-md pr-sm font-medium">
+                      Reserva: {{ solicitud.servicio?.codigoServicio || 'General' }}
+                    </td>
+                    
+                    <td class="py-md px-sm text-on-surface-variant">
+                      {{ solicitud.fechaCreacion | date:'dd MMM yyyy' }}
+                    </td>
+                    
+                    <td class="py-md text-right">
+                      <span class="inline-block px-sm py-xs rounded-full font-label-caps text-label-caps"
+                            [ngClass]="obtenerClaseEstado(solicitud.estadoActual)">
+                        {{ solicitud.estadoActual }}
+                      </span>
+                    </td>
+                    
+                  </tr>
+                }
+              }
+              
             </tbody>
           </table>
         </div>
@@ -209,35 +182,15 @@
   </main>
 
   <footer class="bg-surface border-t border-outline-variant full-width mt-auto">
-    <div
-      class="flex flex-col md:flex-row justify-between items-center w-full py-xl px-lg max-w-container-max mx-auto"
-    >
+    <div class="flex flex-col md:flex-row justify-between items-center w-full py-xl px-lg max-w-container-max mx-auto">
       <span class="font-label-caps text-label-caps text-primary mb-md md:mb-0">UCAB SERVICES</span>
       <div class="flex gap-lg">
-        <a
-          class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-          href="#"
-          >Privacy Policy</a
-        >
-        <a
-          class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-          href="#"
-          >Terms of Service</a
-        >
-        <a
-          class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-          href="#"
-          >Academic Regulations</a
-        >
-        <a
-          class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-          href="#"
-          >Support</a
-        >
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">Privacy Policy</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">Terms of Service</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">Academic Regulations</a>
+        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">Support</a>
       </div>
-      <span class="font-body-sm text-body-sm text-on-surface-variant mt-md md:mt-0"
-        >© 2024 UCAB SERVICES. All rights reserved.</span
-      >
+      <span class="font-body-sm text-body-sm text-on-surface-variant mt-md md:mt-0">© 2026 UCAB SERVICES. All rights reserved.</span>
     </div>
   </footer>
 </div>

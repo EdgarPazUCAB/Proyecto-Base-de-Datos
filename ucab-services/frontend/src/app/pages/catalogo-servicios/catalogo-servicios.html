@@ -1,215 +1,107 @@
-<div
-  class="bg-background text-on-background flex flex-col min-h-screen font-body-md text-body-md antialiased"
->
-  <main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl">
-    <div class="mb-xl">
-      <h1 class="font-h1 text-h1 text-primary mb-sm">Catálogo de Servicios</h1>
-      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
-        Explore nuestra oferta de eventos y servicios. Utilice los filtros para encontrar
-        rápidamente actividades académicas, culturales o deportivas en nuestro campus.
+<div class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
+  
+  <header class="bg-surface shadow-sm border-b border-outline-variant py-xl">
+    <div class="max-w-container-max mx-auto px-lg flex flex-col gap-md">
+      <h1 class="font-h1 text-h1 text-on-surface font-black">Catálogo de Servicios</h1>
+      <p class="text-on-surface-variant font-body-lg">
+        Explore y solicite los servicios disponibles para la comunidad UCAB.
       </p>
-    </div>
-
-    <div
-      class="flex flex-col md:flex-row gap-gutter mb-xl items-center bg-surface-container-lowest p-md rounded-lg border border-outline-variant shadow-sm"
-    >
-      <div class="relative w-full md:w-1/3">
-        <span
-          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
-          >search</span
-        >
-        <input
-          class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors font-body-md text-body-md bg-surface-container-lowest text-on-surface"
-          placeholder="Buscar eventos..."
-          type="text"
-        />
-      </div>
-      <div class="flex gap-sm w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-        <button
-          class="px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-primary hover:text-on-primary transition-colors border border-transparent"
-        >
-          Todos
-        </button>
-        <button
-          class="px-4 py-2 bg-surface-container-lowest text-on-surface rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors border border-outline-variant"
-        >
-          Académicos
-        </button>
-        <button
-          class="px-4 py-2 bg-surface-container-lowest text-on-surface rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors border border-outline-variant"
-        >
-          Culturales
-        </button>
-        <button
-          class="px-4 py-2 bg-surface-container-lowest text-on-surface rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors border border-outline-variant"
-        >
-          Deportivos
-        </button>
+      
+      <div class="flex flex-col md:flex-row gap-sm mt-md">
+        <div class="relative flex-grow">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input 
+            type="text" 
+            [(ngModel)]="textoBusqueda"
+            (ngModelChange)="aplicarFiltros()"
+            placeholder="Buscar por código o descripción..." 
+            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+        </div>
+        <select 
+          [(ngModel)]="estadoFiltro"
+          (ngModelChange)="aplicarFiltros()"
+          class="bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-on-surface cursor-pointer min-w-[200px]">
+          <option value="todos">Todos los estados</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
       </div>
     </div>
+  </header>
 
+  <main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-      <div
-        class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300 flex flex-col"
-      >
-        <div class="h-48 w-full relative overflow-hidden bg-surface-container">
-          <img
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            data-alt="Auditorio UCAB"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzA2XF7R0veQ5JBYBFGr2iYuhfbQB1rFj4YqGkIDp64Y9ckIqgehhUdrUTuSU8ihhZdkdoefUT47tl17VkUg4j7J9DXAGUbMpdXia8cE6ReUilDgK2Gof4lx3IWfIoi8tWWoUKDDrv0MIEb8xojpvX_ajczJl6vAuMHDWc3GuISaUwjeDm5190Z52-n4hA0jRhFR22BxDtqB0Hya-z9B4AacXNnBZfcT5Tgq_BhrQThY50wprjp6nv2k1nKR_KLSP0TcBar-fS0lQW"
-          />
-          <div
-            class="absolute top-sm right-sm bg-primary-container text-on-primary-container font-label-caps text-label-caps px-2 py-1 rounded"
-          >
-            Académico
-          </div>
+      
+      @if (cargando) {
+        <div class="col-span-full flex flex-col items-center justify-center py-20 text-on-surface-variant">
+          <span class="material-symbols-outlined animate-spin text-[48px] text-primary">autorenew</span>
+          <p class="mt-4 font-bold text-body-lg">Cargando catálogo...</p>
         </div>
-        <div class="p-md flex flex-col flex-grow">
-          <h3 class="font-h3 text-h3 text-on-surface mb-xs">Seminario de Innovación Tecnológica</h3>
-          <div
-            class="flex items-center gap-2 mb-sm text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-            <span>15 de Noviembre, 2024</span>
-          </div>
-          <div
-            class="flex items-center gap-2 mb-md text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">location_on</span>
-            <span>Auditorio Hermano Lanz</span>
-          </div>
-          <p class="font-body-sm text-body-sm text-on-surface-variant mb-md flex-grow">
-            Únase a nosotros para una discusión en profundidad sobre las últimas tendencias en
-            inteligencia artificial y su impacto en el sector de servicios corporativos.
-          </p>
-          <button
-            class="w-full py-2 border border-outline-variant text-on-surface rounded font-body-md text-body-md hover:border-primary hover:text-primary transition-colors mt-auto"
-          >
-            Ver Detalles
-          </button>
+      } 
+      
+      @else if (error) {
+        <div class="col-span-full flex flex-col items-center justify-center py-20 text-red-600">
+          <span class="material-symbols-outlined text-[48px]">error</span>
+          <p class="mt-4 font-bold text-body-lg">{{ error }}</p>
         </div>
-      </div>
+      } 
+      
+      @else {
+        @for (servicio of serviciosFiltrados; track servicio.codigoServicio) {
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            
+            <div class="absolute top-0 right-0 w-24 h-24 bg-primary-container opacity-20 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300"></div>
+            
+            <div class="flex flex-col gap-sm relative z-10">
+              <div class="bg-primary-container/30 w-12 h-12 rounded-lg flex items-center justify-center mb-xs text-primary">
+                <span class="material-symbols-outlined text-[24px]">{{ getIconoServicio(servicio.codigoServicio) }}</span>
+              </div>
+              
+              <div>
+                @if (servicio.estadoServicio) {
+                  <span class="inline-block px-2 py-1 bg-surface-container-high text-on-surface-variant text-label-sm font-label-caps uppercase rounded-md mb-2">
+                    Estado: {{ servicio.estadoServicio }}
+                  </span>
+                }
+                
+                <h3 class="font-h3 text-h3 text-on-surface leading-tight mb-2 uppercase">{{ servicio.codigoServicio }}</h3>
+                
+                <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3">
+                  {{ servicio.descripcionDetallada || 'Sin descripción disponible.' }}
+                </p>
+              </div>
+            </div>
 
-      <div
-        class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300 flex flex-col"
-      >
-        <div class="h-48 w-full relative overflow-hidden bg-surface-container">
-          <img
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            data-alt="Orquesta Sinfónica"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-W56f2Ozh1RFsd_JcwI_gGUoROvJMKX6qTOGApqAyXDsxSnDkQVBQVXdUxMKabZJMiy7ZO0_wYwYjE6kE3Q2oU4GGU8kL5uHtrdZSd6pyuBpr1bEeblZb1rpRgCv0Uzf0jghz5Sqfc7VAJDtUVqNyF5tNWSkL1Yivblvs0sXR1z8_vtk-SPQZWDyQ_FI1iUP1LMvpvjnFHeGs-s4DhSQK6aOSrk12rMIn205ANZmSOwEokIdhzd0pQGX5dG9IO1j5AtHeVfLvLmU0"
-          />
-          <div
-            class="absolute top-sm right-sm bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps px-2 py-1 rounded"
-          >
-            Cultural
+            <div class="mt-xl relative z-10 flex flex-col gap-sm">
+              @if (servicio.requisitos) {
+                <div class="flex items-start gap-xs text-on-surface-variant mb-2">
+                  <span class="material-symbols-outlined text-[16px] mt-1">assignment_turned_in</span>
+                  <span class="font-body-sm font-medium line-clamp-2" title="{{ servicio.requisitos }}">
+                    Requisitos: {{ servicio.requisitos }}
+                  </span>
+                </div>
+              }
+              
+              <button 
+                routerLink="/solicitar-servicio" 
+                [queryParams]="{ servicio: servicio.codigoServicio }"
+                class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md py-sm rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+              >
+                <span>Solicitar</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+            
           </div>
-        </div>
-        <div class="p-md flex flex-col flex-grow">
-          <h3 class="font-h3 text-h3 text-on-surface mb-xs">Concierto de la Orquesta Sinfónica</h3>
-          <div
-            class="flex items-center gap-2 mb-sm text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-            <span>22 de Noviembre, 2024</span>
+        }
+        
+        @if (serviciosFiltrados.length === 0) {
+          <div class="col-span-full text-center py-20 text-on-surface-variant">
+            <span class="material-symbols-outlined text-[48px] opacity-50">search_off</span>
+            <p class="mt-4 font-bold text-body-lg">No se encontraron servicios con esos filtros.</p>
           </div>
-          <div
-            class="flex items-center gap-2 mb-md text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">location_on</span>
-            <span>Plaza del Estudiante</span>
-          </div>
-          <p class="font-body-sm text-body-sm text-on-surface-variant mb-md flex-grow">
-            Disfrute de una tarde musical con la Orquesta Sinfónica de la universidad interpretando
-            piezas clásicas y contemporáneas en un entorno al aire libre.
-          </p>
-          <button
-            class="w-full py-2 border border-outline-variant text-on-surface rounded font-body-md text-body-md hover:border-primary hover:text-primary transition-colors mt-auto"
-          >
-            Ver Detalles
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden group hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300 flex flex-col"
-      >
-        <div class="h-48 w-full relative overflow-hidden bg-surface-container">
-          <img
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            data-alt="Complejo Deportivo"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoPwuqCHvIr9nryRfIIJWAhrY_1luRKrC7D6YvSdzDhodq7fdyhzxrcbceESOzVEUY1uYsAXEgp3XKdCbLFv-vS7ZRPQruLemvp_aDu5pAkeVox_wVknV3iEJ2Sdpi4_nV4EFQXhXIL6pulbM6Q-k_FQTEocW11xS1X6U14FA9j18_5_WZu5CMv4UOxBV6ob62ikhYXERt8EoUa6EeSyPBBk5Zdr-GAL2iecwC5oMlbska4hftqrSLgplTApYM9LHsy2HIi8JzCfqo"
-          />
-          <div
-            class="absolute top-sm right-sm bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-2 py-1 rounded"
-          >
-            Deportivo
-          </div>
-        </div>
-        <div class="p-md flex flex-col flex-grow">
-          <h3 class="font-h3 text-h3 text-on-surface mb-xs">
-            Torneo Interuniversitario de Baloncesto
-          </h3>
-          <div
-            class="flex items-center gap-2 mb-sm text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-            <span>28 de Noviembre, 2024</span>
-          </div>
-          <div
-            class="flex items-center gap-2 mb-md text-on-surface-variant font-body-sm text-body-sm"
-          >
-            <span class="material-symbols-outlined text-[18px]">location_on</span>
-            <span>Complejo Deportivo Central</span>
-          </div>
-          <p class="font-body-sm text-body-sm text-on-surface-variant mb-md flex-grow">
-            Apoye a nuestro equipo en las finales del torneo regional de baloncesto. Un evento lleno
-            de energía, competencia sana y espíritu universitario.
-          </p>
-          <button
-            class="w-full py-2 border border-outline-variant text-on-surface rounded font-body-md text-body-md hover:border-primary hover:text-primary transition-colors mt-auto"
-          >
-            Ver Detalles
-          </button>
-        </div>
-      </div>
+        }
+      }
     </div>
   </main>
-
-  <footer
-    class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant mt-auto flat no-shadows w-full"
-  >
-    <div
-      class="w-full py-lg px-lg flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto"
-    >
-      <div class="text-on-surface font-bold mb-sm md:mb-0">UCAB SERVICES</div>
-      <p
-        class="font-body-sm text-body-sm text-on-surface dark:text-inverse-on-surface text-center md:text-left mb-sm md:mb-0"
-      >
-        © 2024 UCAB SERVICES. Universidad Católica Andrés Bello. Todos los derechos reservados.
-      </p>
-      <nav class="flex gap-md font-body-sm text-body-sm">
-        <a
-          class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors"
-          href="#"
-          >Privacidad</a
-        >
-        <a
-          class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors"
-          href="#"
-          >Términos</a
-        >
-        <a
-          class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors"
-          href="#"
-          >Soporte</a
-        >
-        <a
-          class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors"
-          href="#"
-          >Contacto</a
-        >
-      </nav>
-    </div>
-  </footer>
 </div>

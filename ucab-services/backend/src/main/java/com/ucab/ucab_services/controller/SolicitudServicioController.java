@@ -6,18 +6,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/solicitudes-servicio")
+@CrossOrigin(origins = "http://localhost:4200")
 public class SolicitudServicioController {
 
     @Autowired
     private SolicitudServicioService solicitudServicioService;
 
+    // --- CAMBIO APLICADO AQUÍ: Devolvemos un List<Map> en vez de entidades completas ---
     @GetMapping
-    public List<SolicitudServicio> getAllSolicitudesServicio() {
-        return solicitudServicioService.findAll();
+    public ResponseEntity<List<Map<String, Object>>> getAllSolicitudesServicio() {
+        List<SolicitudServicio> solicitudes = solicitudServicioService.findAll();
+        List<Map<String, Object>> responseList = new ArrayList<>();
+
+        for (SolicitudServicio sol : solicitudes) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("identificador", sol.getIdentificador());
+            map.put("estadoActual", sol.getEstadoActual());
+            map.put("fechaCreacion", sol.getFechaCreacion());
+
+            // Extraemos solo la cédula para evitar el error de CategoriaFidelidad (LazyInitialization)
+            if (sol.getMiembro() != null) {
+                Map<String, String> miembroMap = new HashMap<>();
+                miembroMap.put("cedulaMiembro", sol.getMiembro().getCedulaMiembro());
+                map.put("miembro", miembroMap);
+            }
+
+            // Extraemos solo el código del servicio
+            if (sol.getServicio() != null) {
+                Map<String, String> servicioMap = new HashMap<>();
+                servicioMap.put("codigoServicio", sol.getServicio().getCodigoServicio());
+                map.put("servicio", servicioMap);
+            }
+
+            responseList.add(map);
+        }
+
+        return ResponseEntity.ok(responseList);
     }
 
     @GetMapping("/{id}")
@@ -27,8 +59,26 @@ public class SolicitudServicioController {
     }
 
     @PostMapping
-    public SolicitudServicio createSolicitudServicio(@RequestBody SolicitudServicio solicitudServicio) {
-        return solicitudServicioService.save(solicitudServicio);
+    public ResponseEntity<Map<String, String>> createSolicitudServicio(@RequestBody SolicitudServicio solicitudServicio) {
+
+        // 1. Forzamos el ID corto
+        String nuevoId = "SOL-" + System.currentTimeMillis();
+        solicitudServicio.setIdentificador(nuevoId);
+
+        // 2. Prevenimos el null de la fecha de creación
+        if(solicitudServicio.getFechaCreacion() == null) {
+            solicitudServicio.setFechaCreacion(LocalDateTime.now());
+        }
+
+        // 3. Guardamos la solicitud
+        solicitudServicioService.save(solicitudServicio);
+
+        // 4. Devolvemos un JSON simple en lugar del objeto complejo
+        Map<String, String> response = new HashMap<>();
+        response.put("mensaje", "Solicitud creada con éxito");
+        response.put("identificador", nuevoId);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
@@ -37,13 +87,11 @@ public class SolicitudServicioController {
         if (solicitudServicio == null) {
             return ResponseEntity.notFound().build();
         }
-        // Update fields
         solicitudServicio.setEstadoActual(solicitudServicioDetails.getEstadoActual());
         solicitudServicio.setFechaInicio(solicitudServicioDetails.getFechaInicio());
         solicitudServicio.setFechaFin(solicitudServicioDetails.getFechaFin());
-        // Note: We are not updating the relationships (miembro, servicio) for simplicity.
-        SolicitudServicio updatedSolicitudServicio = solicitudServicioService.save(solicitudServicio);
-        return ResponseEntity.ok(updatedSolicitudServicio);
+
+        return ResponseEntity.ok(solicitudServicioService.save(solicitudServicio));
     }
 
     @DeleteMapping("/{id}")
