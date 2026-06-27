@@ -1369,14 +1369,14 @@ INSERT INTO Miembro (Cedula_Miembro, Nombres_Completos, Apellidos_Completos, Sex
     fecha_nacimiento, Estado_cuenta, Fecha_Cambio_Clave, Direccion_habitacion,
     Correo_Institucional, Telefono_Personal, Fecha_apertura, Tipo_Categoria,
     Intentos_fallidos, MFA_habilitado) VALUES
-    ('V-12345678', 'Ana Maria',    'Lopez Torres',   'F', '2001-03-15', 'Activa',     now(), 'Urb. La Castellana, Caracas', 'ana.lopez@ucab.edu.ve',     '04141234567', CURRENT_DATE, 'Frecuente',    1, TRUE),
-    ('V-23456789', 'Carlos Jose',  'Perez Rivas',    'M', '1999-07-22', 'Activa',     now(), 'Urb. El Paraiso, Caracas',    'carlos.perez@ucab.edu.ve',  '04167654321', CURRENT_DATE, 'Preferencial', 0, TRUE),
-    ('V-34567890', 'Maria Elena',  'Sanchez Blanco', 'F', '1985-11-30', 'Activa',     now(), 'Res. La Boyera, Caracas',     'maria.sanchez@ucab.edu.ve', '04121112233', CURRENT_DATE, 'Estandar',     0, FALSE),
-    ('V-45678901', 'Pedro Luis',   'Martinez Gil',   'M', '1978-05-10', 'Activa',     now(), 'Urb. Los Chorros, Caracas',   'pedro.martinez@ucab.edu.ve','04169988776', CURRENT_DATE, 'Preferencial', 0, TRUE),
-    ('V-56789012', 'Laura Beatriz','Herrera Mora',   'F', '2002-01-08', 'Activa',     now(), 'Urb. Bello Monte, Caracas',   'laura.herrera@ucab.edu.ve', '04143344556', CURRENT_DATE, 'Estandar',     2, FALSE),
-    ('V-67890123', 'Jorge Andres', 'Dominguez Paz',  'M', '1990-09-18', 'Activa',     now(), 'Urb. Chuao, Caracas',         'jorge.dominguez@ucab.edu.ve','04125566778',CURRENT_DATE, 'Frecuente',    0, TRUE),
-    ('V-78901234', 'Valentina',    'Rojas Castro',   'F', '2000-12-01', 'Suspendida', now(), 'Urb. Santa Fe, Caracas',      'valentina.rojas@ucab.edu.ve','04161237788',CURRENT_DATE - 800, 'Estandar', 0, FALSE),
-    ('V-89012345', 'Ricardo',      'Vargas Leon',    'M', '1995-04-25', 'Bloqueada',  now(), 'Urb. Las Mercedes, Caracas',  'ricardo.vargas@ucab.edu.ve', '04249876543', CURRENT_DATE, 'Estandar',     5, FALSE);
+    ('V-12345678', 'Ana Maria',    'Lopez Torres',   'F', '2001-03-15', 'Activa',     now(), 'Urb. La Castellana, Caracas', 'ana.lopez@est.ucab.edu.ve',     '04141234567', CURRENT_DATE, 'Frecuente',    1, TRUE),
+    ('V-23456789', 'Carlos Jose',  'Perez Rivas',    'M', '1999-07-22', 'Activa',     now(), 'Urb. El Paraiso, Caracas',    'carlos.perez@egr.ucab.edu.ve',  '04167654321', CURRENT_DATE, 'Preferencial', 0, TRUE),
+    ('V-34567890', 'Maria Elena',  'Sanchez Blanco', 'F', '1985-11-30', 'Activa',     now(), 'Res. La Boyera, Caracas',     'maria.sanchez@adm.ucab.edu.ve', '04121112233', CURRENT_DATE, 'Estandar',     0, FALSE),
+    ('V-45678901', 'Pedro Luis',   'Martinez Gil',   'M', '1978-05-10', 'Activa',     now(), 'Urb. Los Chorros, Caracas',   'pedro.martinez@prof.ucab.edu.ve','04169988776', CURRENT_DATE, 'Preferencial', 0, TRUE),
+    ('V-56789012', 'Laura Beatriz','Herrera Mora',   'F', '2002-01-08', 'Activa',     now(), 'Urb. Bello Monte, Caracas',   'laura.herrera@est.ucab.edu.ve', '04143344556', CURRENT_DATE, 'Estandar',     2, FALSE),
+    ('V-67890123', 'Jorge Andres', 'Dominguez Paz',  'M', '1990-09-18', 'Activa',     now(), 'Urb. Chuao, Caracas',         'jorge.dominguez@est.ucab.edu.ve','04125566778',CURRENT_DATE, 'Frecuente',    0, TRUE),
+    ('V-78901234', 'Valentina',    'Rojas Castro',   'F', '2000-12-01', 'Suspendida', now(), 'Urb. Santa Fe, Caracas',      'valentina.rojas@est.ucab.edu.ve','04161237788',CURRENT_DATE - 800, 'Estandar', 0, FALSE),
+    ('V-89012345', 'Ricardo',      'Vargas Leon',    'M', '1995-04-25', 'Bloqueada',  now(), 'Urb. Las Mercedes, Caracas',  'ricardo.vargas@egr.ucab.edu.ve', '04249876543', CURRENT_DATE, 'Estandar',     5, FALSE);
 
 -- ── Subtipos de Miembro ──────────────────────────────────────────
 -- Cada miembro YA existe en la tabla Miembro (bloque anterior).
