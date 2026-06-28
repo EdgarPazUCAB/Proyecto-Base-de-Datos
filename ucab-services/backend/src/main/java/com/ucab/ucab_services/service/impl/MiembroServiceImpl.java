@@ -2,6 +2,7 @@ package com.ucab.ucab_services.service.impl;
 
 import com.ucab.ucab_services.dto.MiembroDetalleDTO;
 import com.ucab.ucab_services.entity.Miembro;
+import com.ucab.ucab_services.entity.RolMiembro;
 import com.ucab.ucab_services.repository.MiembroRepository;
 import com.ucab.ucab_services.service.MiembroService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,11 @@ public class MiembroServiceImpl implements MiembroService {
                 ? miembro.getTipoCategoria().getTipoCategoria()
                 : null;
 
+        // Antes esto se dejaba como null fijo, lo que rompía el frontend
+        // (Profile no podía decidir qué sección mostrar). Se calcula el
+        // rol real a partir del subdominio del correo institucional.
+        RolMiembro rol = RolMiembro.detectarDesdeCorreo(miembro.getCorreoInstitucional());
+
         return new MiembroDetalleDTO(
                 miembro.getCedulaMiembro(),
                 miembro.getNombresCompletos(),
@@ -71,7 +77,7 @@ public class MiembroServiceImpl implements MiembroService {
                 miembro.getIndiceRecurrencia(),
                 miembro.getFechaApertura() != null ? miembro.getFechaApertura().toLocalDate() : null,
                 tipoCategoria,
-                null
+                rol
         );
     }
 }
