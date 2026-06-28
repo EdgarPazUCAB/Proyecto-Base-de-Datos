@@ -6,70 +6,94 @@
       <p class="font-body-lg text-body-lg text-secondary mt-xs">Gestione su información personal y académica.</p>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
-      
+    <!-- Estado de carga -->
+    <div *ngIf="cargando" class="text-center py-xl text-secondary">
+      Cargando perfil...
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!cargando && errorMessage" class="text-center py-xl text-red-600">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Contenido real, solo cuando ya hay datos del miembro -->
+    <div *ngIf="!cargando && miembro" class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+
       <div class="md:col-span-4 flex flex-col gap-lg">
         <div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300 flex flex-col items-center text-center">
           <div class="w-32 h-32 rounded-full overflow-hidden mb-md border-4 border-surface">
             <img alt="Profile Picture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnHfTJ67UtAx42JwbTpryOgi7EPswaGOA7GP59ec5aJlA0vejh0uQWb1ZETQ0jBSE6oMvblcUxXB9_yqKxLoVhsdiUqPvIptSrmVuOUv4IvdJOTnfw6aQmagisJp3Gw5mbcBFT2RnvxCERE73Kn9rXzdhYQpdFKxHERm3jwkOY2gqoALXH79KhhtWZNHeMDULL7xYDgevGfoCYCpL5wxLwNWE8ePxQz9ANTDWgHWlyQBR4MxI9LQSCZptLBkST42lIrFNyWM4hZJHr" />
           </div>
-          <h2 class="font-h3 text-h3 text-on-surface mb-xs">Ana Martínez Silva</h2>
-          <span class="inline-block bg-primary-container text-on-primary-container font-label-caps text-label-caps px-sm py-1 rounded-full mb-md">Estudiante</span>
-          
+          <h2 class="font-h3 text-h3 text-on-surface mb-xs">{{ miembro.nombresCompletos }} {{ miembro.apellidosCompletos }}</h2>
+          <span class="inline-block bg-primary-container text-on-primary-container font-label-caps text-label-caps px-sm py-1 rounded-full mb-md">{{ etiquetaRol }}</span>
+
           <div class="w-full border-t border-[#E2E8F0] pt-md flex flex-col gap-sm text-left">
             <div class="flex items-center gap-sm text-secondary">
               <span class="material-symbols-outlined text-[20px]">badge</span>
-              <span class="font-body-sm text-body-sm">ID: 202104589</span>
+              <span class="font-body-sm text-body-sm">Cédula: {{ miembro.cedulaMiembro }}</span>
             </div>
             <div class="flex items-center gap-sm text-secondary">
               <span class="material-symbols-outlined text-[20px]">calendar_today</span>
-              <span class="font-body-sm text-body-sm">Miembro desde: Sept 2021</span>
+              <span class="font-body-sm text-body-sm">Miembro desde: {{ miembro.fechaApertura | date:'MMM yyyy' }}</span>
             </div>
           </div>
-          
+
           <button class="mt-lg w-full bg-primary text-on-primary font-body-md text-body-md py-sm px-md rounded-DEFAULT hover:opacity-90 transition-opacity">
             Editar Perfil
           </button>
-          
-          <div class="w-full border-t border-[#E2E8F0] mt-lg pt-md flex flex-col gap-sm text-left">
+
+          <div *ngIf="billetera" class="w-full border-t border-[#E2E8F0] mt-lg pt-md flex flex-col gap-sm text-left">
             <div class="flex items-center gap-sm text-secondary">
               <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-              <span class="font-body-sm text-body-sm">Saldo Tarjeta TAI: Bs. 1.250,00</span>
+              <span class="font-body-sm text-body-sm">Saldo Tarjeta TAI: Bs. {{ billetera.saldoRestante | number:'1.2-2' }}</span>
             </div>
             <div class="flex items-center gap-sm text-secondary">
               <span class="material-symbols-outlined text-[20px]">nfc</span>
-              <span class="font-body-sm text-body-sm">UID Tarjeta TAI: 80:E1:92:BC</span>
+              <span class="font-body-sm text-body-sm">UID Tarjeta TAI: {{ billetera.uid }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="md:col-span-8 flex flex-col gap-lg">
-        <section class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+
+        <!-- Información Académica: solo Estudiante y Egresado -->
+        <section *ngIf="esEstudiante || esEgresado" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
             <span class="material-symbols-outlined text-primary icon-filled">school</span>
             <h3 class="font-h3 text-h3 text-on-surface">Información Académica</h3>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
             <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">ESCUELA</p>
-              <p class="font-body-md text-body-md text-on-surface">Ingeniería Informática</p>
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">ESTADO DE CUENTA</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.estadoCuenta }}</p>
             </div>
             <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">SEMESTRE ACTUAL</p>
-              <p class="font-body-md text-body-md text-on-surface">6to Semestre</p>
-            </div>
-            <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">SEDE</p>
-              <p class="font-body-md text-body-md text-on-surface">Caracas - Montalbán</p>
-            </div>
-            <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">ESTADO ACADÉMICO</p>
-              <span class="inline-block bg-inverse-primary/20 text-primary font-label-caps text-label-caps px-sm py-1 rounded-full">Activo Regular</span>
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">CATEGORÍA DE FIDELIDAD</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.tipoCategoria || 'Sin categoría asignada' }}</p>
             </div>
           </div>
         </section>
 
+        <!-- Información Laboral: solo Docente y Personal Administrativo -->
+        <section *ngIf="esDocente || esPersonalAdministrativo" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+          <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
+            <span class="material-symbols-outlined text-primary icon-filled">work</span>
+            <h3 class="font-h3 text-h3 text-on-surface">Información Laboral</h3>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+            <div>
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">ROL</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ etiquetaRol }}</p>
+            </div>
+            <div>
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">ESTADO DE CUENTA</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.estadoCuenta }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Información de Contacto: aplica a todos los roles -->
         <section class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
             <span class="material-symbols-outlined text-primary icon-filled">contact_mail</span>
@@ -78,24 +102,24 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
             <div>
               <p class="font-label-caps text-label-caps text-secondary mb-xs">CORREO INSTITUCIONAL</p>
-              <p class="font-body-md text-body-md text-on-surface">amartinez589@est.ucab.edu.ve</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.correoInstitucional }}</p>
             </div>
             <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">CORREO PERSONAL</p>
-              <p class="font-body-md text-body-md text-on-surface">ana.martinez@email.com</p>
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">TELÉFONO</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.telefonoPersonal }}</p>
             </div>
-            <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">TELÉFONO MÓVIL</p>
-              <p class="font-body-md text-body-md text-on-surface">+58 412 123 4567</p>
-            </div>
-            <div>
-              <p class="font-label-caps text-label-caps text-secondary mb-xs">DIRECCIÓN PRINCIPAL</p>
-              <p class="font-body-md text-body-md text-on-surface">Av. Teherán, Residencia El Parque, Apto 4B, Caracas.</p>
+            <div class="sm:col-span-2">
+              <p class="font-label-caps text-label-caps text-secondary mb-xs">DIRECCIÓN</p>
+              <p class="font-body-md text-body-md text-on-surface">{{ miembro.direccionHabitacion }}</p>
             </div>
           </div>
         </section>
 
-        <section class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl overflow-hidden hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+        <!-- Vínculos Familiares: SOLO Docente y Personal Administrativo
+             (regla de negocio validada también por trigger en PostgreSQL:
+             fn_validar_rol_beneficiario rechaza Beneficiarios de
+             Estudiantes/Egresados) -->
+        <section *ngIf="puedeTenerBeneficiarios" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl overflow-hidden hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="p-lg border-b border-[#E2E8F0] flex justify-between items-center bg-surface-bright">
             <div class="flex items-center gap-sm">
               <span class="material-symbols-outlined text-primary icon-filled">family_restroom</span>
@@ -105,69 +129,14 @@
               + Añadir Vínculo
             </button>
           </div>
-          <div class="w-full overflow-x-auto">
-            <table class="w-full text-left font-body-sm text-body-sm">
-              <thead class="bg-[#F8FAFC] text-secondary font-label-caps text-label-caps border-b border-[#E2E8F0]">
-                <tr>
-                  <th class="py-md px-lg">NOMBRE</th>
-                  <th class="py-md px-lg">PARENTESCO</th>
-                  <th class="py-md px-lg">FECHA NACIMIENTO</th>
-                  <th class="py-md px-lg">COBERTURA</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="border-b border-[#E2E8F0] hover:bg-surface-container-low transition-colors">
-                  <td class="py-md px-lg text-on-surface font-medium">Juan Pérez</td>
-                  <td class="py-md px-lg text-on-surface">Hijo</td>
-                  <td class="py-md px-lg text-secondary">15 May 2010</td>
-                  <td class="py-md px-lg"><span class="inline-block bg-primary-container/30 text-primary-fixed-dim font-label-caps text-label-caps px-sm py-xs rounded-full">Activa</span></td>
-                </tr>
-                <tr class="hover:bg-surface-container-low transition-colors">
-                  <td class="py-md px-lg text-on-surface font-medium">María García</td>
-                  <td class="py-md px-lg text-on-surface">Cónyuge</td>
-                  <td class="py-md px-lg text-secondary">22 Ago 1985</td>
-                  <td class="py-md px-lg"><span class="inline-block bg-primary-container/30 text-primary-fixed-dim font-label-caps text-label-caps px-sm py-xs rounded-full">Activa</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- TODO: cargar beneficiarios reales desde GET /api/beneficiarios/{cedula}
+               cuando ese endpoint esté disponible. Por ahora la tabla
+               aparece vacía en vez de mostrar datos falsos. -->
+          <div class="p-lg text-center text-secondary text-body-sm">
+            Aún no hay vínculos familiares registrados.
           </div>
         </section>
 
-        <section class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl overflow-hidden hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
-          <div class="p-lg border-b border-[#E2E8F0] flex justify-between items-center bg-surface-bright">
-            <div class="flex items-center gap-sm">
-              <span class="material-symbols-outlined text-primary icon-filled">receipt_long</span>
-              <h3 class="font-h3 text-h3 text-on-surface">Solicitudes Recientes</h3>
-            </div>
-            <a class="font-body-sm text-body-sm text-primary hover:underline" href="#">Ver todas</a>
-          </div>
-          <div class="w-full overflow-x-auto">
-            <table class="w-full text-left font-body-sm text-body-sm">
-              <thead class="bg-[#F8FAFC] text-secondary font-label-caps text-label-caps border-b border-[#E2E8F0]">
-                <tr>
-                  <th class="py-md px-lg">ID SOLICITUD</th>
-                  <th class="py-md px-lg">TIPO</th>
-                  <th class="py-md px-lg">FECHA</th>
-                  <th class="py-md px-lg">ESTADO</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="border-b border-[#E2E8F0] hover:bg-surface-container-low transition-colors">
-                  <td class="py-md px-lg text-on-surface">REQ-0042</td>
-                  <td class="py-md px-lg text-on-surface">Constancia de Estudios</td>
-                  <td class="py-md px-lg text-secondary">12 Oct 2024</td>
-                  <td class="py-md px-lg"><span class="inline-block bg-primary-container/30 text-primary-fixed-dim font-label-caps text-label-caps px-sm py-xs rounded-full">Aprobado</span></td>
-                </tr>
-                <tr class="hover:bg-surface-container-low transition-colors">
-                  <td class="py-md px-lg text-on-surface">REQ-0038</td>
-                  <td class="py-md px-lg text-on-surface">Revisión de Calificaciones</td>
-                  <td class="py-md px-lg text-secondary">05 Sep 2024</td>
-                  <td class="py-md px-lg"><span class="inline-block bg-surface-variant text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded-full">Cerrado</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
       </div>
     </div>
   </main>
