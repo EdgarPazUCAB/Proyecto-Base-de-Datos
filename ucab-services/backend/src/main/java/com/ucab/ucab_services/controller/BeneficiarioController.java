@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +65,17 @@ public class BeneficiarioController {
             beneficiario.setEstatusBeneficios("Activo");
         }
 
-        beneficiarioService.save(beneficiario);
+        try {
+            beneficiarioService.save(beneficiario);
+        } catch (DataIntegrityViolationException e) {
+            // El trigger trg_validar_rol_beneficiario de PostgreSQL rechaza
+            // el INSERT si el miembro no es Docente ni Personal
+            // Administrativo. Se traduce ese rechazo en un 403 claro en
+            // vez de dejar que se propague como un 500 genérico.
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Solo Docentes o Personal Administrativo pueden registrar beneficiarios.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+        }
 
         // EVITA EL ERROR DE "no session" AL RESPONDER JSON LIMPIO
         Map<String, String> response = new HashMap<>();
