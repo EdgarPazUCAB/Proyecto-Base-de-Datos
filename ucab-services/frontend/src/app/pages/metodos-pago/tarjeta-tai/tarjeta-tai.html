@@ -31,21 +31,21 @@
               >
             </div>
 
-            <div
+            <div routerLink="/pago-movil"
               class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
             >
               <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"
-                >account_balance</span
+                >phone_iphone</span
               >
               <span class="font-body-md text-body-md font-medium text-on-surface"
-                >Transferencia</span
+                >Pago Móvil</span
               >
               <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
                 >Bancos Nacionales</span
               >
             </div>
 
-            <div
+            <div routerLink="/zelle"
               class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
             >
               <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"
@@ -59,147 +59,166 @@
           </div>
         </section>
 
-        <section
-          class="bg-surface border border-outline-variant rounded-xl p-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)]"
-        >
-          <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
-            <span class="material-symbols-outlined text-primary text-[28px]"
-              >account_balance_wallet</span
-            >
-            <h3 class="font-h3 text-h3 text-on-surface">Detalles de Tarjeta TAI</h3>
+        @if (pagoExitoso) {
+          <div class="bg-green-50 border border-green-200 text-green-800 p-lg rounded-xl flex flex-col items-center text-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[48px]">check_circle</span>
+            <h3 class="font-h3 text-h3">¡Pago Registrado Exitosamente!</h3>
+            <p>El saldo ha sido descontado de su Billetera TAI.</p>
+            <button routerLink="/dashboard" class="mt-4 bg-green-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-800 transition-colors cursor-pointer">
+              Volver al Inicio
+            </button>
           </div>
-
-          <div class="grid grid-cols-1 gap-lg">
-            <div class="flex flex-col gap-xs">
-              <label
-                class="font-label-caps text-label-caps text-on-surface-variant uppercase"
-                for="pos-digital"
-                >POS Digital</label
+        } @else {
+          <section
+            class="bg-surface border border-outline-variant rounded-xl p-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)]"
+          >
+            <div class="flex items-center gap-sm mb-lg border-b border-outline-variant pb-md">
+              <span class="material-symbols-outlined text-primary text-[28px]"
+                >account_balance_wallet</span
               >
-              <div class="relative">
-                <span
-                  class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant"
-                  >point_of_sale</span
-                >
-                <input
-                  class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-md pl-[48px] pr-md font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                  id="pos-digital"
-                  placeholder="Ingrese el código del POS Digital"
-                  type="text"
-                />
-              </div>
-              <span class="font-body-sm text-body-sm text-on-surface-variant"
-                >El código de 6 a 8 dígitos generado por su terminal.</span
-              >
+              <h3 class="font-h3 text-h3 text-on-surface">Detalles de Tarjeta TAI</h3>
             </div>
 
-            <div class="flex flex-col gap-xs">
-              <label
-                class="font-label-caps text-label-caps text-on-surface-variant uppercase"
-                for="recibo-digital"
-                >Recibo Digital</label
-              >
+            <div class="grid grid-cols-1 gap-lg">
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  for="pos-digital"
+                  >POS Digital</label
+                >
+                <div class="relative">
+                  <span
+                    class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant"
+                    >point_of_sale</span
+                  >
+                  <input
+                    [(ngModel)]="posTerminal" name="posTerminal" required
+                    class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-md pl-[48px] pr-md font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    id="pos-digital"
+                    placeholder="Ingrese el código del POS Digital (Ej: POS-1234)"
+                    type="text"
+                  />
+                </div>
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >El código generado por su terminal POS virtual de la universidad.</span
+                >
+              </div>
+
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  for="recibo-digital"
+                  >Código de Recibo Digital</label
+                >
+                <div class="relative">
+                  <span
+                    class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant"
+                    >receipt</span
+                  >
+                  <input
+                    [(ngModel)]="reciboDigital" name="reciboDigital" required
+                    class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-md pl-[48px] pr-md font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all uppercase"
+                    id="recibo-digital"
+                    placeholder="Ej: REC-987654"
+                    type="text"
+                  />
+                </div>
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >El identificador único de su recibo digital.</span
+                >
+              </div>
+
               <div
-                class="border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary transition-all cursor-pointer group"
+                class="bg-secondary-container rounded-xl p-lg flex flex-col gap-md mt-sm border border-secondary-fixed-dim"
               >
-                <span
-                  class="material-symbols-outlined text-[40px] text-on-surface-variant group-hover:text-primary mb-sm transition-colors"
-                  >upload_file</span
-                >
-                <span class="font-body-md text-body-md font-medium text-on-surface"
-                  >Haga clic para subir o arrastre el archivo</span
-                >
-                <span class="font-body-sm text-body-sm text-on-surface-variant mt-xs"
-                  >Formatos soportados: PDF, JPG, PNG (Max. 5MB)</span
-                >
-              </div>
-            </div>
-
-            <div
-              class="bg-secondary-container rounded-xl p-lg flex flex-col gap-md mt-sm border border-secondary-fixed-dim"
-            >
-              <div class="flex items-center gap-sm text-on-secondary-container">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1"
-                  >info</span
-                >
-                <span class="font-body-md text-body-md font-medium">Proyección de Saldo</span>
-              </div>
-              <div class="flex flex-col gap-sm">
-                <div
-                  class="flex justify-between items-center border-b border-on-secondary-container/20 pb-sm"
-                >
-                  <span class="font-body-md text-body-md text-on-secondary-container opacity-80"
-                    >Saldo Actual en TAI</span
+                <div class="flex items-center gap-sm text-on-secondary-container">
+                  <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1"
+                    >info</span
                   >
-                  <span class="font-body-md text-body-md font-medium text-on-secondary-container"
-                    >$1,250.00</span
-                  >
+                  <span class="font-body-md text-body-md font-medium">Billetera TAI</span>
                 </div>
-                <div
-                  class="flex justify-between items-center border-b border-on-secondary-container/20 pb-sm"
-                >
-                  <span class="font-body-md text-body-md text-on-secondary-container opacity-80"
-                    >Monto de la Solicitud</span
+                <div class="flex flex-col gap-sm">
+                  <div
+                    class="flex justify-between items-center border-b border-on-secondary-container/20 pb-sm"
                   >
-                  <span class="font-body-md text-body-md font-medium text-error">-$450.00</span>
-                </div>
-                <div class="flex justify-between items-center pt-xs">
-                  <span class="font-h3 text-h3 text-on-secondary-container">Saldo Restante</span>
-                  <span class="font-h3 text-h3 text-primary-fixed-variant font-bold">$800.00</span>
+                    <span class="font-body-md text-body-md text-on-secondary-container opacity-80"
+                      >Monto de la Solicitud (Bs)</span
+                    >
+                    <span class="font-body-md text-body-md font-medium text-error">-Bs. {{ totalPagarVes | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="flex justify-between items-center pt-xs">
+                    <span class="font-body-sm text-body-sm text-on-secondary-container">El monto exacto se deducirá de su saldo TAI disponible durante el procesamiento.</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        }
       </div>
 
       <div class="lg:col-span-4">
         <aside
           class="bg-surface border border-outline-variant rounded-xl p-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)] sticky top-xl"
         >
-          <h2 class="font-h3 text-h3 text-on-surface border-b border-outline-variant pb-md mb-md">
-            Resumen de la Solicitud
-          </h2>
-          <div class="flex flex-col gap-md mb-xl">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="font-body-md text-body-md font-medium text-on-surface block"
-                  >Renovación de Credenciales</span
-                >
-                <span class="font-body-sm text-body-sm text-on-surface-variant block mt-xs"
-                  >Servicio Administrativo</span
-                >
-              </div>
-              <span class="font-body-md text-body-md text-on-surface">$400.00</span>
-            </div>
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="font-body-md text-body-md font-medium text-on-surface block"
-                  >Gastos de Procesamiento TAI</span
-                >
-                <span class="font-body-sm text-body-sm text-on-surface-variant block mt-xs"
-                  >Tarifa fija de plataforma</span
-                >
-              </div>
-              <span class="font-body-md text-body-md text-on-surface">$50.00</span>
-            </div>
+          <div class="flex items-center justify-between border-b border-outline-variant pb-md mb-md">
+            <h2 class="font-h3 text-h3 text-on-surface">Resumen de la Solicitud</h2>
+            @if (!cargandoTasa) {
+              <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-bold">
+                Tasa: Bs. {{ tasaActual | number:'1.2-2' }}
+              </span>
+            }
           </div>
 
-          <div class="border-t border-outline-variant pt-md mb-xl">
-            <div class="flex justify-between items-end">
-              <span class="font-body-lg text-body-lg font-medium text-on-surface"
-                >Total a Pagar</span
-              >
-              <span class="font-h2 text-h2 text-primary font-bold tracking-tight">$450.00</span>
+          @if (cargandoTasa) {
+            <div class="py-10 text-center flex flex-col items-center justify-center text-secondary">
+              <span class="material-symbols-outlined animate-spin text-[32px] mb-2">autorenew</span>
+              <p>Calculando importes...</p>
             </div>
-          </div>
+          } @else {
+            <div class="flex flex-col gap-md mb-xl">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-body-md text-body-md font-medium text-on-surface block"
+                    >Pago de Folio</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant block mt-xs"
+                    >Folio #{{ folioId }}</span
+                  >
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">$ {{ subtotalUsd | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-body-md text-body-md font-medium text-on-surface block"
+                    >IVA (16%)</span
+                  >
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">$ {{ ivaUsd | number:'1.2-2' }}</span>
+              </div>
+            </div>
 
-          <button
-            class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md font-medium py-md rounded-lg flex items-center justify-center gap-sm transition-all focus:ring-4 focus:ring-primary/30 outline-none"
-          >
-            <span class="material-symbols-outlined">lock</span>
-            Confirmar Pago
-          </button>
+            <div class="border-t border-outline-variant pt-md mb-xl">
+              <div class="flex justify-between items-end">
+                <span class="font-body-lg text-body-lg font-medium text-on-surface"
+                  >Total a Pagar (Bs)</span
+                >
+                <span class="font-h2 text-h2 text-primary font-bold tracking-tight">Bs. {{ totalPagarVes | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <button
+              (click)="registrarPago()"
+              [disabled]="cargandoTasa || procesandoPago || pagoExitoso"
+              class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md font-medium py-md rounded-lg flex items-center justify-center gap-sm transition-all focus:ring-4 focus:ring-primary/30 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if(procesandoPago) {
+                PROCESANDO <span class="material-symbols-outlined animate-spin text-[20px]">autorenew</span>
+              } @else {
+                <span class="material-symbols-outlined">lock</span>
+                Confirmar Pago Seguro
+              }
+            </button>
+          }
 
           <p
             class="font-body-sm text-body-sm text-center text-on-surface-variant mt-md flex items-center justify-center gap-xs"
@@ -211,36 +230,4 @@
       </div>
     </div>
   </main>
-
-  <footer
-    class="w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 mt-auto border-t border-slate-100 dark:border-slate-900 flat no-shadows"
-  >
-    <div class="max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center">
-      <div class="flex flex-col gap-sm">
-        <span class="text-lg font-bold text-green-600 dark:text-green-400 font-['Inter']"
-          >UCAB SERVICES</span
-        >
-        <span class="text-slate-600 dark:text-slate-400 font-['Inter'] text-sm tracking-normal"
-          >© 2024 UCAB SERVICES. Universidad Católica Andrés Bello.</span
-        >
-      </div>
-      <nav class="flex gap-lg">
-        <a
-          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
-          href="#"
-          >Aviso Legal</a
-        >
-        <a
-          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
-          href="#"
-          >Privacidad</a
-        >
-        <a
-          class="text-slate-500 dark:text-slate-500 hover:text-green-600 dark:hover:text-green-400 font-['Inter'] text-sm tracking-normal hover:underline transition-all focus:outline-none text-green-700"
-          href="#"
-          >Términos y Condiciones</a
-        >
-      </nav>
-    </div>
-  </footer>
 </div>

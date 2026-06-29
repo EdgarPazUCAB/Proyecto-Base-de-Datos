@@ -128,5 +128,59 @@
 
       </div>
     }
+
+    <div class="mt-xl bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg shadow-sm">
+      <h3 class="font-h3 text-h3 text-on-surface mb-md pb-sm border-b border-[#E2E8F0] flex items-center gap-sm">
+        <span class="material-symbols-outlined text-primary">history</span>
+        Historial de Pagos
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase bg-surface-container-low">
+              <th class="py-sm px-md font-semibold">Fecha</th>
+              <th class="py-sm px-md font-semibold">Folio / Factura</th>
+              <th class="py-sm px-md font-semibold">Método</th>
+              <th class="py-sm px-md font-semibold text-right">Monto</th>
+            </tr>
+          </thead>
+          <tbody class="font-body-md text-body-md text-on-surface">
+            @if (cargandoHistorial) {
+              <tr>
+                <td colspan="4" class="py-xl text-center text-on-surface-variant animate-pulse">
+                  Cargando historial de pagos...
+                </td>
+              </tr>
+            } @else if (historialPagos.length === 0) {
+              <tr>
+                <td colspan="4" class="py-xl text-center text-on-surface-variant">
+                  No hay transacciones registradas.
+                </td>
+              </tr>
+            } @else {
+              @for (pago of historialPagos; track pago.numeroControlFactura) {
+                <tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors">
+                  <td class="py-md px-md text-on-surface-variant">
+                    {{ pago.fechaOperacion | date:'mediumDate' }}
+                  </td>
+                  <td class="py-md px-md font-mono text-sm text-secondary">
+                    {{ pago.identificadorFolio || pago.numeroControlFactura }}
+                  </td>
+                  <td class="py-md px-md">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-secondary-container text-on-secondary-container uppercase shadow-sm">
+                      {{ pago.tipoPago }}
+                    </span>
+                  </td>
+                  <td class="py-md px-md text-right font-bold text-on-surface">
+                    Bs. {{ pago.montoLiquidacion | number:'1.2-2' }}
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>

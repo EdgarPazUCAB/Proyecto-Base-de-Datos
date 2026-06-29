@@ -9,12 +9,17 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "zelle")
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class Zelle extends Pago {
 
-    @Column(name = "correo_titular", length = 100, nullable = false)
-    private String correoTitular;
+    @Column(name = "nombre_titular", length = 200, nullable = false)
+    private String nombreTitular;
 
-    @Column(name = "referencia_zelle", length = 50, nullable = false)
-    private String referenciaZelle;
+    @Column(name = "correo_origen", length = 150, nullable = false)
+    private String correoOrigen;
+
+    @Column(name = "codigo_confirmacion", length = 50, nullable = false)
+    private String codigoConfirmacion;
 }

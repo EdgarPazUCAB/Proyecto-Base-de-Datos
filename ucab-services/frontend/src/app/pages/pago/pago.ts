@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { FolioConsumoService, Folio } from '../../services/folio-consumo.service';
+import { PagoService } from '../../services/pago.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -20,9 +21,13 @@ export class Pago implements OnInit {
 
   metodoSeleccionado: string = 'pagomovil'; 
   totalAPagarUsd: number = 0; 
+  
+  historialPagos: any[] = [];
+  cargandoHistorial: boolean = true;
 
   constructor(
     private folioService: FolioConsumoService,
+    private pagoService: PagoService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -34,6 +39,20 @@ export class Pago implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    // Cargar historial de pagos siempre
+    this.pagoService.obtenerHistorialPagos(sesion.cedulaMiembro).subscribe({
+      next: (historial) => {
+        this.historialPagos = historial;
+        this.cargandoHistorial = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error cargando historial de pagos:', err);
+        this.cargandoHistorial = false;
+        this.cdr.detectChanges();
+      }
+    });
 
     this.folioService.obtenerFolios().subscribe({
       next: (folios) => {

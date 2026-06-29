@@ -13,4 +13,16 @@ export class PagoService {
   procesarPagoMovil(datosPago: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/movil`, datosPago);
   }
+
+  procesarPagoZelle(datosPago: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/zelle`, datosPago);
+  }
+
+  procesarPagoTai(datosPago: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tai`, datosPago);
+  }
+
+  obtenerHistorialPagos(cedula: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/historial/${cedula}`);
+  }
 }

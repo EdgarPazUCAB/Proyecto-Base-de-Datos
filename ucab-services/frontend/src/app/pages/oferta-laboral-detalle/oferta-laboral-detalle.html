@@ -3,291 +3,129 @@
     <nav aria-label="Breadcrumb" class="mb-lg">
       <ol class="flex items-center space-x-sm font-body-sm text-body-sm text-secondary">
         <li>
-          <a class="hover:text-primary transition-colors" href="#">Services</a>
+          <a class="hover:text-primary transition-colors cursor-pointer" routerLink="/dashboard">Inicio</a>
         </li>
         <li>
           <span class="material-symbols-outlined text-[16px]">chevron_right</span>
         </li>
         <li>
-          <a class="hover:text-primary transition-colors" href="#">Job Offers</a>
+          <a class="hover:text-primary transition-colors cursor-pointer" routerLink="/ofertas-laborales">Ofertas Laborales</a>
         </li>
         <li>
           <span class="material-symbols-outlined text-[16px]">chevron_right</span>
         </li>
         <li aria-current="page" class="text-on-background font-semibold">
-          Desarrollador Full Stack Senior
+          {{ oferta()?.cargoLaboral || 'Detalle' }}
         </li>
       </ol>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-      <div class="lg:col-span-8 flex flex-col gap-lg">
-        <div class="bg-surface rounded-xl border border-outline-variant p-xl shadow-sm">
-          <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-md"
-          >
-            <div>
-              <h1 class="font-h1 text-h1 text-on-background mb-xs">
-                Desarrollador Full Stack Senior
-              </h1>
-              <p class="font-h3 text-h3 text-primary flex items-center gap-xs">
-                <span class="material-symbols-outlined" data-weight="fill">business</span>
-                TechSolutions C.A.
+    @if (cargando()) {
+      <div class="flex flex-col items-center justify-center py-xl text-primary animate-pulse">
+        <span class="material-symbols-outlined text-[48px] animate-spin mb-4">autorenew</span>
+        <p class="font-body-lg">Cargando detalles de la oferta...</p>
+      </div>
+    } @else if (error()) {
+      <div class="flex flex-col items-center justify-center py-xl text-error">
+        <span class="material-symbols-outlined text-[48px] mb-4">error</span>
+        <p class="font-body-lg">{{ error() }}</p>
+        <button class="mt-md px-6 py-2 bg-primary text-on-primary rounded-lg font-bold" routerLink="/ofertas-laborales">Volver al listado</button>
+      </div>
+    } @else if (oferta()) {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="lg:col-span-8 flex flex-col gap-lg">
+          <div class="bg-surface rounded-xl border border-outline-variant p-xl shadow-sm">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-md">
+              <div>
+                <h1 class="font-h1 text-h1 text-on-background mb-xs">
+                  {{ oferta().cargoLaboral }}
+                </h1>
+                <p class="font-h3 text-h3 text-primary flex items-center gap-xs">
+                  <span class="material-symbols-outlined" data-weight="fill">business</span>
+                  {{ oferta().empresa || 'Entidad ' + oferta().idEntidadExterna }}
+                </p>
+              </div>
+              <div class="flex flex-col items-end gap-sm">
+                <span class="inline-flex items-center px-sm py-xs rounded-full font-label-caps text-label-caps border"
+                      [ngClass]="oferta().estatusVacante === 'Disponible' ? 'bg-primary-container text-primary border-primary/20' : 'bg-error-container text-error border-error/20'">
+                  <span class="w-2 h-2 rounded-full mr-xs" [ngClass]="oferta().estatusVacante === 'Disponible' ? 'bg-primary' : 'bg-error'"></span>
+                  {{ oferta().estatusVacante }}
+                </span>
+                <span class="font-body-sm text-body-sm text-secondary flex items-center gap-xs">
+                  <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                  Publicado el {{ oferta().fechaOferta | date:'longDate' }}
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-md mt-lg pt-lg border-t border-outline-variant">
+              <div class="flex items-center gap-sm bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant/50">
+                <span class="material-symbols-outlined text-secondary">school</span>
+                <div class="flex flex-col">
+                  <span class="font-label-caps text-label-caps text-secondary">Requisito Académico</span>
+                  <span class="font-body-md text-body-md font-semibold text-on-background">Índice Mín. {{ oferta().indiceAcademicoMin | number:'1.2-2' }}</span>
+                </div>
+              </div>
+              @if (oferta().rangoFechaGraduacion) {
+                <div class="flex items-center gap-sm bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant/50">
+                  <span class="material-symbols-outlined text-secondary">history_edu</span>
+                  <div class="flex flex-col">
+                    <span class="font-label-caps text-label-caps text-secondary">Año de Graduación</span>
+                    <span class="font-body-md text-body-md font-semibold text-on-background">{{ oferta().rangoFechaGraduacion }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+            <div class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm md:col-span-2">
+              <h2 class="font-h2 text-h2 text-on-background mb-md flex items-center gap-sm border-b border-outline-variant pb-sm">
+                <span class="material-symbols-outlined text-primary">assignment</span>
+                Responsabilidades
+              </h2>
+              <p class="font-body-lg text-body-lg text-on-surface-variant whitespace-pre-line">
+                {{ oferta().responsabilidades || 'No especificado.' }}
               </p>
             </div>
-            <div class="flex flex-col items-end gap-sm">
-              <span
-                class="inline-flex items-center px-sm py-xs rounded-full bg-surface-container-highest text-primary font-label-caps text-label-caps border border-primary/20"
-              >
-                <span class="w-2 h-2 rounded-full bg-primary mr-xs"></span>
-                Disponible
-              </span>
-              <span class="font-body-sm text-body-sm text-secondary flex items-center gap-xs">
-                <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                Publicado el 25 de Octubre 2024
-              </span>
+
+            <div class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm hover:shadow-md transition-shadow">
+              <h3 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary">person_search</span>
+                Perfil Buscado
+              </h3>
+              <p class="font-body-md text-body-md text-on-surface-variant whitespace-pre-line">
+                {{ oferta().perfilBuscado || 'No especificado.' }}
+              </p>
             </div>
-          </div>
-          <div class="flex flex-wrap gap-md mt-lg pt-lg border-t border-outline-variant">
-            <div
-              class="flex items-center gap-sm bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant/50"
-            >
-              <span class="material-symbols-outlined text-secondary">school</span>
-              <div class="flex flex-col">
-                <span class="font-label-caps text-label-caps text-secondary"
-                  >Requisito Académico</span
-                >
-                <span class="font-body-md text-body-md font-semibold text-on-background"
-                  >Índice Mín. 15</span
-                >
-              </div>
-            </div>
-            <div
-              class="flex items-center gap-sm bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant/50"
-            >
-              <span class="material-symbols-outlined text-secondary">work</span>
-              <div class="flex flex-col">
-                <span class="font-label-caps text-label-caps text-secondary">Modalidad</span>
-                <span class="font-body-md text-body-md font-semibold text-on-background"
-                  >Híbrido</span
-                >
-              </div>
-            </div>
-            <div
-              class="flex items-center gap-sm bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant/50"
-            >
-              <span class="material-symbols-outlined text-secondary">location_on</span>
-              <div class="flex flex-col">
-                <span class="font-label-caps text-label-caps text-secondary">Ubicación</span>
-                <span class="font-body-md text-body-md font-semibold text-on-background"
-                  >Caracas, VE</span
-                >
-              </div>
+
+            <div class="bg-surface-container-low rounded-xl border border-outline-variant p-lg shadow-sm hover:shadow-md transition-shadow">
+              <h3 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary">redeem</span>
+                Beneficios
+              </h3>
+              <p class="font-body-md text-body-md text-on-surface-variant whitespace-pre-line">
+                {{ oferta().beneficios || 'No especificado.' }}
+              </p>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-          <div
-            class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm md:col-span-2"
-          >
-            <h2
-              class="font-h2 text-h2 text-on-background mb-md flex items-center gap-sm border-b border-outline-variant pb-sm"
-            >
-              <span class="material-symbols-outlined text-primary">assignment</span>
-              Responsabilidades
-            </h2>
-            <ul
-              class="space-y-sm font-body-lg text-body-lg text-on-surface-variant list-disc pl-lg"
-            >
-              <li>Desarrollo de nuevas funcionalidades robustas y escalables.</li>
-              <li>Mantenimiento y optimización de arquitectura de microservicios.</li>
-              <li>Liderazgo técnico y mentoría de equipos de desarrolladores junior.</li>
-              <li>Optimización avanzada de consultas a bases de datos relacionales y NoSQL.</li>
-            </ul>
-          </div>
-
-          <div
-            class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h3 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-sm">
-              <span class="material-symbols-outlined text-primary">person_search</span>
-              Perfil Buscado
-            </h3>
-            <ul class="space-y-sm font-body-md text-body-md text-on-surface-variant">
-              <li class="flex items-start gap-sm">
-                <span class="material-symbols-outlined text-primary text-[20px] mt-1"
-                  >check_circle</span
-                >
-                <span>Graduado en Ingeniería Informática.</span>
-              </li>
-              <li class="flex items-start gap-sm">
-                <span class="material-symbols-outlined text-primary text-[20px] mt-1"
-                  >check_circle</span
-                >
-                <span>5+ años de experiencia demostrable en Node.js y React.</span>
-              </li>
-              <li class="flex items-start gap-sm">
-                <span class="material-symbols-outlined text-primary text-[20px] mt-1"
-                  >check_circle</span
-                >
-                <span>Conocimientos avanzados en ecosistema AWS.</span>
-              </li>
-              <li class="flex items-start gap-sm">
-                <span class="material-symbols-outlined text-primary text-[20px] mt-1"
-                  >check_circle</span
-                >
-                <span>Dominio del idioma inglés (Fluido).</span>
-              </li>
-            </ul>
-          </div>
-
-          <div
-            class="bg-surface-container-low rounded-xl border border-outline-variant p-lg shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h3 class="font-h3 text-h3 text-on-background mb-md flex items-center gap-sm">
-              <span class="material-symbols-outlined text-primary">redeem</span>
-              Beneficios
-            </h3>
-            <div class="grid grid-cols-1 gap-sm">
-              <div
-                class="flex items-center gap-md bg-surface p-sm rounded-lg border border-outline-variant/30"
-              >
-                <span class="material-symbols-outlined text-primary">health_and_safety</span>
-                <span class="font-body-md text-body-md text-on-surface-variant"
-                  >Seguro médico privado extendido</span
-                >
-              </div>
-              <div
-                class="flex items-center gap-md bg-surface p-sm rounded-lg border border-outline-variant/30"
-              >
-                <span class="material-symbols-outlined text-primary">trending_up</span>
-                <span class="font-body-md text-body-md text-on-surface-variant"
-                  >Bonos trimestrales por desempeño</span
-                >
-              </div>
-              <div
-                class="flex items-center gap-md bg-surface p-sm rounded-lg border border-outline-variant/30"
-              >
-                <span class="material-symbols-outlined text-primary">schedule</span>
-                <span class="font-body-md text-body-md text-on-surface-variant"
-                  >Flexibilidad de horario comprobada</span
-                >
-              </div>
-              <div
-                class="flex items-center gap-md bg-surface p-sm rounded-lg border border-outline-variant/30"
-              >
-                <span class="material-symbols-outlined text-primary">menu_book</span>
-                <span class="font-body-md text-body-md text-on-surface-variant"
-                  >Acceso a cursos especializados</span
-                >
-              </div>
-            </div>
+        <div class="lg:col-span-4 flex flex-col gap-md">
+          <div class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm sticky top-xl flex flex-col gap-md">
+            <h3 class="font-h3 text-h3 text-on-background border-b border-outline-variant pb-xs">Postulación</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              Asegúrate de cumplir con el índice académico mínimo solicitado antes de postularte a esta vacante.
+            </p>
+            <button class="w-full py-3 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg font-bold hover:bg-primary/90 transition-colors shadow-sm flex justify-center items-center gap-2" [disabled]="oferta().estatusVacante !== 'Disponible'" [ngClass]="{'opacity-50 cursor-not-allowed': oferta().estatusVacante !== 'Disponible'}">
+              <span class="material-symbols-outlined">send</span>
+              Postularme Ahora
+            </button>
+            <p class="font-body-sm text-body-sm text-secondary text-center">
+              Revisaremos tu expediente académico al enviar la solicitud.
+            </p>
           </div>
         </div>
       </div>
-
-      <div class="lg:col-span-4 flex flex-col gap-lg">
-        <div
-          class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm sticky top-[88px]"
-        >
-          <div class="text-center mb-md">
-            <h3 class="font-h3 text-h3 text-on-background mb-xs">¿Cumples el perfil?</h3>
-            <p class="font-body-sm text-body-sm text-secondary">
-              Asegúrate de que tu perfil académico en UCAB Services esté actualizado antes de
-              postularte.
-            </p>
-          </div>
-          <button
-            class="w-full bg-primary-container text-on-primary-container font-h3 text-h3 py-md rounded-lg shadow-sm hover:shadow-md hover:bg-primary hover:text-on-primary transition-all duration-200 active:scale-95 flex items-center justify-center gap-sm"
-          >
-            <span class="material-symbols-outlined">send</span>
-            Postularse
-          </button>
-          <div class="mt-md pt-md border-t border-outline-variant text-center">
-            <p class="font-label-caps text-label-caps text-secondary mb-sm">
-              Validación Automática
-            </p>
-            <div
-              class="flex items-center justify-center gap-xs text-primary bg-surface-container-low py-xs px-sm rounded-md border border-outline-variant/30 inline-flex"
-            >
-              <span class="material-symbols-outlined text-[16px]">verified</span>
-              <span class="font-body-sm text-body-sm">Tu índice actual es: 16.5 (Apto)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm">
-          <h3
-            class="font-h3 text-h3 text-on-background mb-md border-b border-outline-variant pb-sm"
-          >
-            Sobre la Empresa
-          </h3>
-          <div class="flex items-center gap-md mb-md">
-            <div
-              class="w-16 h-16 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden"
-            >
-              <img
-                alt="Company Logo"
-                class="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCApDwd2C8WyBMtk5jngqQeqR-1aZQMt0BgbXWzUcT2yWYhMBW2f8vaoorPesl2yzqgK-njnfBHoTwCQ_xmE7dk2pRATn8uRx0Cy9gfLsHEYnq1NV8cAYkLFy9w1gwaZFtpbgiRF3MaSs7WSYO1nkhuR67e2pIxqfzYheJb9_ktk7lBFDrPHXcgKNfsj-2UZVkWHzAn5eWA83o8m0rYty5sjZ7ixwxguuE345fHbrMQm7GT88psKrssRZQm7l4hI5xuHuHZGa7BQzoU"
-              />
-            </div>
-            <div>
-              <span class="font-h3 text-h3 text-on-background block">TechSolutions C.A.</span>
-              <span class="font-body-sm text-body-sm text-secondary"
-                >Tecnología de la Información</span
-              >
-            </div>
-          </div>
-          <p class="font-body-sm text-body-sm text-on-surface-variant mb-md">
-            Líderes en el desarrollo de soluciones cloud y software corporativo en la región,
-            impulsando la transformación digital de grandes empresas.
-          </p>
-          <a
-            class="font-body-sm text-body-sm text-primary font-semibold hover:underline flex items-center gap-xs"
-            href="#"
-          >
-            Ver más ofertas de esta empresa
-            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
-        </div>
-      </div>
-    </div>
+    }
   </main>
-
-  <footer class="bg-surface-container-low py-12 border-t border-outline-variant mt-auto">
-    <div
-      class="flex flex-col md:flex-row justify-between items-center w-full px-lg max-w-container-max mx-auto gap-lg md:gap-0"
-    >
-      <div class="flex flex-col items-center md:items-start gap-sm">
-        <span class="font-h3 text-h3 font-bold text-primary">UCAB SERVICES</span>
-        <span class="font-body-sm text-body-sm text-on-surface-variant"
-          >© 2024 UCAB SERVICES. Institutional Academic Platform.</span
-        >
-      </div>
-      <nav class="flex flex-wrap justify-center gap-md font-body-sm text-body-sm">
-        <a
-          class="text-on-surface-variant hover:text-primary hover:underline transition-colors duration-200"
-          href="#"
-          >Privacy Policy</a
-        >
-        <a
-          class="text-on-surface-variant hover:text-primary hover:underline transition-colors duration-200"
-          href="#"
-          >Terms of Service</a
-        >
-        <a
-          class="text-on-surface-variant hover:text-primary hover:underline transition-colors duration-200"
-          href="#"
-          >Help Center</a
-        >
-        <a
-          class="text-on-surface-variant hover:text-primary hover:underline transition-colors duration-200"
-          href="#"
-          >Compliance</a
-        >
-      </nav>
-    </div>
-  </footer>
 </div>

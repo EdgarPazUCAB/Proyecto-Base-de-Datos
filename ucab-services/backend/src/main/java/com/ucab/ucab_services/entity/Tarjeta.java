@@ -12,12 +12,15 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class Tarjeta extends Pago {
 
-    @Column(name = "tipo_tarjeta", length = 20, nullable = false)
-    private String tipoTarjeta;
+    @Column(name = "tipo_red", length = 50)
+    private String tipoRed;
 
-    @Column(name = "banco_emisor", length = 100, nullable = false)
-    private String bancoEmisor;
+    @Column(name = "fecha_vencimiento")
+    private java.time.LocalDate fechaVencimiento;
 
-    @Column(name = "ultimos_cuatro", length = 4, nullable = false)
-    private String ultimosCuatro;
+    @Column(name = "compania", length = 100)
+    private String compania;
+
+    @Column(name = "num_tarjeta", length = 20)
+    private String numTarjeta;
 }

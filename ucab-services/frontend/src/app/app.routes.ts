@@ -17,6 +17,7 @@ import { OfertaLaboralDetalle } from './pages/oferta-laboral-detalle/oferta-labo
 import { Dashboard } from './pages/dashboard/dashboard';
 import { CatalogoServicios } from './pages/catalogo-servicios/catalogo-servicios';
 import { AnadirAcompananteTemporal } from './pages/anadir-acompanante-temporal/anadir-acompanante-temporal';
+import { GestionarSolicitudes } from './pages/gestionar-solicitudes/gestionar-solicitudes';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -37,5 +38,6 @@ export const routes: Routes = [
   { path: 'oferta-laboral-detalle', component: OfertaLaboralDetalle },
   { path: 'dashboard', component: Dashboard },
   { path: 'catalogo-servicios', component: CatalogoServicios },
-  { path: 'anadir-acompanante-temporal', component: AnadirAcompananteTemporal }
+  { path: 'anadir-acompanante-temporal', component: AnadirAcompananteTemporal },
+  { path: 'gestionar-solicitudes', component: GestionarSolicitudes }
 ];

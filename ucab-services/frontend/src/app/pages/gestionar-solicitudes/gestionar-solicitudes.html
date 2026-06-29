@@ -1,0 +1,81 @@
+<div class="bg-background min-h-screen flex flex-col font-body-md text-body-md antialiased">
+  <main class="flex-grow w-full max-w-[1280px] mx-auto px-gutter py-xl flex flex-col gap-xl">
+    <div class="flex items-center gap-sm text-secondary font-body-sm text-body-sm">
+      <a class="hover:text-primary transition-colors cursor-pointer" routerLink="/dashboard">Inicio</a>
+      <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+      <span class="text-on-background font-medium">Gestionar Solicitudes</span>
+    </div>
+
+    <section class="flex flex-col gap-sm">
+      <h1 class="font-h1 text-h1 text-on-background">Mis Solicitudes de Servicio</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant">
+        Consulta y administra el estado de tus solicitudes activas e históricas.
+      </p>
+    </section>
+
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm">
+      <div class="flex justify-between items-center mb-md border-b border-outline-variant pb-md">
+        <h3 class="font-h3 text-h3 text-on-background">Historial Completo</h3>
+        <button class="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors flex items-center gap-2" routerLink="/solicitar-servicio">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          Nueva Solicitud
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase bg-surface-container-low">
+              <th class="py-sm px-md font-semibold">ID Solicitud</th>
+              <th class="py-sm px-md font-semibold">Servicio</th>
+              <th class="py-sm px-md font-semibold">Fecha de Creación</th>
+              <th class="py-sm px-md font-semibold text-center">Estado</th>
+            </tr>
+          </thead>
+          
+          <tbody class="font-body-md text-body-md text-on-surface">
+            @if (cargando) {
+              <tr>
+                <td colspan="4" class="py-xl text-center text-on-surface-variant animate-pulse">
+                  <div class="flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined animate-spin text-[32px] text-primary mb-2">autorenew</span>
+                    Cargando tu historial de solicitudes...
+                  </div>
+                </td>
+              </tr>
+            } @else if (misSolicitudes.length === 0) {
+              <tr>
+                <td colspan="4" class="py-xl text-center text-on-surface-variant">
+                  <div class="flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-[48px] text-secondary mb-2">inbox</span>
+                    No tienes solicitudes registradas.
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @for (solicitud of misSolicitudes; track solicitud.identificador) {
+                <tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors group cursor-default">
+                  <td class="py-md px-md font-mono text-sm text-secondary group-hover:text-primary transition-colors">
+                    {{ solicitud.identificador }}
+                  </td>
+                  <td class="py-md px-md font-medium text-on-surface">
+                    {{ solicitud.servicio?.codigoServicio || 'General' }}
+                  </td>
+                  <td class="py-md px-md text-on-surface-variant">
+                    {{ solicitud.fechaCreacion | date:'mediumDate' }}
+                  </td>
+                  <td class="py-md px-md text-center">
+                    <span class="inline-block px-3 py-1 rounded-full font-label-caps text-label-caps uppercase shadow-sm"
+                          [ngClass]="obtenerClaseEstado(solicitud.estadoActual)">
+                      {{ solicitud.estadoActual }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
