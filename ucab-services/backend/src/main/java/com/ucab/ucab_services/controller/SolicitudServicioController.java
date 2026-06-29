@@ -20,6 +20,9 @@ public class SolicitudServicioController {
     @Autowired
     private SolicitudServicioService solicitudServicioService;
 
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
     // --- CAMBIO APLICADO AQUÍ: Devolvemos un List<Map> en vez de entidades completas ---
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllSolicitudesServicio() {
@@ -72,6 +75,20 @@ public class SolicitudServicioController {
 
         // 3. Guardamos la solicitud
         solicitudServicioService.save(solicitudServicio);
+
+        // 3.5. Creamos automáticamente el Folio_Consumo asociado y un cargo base para que pueda ser pagado
+        try {
+            jdbcTemplate.update("INSERT INTO Folio_Consumo (Identificador, Fecha_apertura, Estado_cierre) VALUES (?, CURRENT_DATE, 'Abierto')", nuevoId);
+            
+            // Asignamos un precio base (ej: 50.00 + 8.00 IVA). 
+            // Esto luego puede conectarse con la tabla Tarifa_Servicio según el perfil y servicio.
+            jdbcTemplate.update("INSERT INTO Item_consumo (Identificador, Fecha_apertura, Concepto, Precio_unitario, Cantidad, Impuesto, Fecha_cargo) VALUES (?, CURRENT_DATE, ?, 50.00, 1, 8.00, CURRENT_DATE)", 
+                nuevoId, "Consumo por servicio: " + solicitudServicio.getServicio().getCodigoServicio());
+                
+            System.out.println("Folio e Item de consumo creados para la nueva solicitud: " + nuevoId);
+        } catch (Exception e) {
+            System.err.println("Error creando Folio_Consumo o Item_consumo inicial: " + e.getMessage());
+        }
 
         // 4. Devolvemos un JSON simple en lugar del objeto complejo
         Map<String, String> response = new HashMap<>();

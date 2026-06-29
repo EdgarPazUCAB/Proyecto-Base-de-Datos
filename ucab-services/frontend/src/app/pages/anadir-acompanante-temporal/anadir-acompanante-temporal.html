@@ -1,0 +1,74 @@
+<div class="min-h-screen flex flex-col font-body-md text-body-md text-on-background">
+  <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl flex flex-col items-center">
+    
+    <div class="w-full flex justify-between items-center mb-6">
+      <a class="inline-flex items-center gap-xs text-primary hover:text-surface-tint transition-colors font-body-sm text-body-sm group cursor-pointer" (click)="omitir()">
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        <span>Omitir y volver al Dashboard</span>
+      </a>
+    </div>
+
+    <div class="w-full bg-surface-container-lowest border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      
+      <div class="bg-surface-bright border-b border-gray-200 p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="font-h1 text-h1 text-on-background m-0">Añadir Acompañante</h1>
+          <p class="font-body-md text-body-md text-secondary mt-1">
+            Registra un acompañante temporal para tu solicitud.
+          </p>
+        </div>
+      </div>
+
+      @if (mensajeExito) {
+        <div class="m-8 p-4 bg-green-50 border border-green-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between text-green-700">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+            <p class="font-medium font-body-md">{{ mensajeExito }}</p>
+          </div>
+        </div>
+      }
+      @if (mensajeError) {
+        <div class="m-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3 text-red-700">
+          <span class="material-symbols-outlined text-[24px]">error</span>
+          <p class="font-medium font-body-md">{{ mensajeError }}</p>
+        </div>
+      }
+
+      <form (ngSubmit)="guardarAcompanante()" class="flex flex-col" #form="ngForm">
+        <div class="p-8">
+          <div class="flex items-center mb-6">
+            <span class="material-symbols-outlined text-primary mr-3 text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1">person_add</span>
+            <h2 class="font-h3 text-h3 text-on-background">Detalles del Acompañante</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="flex flex-col">
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="documento">Documento de Identidad *</label>
+              <input [(ngModel)]="documentoIdentidad" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="documento" name="documento" required type="text" placeholder="Ej: V-12345678" />
+            </div>
+            
+            <div class="flex flex-col">
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="nombre">Nombre Completo *</label>
+              <input [(ngModel)]="nombreAcompanante" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="nombre" name="nombre" required type="text" placeholder="Ej: Juan Pérez" />
+            </div>
+
+          </div>
+        </div>
+
+        <div class="p-6 bg-surface-container-lowest border-t border-gray-200 flex justify-end items-center space-x-4">
+          <button (click)="omitir()" class="px-6 py-2 bg-surface-container-lowest border border-gray-200 text-secondary font-body-md text-body-md rounded-DEFAULT hover:bg-gray-50 transition-colors" type="button">
+            Omitir
+          </button>
+          
+          <button [disabled]="cargando || !form.valid" class="px-6 py-2 bg-primary text-on-primary font-body-md text-body-md rounded-DEFAULT hover:bg-surface-tint transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" type="submit">
+            @if(cargando) {
+              <span class="material-symbols-outlined animate-spin text-[20px]">autorenew</span> Guardando...
+            } @else {
+              Guardar Acompañante
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

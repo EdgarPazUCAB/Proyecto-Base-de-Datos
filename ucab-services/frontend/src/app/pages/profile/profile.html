@@ -6,17 +6,14 @@
       <p class="font-body-lg text-body-lg text-secondary mt-xs">Gestione su información personal y académica.</p>
     </header>
 
-    <!-- Estado de carga -->
     <div *ngIf="cargando" class="text-center py-xl text-secondary">
       Cargando perfil...
     </div>
 
-    <!-- Error -->
     <div *ngIf="!cargando && errorMessage" class="text-center py-xl text-red-600">
       {{ errorMessage }}
     </div>
 
-    <!-- Contenido real, solo cuando ya hay datos del miembro -->
     <div *ngIf="!cargando && miembro" class="grid grid-cols-1 md:grid-cols-12 gap-lg">
 
       <div class="md:col-span-4 flex flex-col gap-lg">
@@ -57,7 +54,6 @@
 
       <div class="md:col-span-8 flex flex-col gap-lg">
 
-        <!-- Información Académica: solo Estudiante y Egresado -->
         <section *ngIf="esEstudiante || esEgresado" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
             <span class="material-symbols-outlined text-primary icon-filled">school</span>
@@ -75,7 +71,6 @@
           </div>
         </section>
 
-        <!-- Información Laboral: solo Docente y Personal Administrativo -->
         <section *ngIf="esDocente || esPersonalAdministrativo" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
             <span class="material-symbols-outlined text-primary icon-filled">work</span>
@@ -93,7 +88,6 @@
           </div>
         </section>
 
-        <!-- Información de Contacto: aplica a todos los roles -->
         <section class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl p-lg hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="flex items-center gap-sm mb-md border-b border-[#E2E8F0] pb-sm">
             <span class="material-symbols-outlined text-primary icon-filled">contact_mail</span>
@@ -115,25 +109,61 @@
           </div>
         </section>
 
-        <!-- Vínculos Familiares: SOLO Docente y Personal Administrativo
-             (regla de negocio validada también por trigger en PostgreSQL:
-             fn_validar_rol_beneficiario rechaza Beneficiarios de
-             Estudiantes/Egresados) -->
         <section *ngIf="puedeTenerBeneficiarios" class="bg-surface-container-lowest border border-[#E2E8F0] rounded-xl overflow-hidden hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] transition-shadow duration-300">
           <div class="p-lg border-b border-[#E2E8F0] flex justify-between items-center bg-surface-bright">
             <div class="flex items-center gap-sm">
               <span class="material-symbols-outlined text-primary icon-filled">family_restroom</span>
               <h3 class="font-h3 text-h3 text-on-surface">Mis Vínculos Familiares</h3>
             </div>
-            <button class="bg-primary text-on-primary font-body-sm text-body-sm py-xs px-sm md:py-sm md:px-md rounded-DEFAULT hover:opacity-90 transition-opacity">
+            <button routerLink="/anadir-vinculo-familiar" class="bg-primary text-on-primary font-body-sm text-body-sm py-xs px-sm md:py-sm md:px-md rounded-DEFAULT hover:opacity-90 transition-opacity cursor-pointer">
               + Añadir Vínculo
             </button>
           </div>
-          <!-- TODO: cargar beneficiarios reales desde GET /api/beneficiarios/{cedula}
-               cuando ese endpoint esté disponible. Por ahora la tabla
-               aparece vacía en vez de mostrar datos falsos. -->
-          <div class="p-lg text-center text-secondary text-body-sm">
-            Aún no hay vínculos familiares registrados.
+          
+          <div class="p-lg">
+            @if (cargandoBeneficiarios) {
+              <div class="text-center text-secondary py-md animate-pulse font-body-sm">
+                Cargando registros familiares...
+              </div>
+            }
+            @else if (beneficiarios.length === 0) {
+              <div class="text-center text-secondary text-body-sm py-md">
+                Aún no hay vínculos familiares registrados.
+              </div>
+            }
+            @else {
+              <div class="grid grid-cols-1 gap-md">
+                @for (beneficiario of beneficiarios; track beneficiario.documentoIdentidad) {
+                  <div class="flex items-center justify-between p-md border border-[#E2E8F0] rounded-lg hover:shadow-sm transition-shadow bg-surface-container-lowest">
+                    
+                    <div class="flex items-start gap-4">
+                      <div class="bg-primary-container/20 text-primary p-2 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">person</span>
+                      </div>
+                      
+                      <div class="flex flex-col">
+                        <span class="font-bold text-on-surface">{{ beneficiario.nombre }}</span>
+                        <div class="flex items-center gap-2 text-secondary text-body-sm mt-1">
+                          <span class="font-medium text-primary">{{ beneficiario.parentesco }}</span>
+                          <span>•</span>
+                          <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">badge</span>
+                            {{ beneficiario.documentoIdentidad }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-right">
+                      <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        {{ beneficiario.estatusBeneficios || 'Activo' }}
+                      </span>
+                    </div>
+
+                  </div>
+                }
+              </div>
+            }
           </div>
         </section>
 

@@ -132,8 +132,12 @@ export class SolicitarServicio implements OnInit {
         this.cdr.detectChanges();
         window.scrollTo(0, 0); 
         
-        // Redirigimos al dashboard después de 2.5 segundos
-        setTimeout(() => this.router.navigate(['/dashboard']), 2500);
+        // Redirigimos a la pantalla de añadir acompañante pasándole el ID de la solicitud
+        setTimeout(() => {
+          this.router.navigate(['/anadir-acompanante-temporal'], { 
+            queryParams: { solicitud: res.identificador } 
+          });
+        }, 1500);
       },
       error: (err) => {
         console.error('Error al enviar la solicitud:', err);

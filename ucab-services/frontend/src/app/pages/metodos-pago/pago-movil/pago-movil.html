@@ -1,50 +1,61 @@
 <div class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
-  <main
-    class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl flex flex-col md:flex-row gap-xl items-start"
-  >
+  <main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl flex flex-col md:flex-row gap-xl items-start">
+    
     <aside class="w-full md:w-5/12 flex flex-col gap-md">
       <div class="bg-surface border border-outline-variant rounded-xl p-lg shadow-sm">
-        <h2 class="font-h3 text-h3 text-on-surface mb-md">Resumen de la solicitud</h2>
+        
+        <div class="flex justify-between items-center mb-md">
+          <h2 class="font-h3 text-h3 text-on-surface">Resumen de la solicitud</h2>
+          
+          @if (!cargandoTasa) {
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-bold">
+              Tasa: Bs. {{ tasaActual | number:'1.2-2' }}
+            </span>
+          }
+        </div>
+
         <div class="flex items-start gap-md border-b border-outline-variant pb-md mb-md">
-          <div
-            class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0"
-          >
-            <span class="material-symbols-outlined">school</span>
+          <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined">receipt_long</span>
           </div>
           <div>
-            <h4 class="font-body-lg text-body-lg text-on-surface font-medium">
-              Emisión de Certificado de Notas
-            </h4>
-            <p class="font-body-sm text-body-sm text-secondary mt-xs">Solicitud #REQ-2024-8901</p>
+            <h4 class="font-body-lg text-body-lg text-on-surface font-medium">Pago de Folio de Consumo</h4>
+            <p class="font-body-sm text-body-sm text-secondary mt-xs">Folio #F-2024-0892</p>
           </div>
         </div>
-        <div class="flex flex-col gap-sm border-b border-outline-variant pb-md mb-md">
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-secondary">Subtotal</span>
-            <span class="font-body-md text-body-md text-on-surface">Bs. 850,00</span>
+
+        @if (cargandoTasa) {
+          <div class="py-10 text-center flex flex-col items-center justify-center text-secondary">
+            <span class="material-symbols-outlined animate-spin text-[32px] mb-2">autorenew</span>
+            <p>Calculando tasa del día...</p>
           </div>
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-secondary">Impuestos (IVA 16%)</span>
-            <span class="font-body-md text-body-md text-on-surface">Bs. 136,00</span>
+        } @else {
+          <div class="flex flex-col gap-sm border-b border-outline-variant pb-md mb-md">
+            <div class="flex justify-between items-center">
+              <span class="font-body-md text-body-md text-secondary">Subtotal (${{ subtotalUsd | number:'1.2-2' }})</span>
+              <span class="font-body-md text-body-md text-on-surface">Bs. {{ subtotalVes | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="font-body-md text-body-md text-secondary">Impuestos IVA (${{ ivaUsd | number:'1.2-2' }})</span>
+              <span class="font-body-md text-body-md text-on-surface">Bs. {{ ivaVes | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center text-secondary/80">
+              <span class="font-body-md text-body-md">Tasa de procesamiento (1.5%)</span>
+              <span class="font-body-md text-body-md">Bs. {{ tasaProcesamientoVes | number:'1.2-2' }}</span>
+            </div>
           </div>
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-secondary">Tasa de procesamiento</span>
-            <span class="font-body-md text-body-md text-on-surface">Bs. 14,00</span>
+          <div class="flex justify-between items-center mt-sm">
+            <span class="font-body-lg text-body-lg text-on-surface font-bold">Total a pagar</span>
+            <span class="font-h2 text-h2 text-primary font-bold">Bs. {{ totalPagarVes | number:'1.2-2' }}</span>
           </div>
-        </div>
-        <div class="flex justify-between items-center mt-sm">
-          <span class="font-body-lg text-body-lg text-on-surface font-bold">Total a pagar</span>
-          <span class="font-h2 text-h2 text-primary font-bold">Bs. 1.000,00</span>
-        </div>
-        <div
-          class="mt-md bg-surface-container-low p-sm rounded border border-outline-variant flex items-center gap-sm"
-        >
+        }
+
+        <div class="mt-md bg-surface-container-low p-sm rounded border border-outline-variant flex items-center gap-sm">
           <span class="material-symbols-outlined text-secondary text-[20px]">info</span>
-          <p class="font-body-sm text-body-sm text-secondary">
-            El pago debe realizarse por el monto exacto mostrado.
-          </p>
+          <p class="font-body-sm text-body-sm text-secondary">El pago debe realizarse por el monto exacto mostrado.</p>
         </div>
       </div>
+      
       <div class="flex justify-center gap-lg opacity-60">
         <div class="flex items-center gap-xs font-label-caps text-label-caps text-secondary">
           <span class="material-symbols-outlined text-[16px]">lock</span> Transacción Segura
@@ -56,159 +67,111 @@
     </aside>
 
     <section class="w-full md:w-7/12 flex flex-col gap-lg">
+      
       <div>
-        <h3 class="font-body-lg text-body-lg text-on-surface mb-sm font-medium">
-          Selecciona tu método de pago
-        </h3>
+        <h3 class="font-body-lg text-body-lg text-on-surface mb-sm font-medium">Selecciona tu método de pago</h3>
         <div class="grid grid-cols-3 gap-sm">
-          <button
-            class="bg-surface-container-low border-2 border-primary rounded-lg p-md flex flex-col items-center gap-xs relative overflow-hidden transition-all text-primary"
-          >
+          <button class="bg-surface-container-low border-2 border-primary rounded-lg p-md flex flex-col items-center gap-xs relative overflow-hidden transition-all text-primary">
             <span class="material-symbols-outlined text-[28px]">phone_iphone</span>
             <span class="font-label-caps text-label-caps">Pago Móvil</span>
             <div class="absolute top-sm right-sm w-2 h-2 rounded-full bg-primary"></div>
           </button>
-          <button
-            class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all"
-          >
+          <button routerLink="/tarjeta" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
             <span class="material-symbols-outlined text-[28px]">credit_card</span>
             <span class="font-label-caps text-label-caps">Tarjeta</span>
           </button>
-          <button
-            class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all"
-          >
-            <span class="material-symbols-outlined text-[28px]">account_balance</span>
-            <span class="font-label-caps text-label-caps">Transferencia</span>
+          <button routerLink="/criptomonedas" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">currency_bitcoin</span>
+            <span class="font-label-caps text-label-caps">Criptos</span>
           </button>
         </div>
       </div>
 
-      <div class="bg-surface border border-outline-variant rounded-xl p-lg shadow-sm">
-        <div class="bg-surface-container-low border border-outline-variant rounded-lg p-md mb-lg">
-          <h4 class="font-label-caps text-label-caps text-secondary uppercase tracking-wider mb-sm">
-            Datos para realizar el pago móvil
-          </h4>
-          <div class="grid grid-cols-2 gap-sm">
-            <div>
-              <span class="font-body-sm text-body-sm text-secondary block">Banco Destino</span>
-              <span class="font-body-md text-body-md text-on-surface font-medium"
-                >Mercantil (0105)</span
-              >
-            </div>
-            <div>
-              <span class="font-body-sm text-body-sm text-secondary block">Teléfono Destino</span>
-              <span class="font-body-md text-body-md text-on-surface font-medium"
-                >0414-1234567</span
-              >
-            </div>
-            <div class="col-span-2">
-              <span class="font-body-sm text-body-sm text-secondary block">RIF</span>
-              <span class="font-body-md text-body-md text-on-surface font-medium"
-                >J-00012255-5 (UCAB)</span
-              >
-            </div>
-          </div>
+      @if (pagoExitoso) {
+        <div class="bg-green-50 border border-green-200 text-green-800 p-lg rounded-xl flex flex-col items-center text-center gap-2 shadow-sm">
+          <span class="material-symbols-outlined text-[48px]">check_circle</span>
+          <h3 class="font-h3 text-h3">¡Pago Registrado Exitosamente!</h3>
+          <p>Tu solicitud será procesada por nuestro departamento de finanzas.</p>
+          <button routerLink="/dashboard" class="mt-4 bg-green-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-800 transition-colors cursor-pointer">
+            Volver al Inicio
+          </button>
         </div>
-
-        <form class="flex flex-col gap-md">
-          <div>
-            <label class="font-label-caps text-label-caps text-secondary mb-xs block" for="banco"
-              >Banco Emisor</label
-            >
-            <div class="relative">
-              <select
-                class="w-full bg-surface border border-outline-variant rounded-lg p-sm pl-md pr-xl font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                id="banco"
-                name="banco"
-              >
-                <option disabled="" selected="" value="">Seleccione un banco...</option>
-                <option value="0102">Banco de Venezuela (0102)</option>
-                <option value="0104">Venezolano de Crédito (0104)</option>
-                <option value="0105">Mercantil (0105)</option>
-                <option value="0108">Provincial (0108)</option>
-                <option value="0134">Banesco (0134)</option>
-                <option value="0151">BFC (0151)</option>
-                <option value="0156">100% Banco (0156)</option>
-                <option value="0191">BNC (0191)</option>
-              </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center pr-sm pointer-events-none text-secondary"
-              >
-                <span class="material-symbols-outlined">expand_more</span>
+      } 
+      @else {
+        <div class="bg-surface border border-outline-variant rounded-xl p-lg shadow-sm">
+          <div class="bg-surface-container-low border border-outline-variant rounded-lg p-md mb-lg">
+            <h4 class="font-label-caps text-label-caps text-secondary uppercase tracking-wider mb-sm">
+              Datos para realizar el pago móvil
+            </h4>
+            <div class="grid grid-cols-2 gap-sm">
+              <div>
+                <span class="font-body-sm text-body-sm text-secondary block">Banco Destino</span>
+                <span class="font-body-md text-body-md text-on-surface font-medium">Mercantil (0105)</span>
+              </div>
+              <div>
+                <span class="font-body-sm text-body-sm text-secondary block">Teléfono Destino</span>
+                <span class="font-body-md text-body-md text-on-surface font-medium">0414-1234567</span>
+              </div>
+              <div class="col-span-2">
+                <span class="font-body-sm text-body-sm text-secondary block">RIF</span>
+                <span class="font-body-md text-body-md text-on-surface font-medium">J-00012255-5 (UCAB)</span>
               </div>
             </div>
           </div>
 
-          <div>
-            <label class="font-label-caps text-label-caps text-secondary mb-xs block" for="telefono"
-              >Teléfono Emisor</label
-            >
-            <div class="flex gap-sm">
-              <select
-                class="w-1/3 md:w-1/4 bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              >
-                <option>0414</option>
-                <option>0424</option>
-                <option>0412</option>
-                <option>0416</option>
-                <option>0426</option>
-              </select>
-              <input
-                class="w-2/3 md:w-3/4 bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline-variant"
-                id="telefono"
-                maxlength="7"
-                name="telefono"
-                pattern="[0-9]{7}"
-                placeholder="Ej: 1234567"
-                type="tel"
-              />
+          <form (ngSubmit)="registrarPago()" class="flex flex-col gap-md">
+            <div>
+              <label class="font-label-caps text-label-caps text-secondary mb-xs block" for="banco">Banco Emisor</label>
+              <div class="relative">
+                <select [(ngModel)]="bancoEmisor" id="banco" name="banco" required class="w-full bg-surface border border-outline-variant rounded-lg p-sm pl-md pr-xl font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                  <option disabled selected value="">Seleccione un banco...</option>
+                  <option value="0102">Banco de Venezuela (0102)</option>
+                  <option value="0104">Venezolano de Crédito (0104)</option>
+                  <option value="0105">Mercantil (0105)</option>
+                  <option value="0108">Provincial (0108)</option>
+                  <option value="0134">Banesco (0134)</option>
+                  <option value="0191">BNC (0191)</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-sm pointer-events-none text-secondary">
+                  <span class="material-symbols-outlined">expand_more</span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label
-              class="font-label-caps text-label-caps text-secondary mb-xs block"
-              for="referencia"
-              >Número de Referencia</label
-            >
-            <input
-              class="w-full bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline-variant"
-              id="referencia"
-              name="referencia"
-              placeholder="Últimos 4 a 6 dígitos"
-              type="text"
-            />
-            <p class="font-body-sm text-body-sm text-secondary mt-xs">
-              Ingrese el número de comprobante arrojado por su banco al realizar la operación.
-            </p>
-          </div>
+            <div>
+              <label class="font-label-caps text-label-caps text-secondary mb-xs block" for="telefono">Teléfono Emisor</label>
+              <div class="flex gap-sm">
+                <select [(ngModel)]="telefonoPrefix" name="prefijo" class="w-1/3 md:w-1/4 bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                  <option value="0414">0414</option>
+                  <option value="0424">0424</option>
+                  <option value="0412">0412</option>
+                  <option value="0416">0416</option>
+                  <option value="0426">0426</option>
+                </select>
+                <input [(ngModel)]="telefonoNumero" name="telefono" id="telefono" maxlength="7" pattern="[0-9]{7}" required placeholder="Ej: 1234567" type="tel" class="w-2/3 md:w-3/4 bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline-variant" />
+              </div>
+            </div>
 
-          <div class="mt-sm pt-md border-t border-outline-variant">
-            <button
-              class="w-full bg-primary text-on-primary font-label-caps text-label-caps uppercase tracking-wider rounded-lg py-md px-lg hover:bg-primary/90 hover:shadow-md transition-all flex justify-center items-center gap-sm"
-              type="button"
-            >
-              Registrar Pago
-              <span class="material-symbols-outlined text-[18px]">check_circle</span>
-            </button>
-          </div>
-        </form>
-      </div>
+            <div>
+              <label class="font-label-caps text-label-caps text-secondary mb-xs block" for="referencia">Número de Referencia</label>
+              <input [(ngModel)]="referencia" id="referencia" name="referencia" required placeholder="Últimos 4 a 6 dígitos" type="text" class="w-full bg-surface border border-outline-variant rounded-lg p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline-variant" />
+              <p class="font-body-sm text-body-sm text-secondary mt-xs">Ingrese el comprobante arrojado por su banco al realizar la operación.</p>
+            </div>
+
+            <div class="mt-sm pt-md border-t border-outline-variant">
+              <button [disabled]="cargandoTasa || procesandoPago" type="submit" class="w-full bg-primary text-on-primary font-label-caps text-label-caps uppercase tracking-wider rounded-lg py-md px-lg hover:bg-primary/90 hover:shadow-md transition-all flex justify-center items-center gap-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                
+                @if(procesandoPago) {
+                  Procesando <span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span>
+                } @else {
+                  Registrar Pago <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                }
+
+              </button>
+            </div>
+          </form>
+        </div>
+      }
     </section>
   </main>
-
-  <footer class="w-full border-t border-outline-variant bg-surface py-md mt-auto">
-    <div
-      class="max-w-container-max mx-auto px-lg flex flex-col md:flex-row justify-between items-center gap-sm"
-    >
-      <span class="font-body-sm text-body-sm text-secondary"
-        >© 2024 UCAB SERVICES. Universidad Católica Andrés Bello.</span
-      >
-      <div class="flex gap-md font-body-sm text-body-sm text-secondary">
-        <a class="hover:text-primary transition-colors" href="#">Aviso Legal</a>
-        <a class="hover:text-primary transition-colors" href="#">Privacidad</a>
-        <a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a>
-      </div>
-    </div>
-  </footer>
 </div>

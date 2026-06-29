@@ -1,26 +1,30 @@
 <div class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
-  
   <header class="bg-surface shadow-sm border-b border-outline-variant py-xl">
     <div class="max-w-container-max mx-auto px-lg flex flex-col gap-md">
       <h1 class="font-h1 text-h1 text-on-surface font-black">Catálogo de Servicios</h1>
       <p class="text-on-surface-variant font-body-lg">
         Explore y solicite los servicios disponibles para la comunidad UCAB.
       </p>
-      
+
       <div class="flex flex-col md:flex-row gap-sm mt-md">
         <div class="relative flex-grow">
-          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-          <input 
-            type="text" 
+          <span
+            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            >search</span
+          >
+          <input
+            type="text"
             [(ngModel)]="textoBusqueda"
             (ngModelChange)="aplicarFiltros()"
-            placeholder="Buscar por código o descripción..." 
-            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+            placeholder="Buscar por código o descripción..."
+            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+          />
         </div>
-        <select 
+        <select
           [(ngModel)]="estadoFiltro"
           (ngModelChange)="aplicarFiltros()"
-          class="bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-on-surface cursor-pointer min-w-[200px]">
+          class="bg-surface-container-lowest border border-outline-variant rounded-lg py-3 px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-on-surface cursor-pointer min-w-[200px]"
+        >
           <option value="todos">Todos los estados</option>
           <option value="activo">Activos</option>
           <option value="inactivo">Inactivos</option>
@@ -31,41 +35,53 @@
 
   <main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-      
       @if (cargando) {
-        <div class="col-span-full flex flex-col items-center justify-center py-20 text-on-surface-variant">
-          <span class="material-symbols-outlined animate-spin text-[48px] text-primary">autorenew</span>
+        <div
+          class="col-span-full flex flex-col items-center justify-center py-20 text-on-surface-variant"
+        >
+          <span class="material-symbols-outlined animate-spin text-[48px] text-primary"
+            >autorenew</span
+          >
           <p class="mt-4 font-bold text-body-lg">Cargando catálogo...</p>
         </div>
-      } 
-      
-      @else if (error) {
+
+      } @else if (error) {
         <div class="col-span-full flex flex-col items-center justify-center py-20 text-red-600">
           <span class="material-symbols-outlined text-[48px]">error</span>
           <p class="mt-4 font-bold text-body-lg">{{ error }}</p>
         </div>
-      } 
-      
-      @else {
+
+      } @else {
         @for (servicio of serviciosFiltrados; track servicio.codigoServicio) {
-          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-            
-            <div class="absolute top-0 right-0 w-24 h-24 bg-primary-container opacity-20 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300"></div>
-            
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+          >
+            <div
+              class="absolute top-0 right-0 w-24 h-24 bg-primary-container opacity-20 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300"
+            ></div>
+
             <div class="flex flex-col gap-sm relative z-10">
-              <div class="bg-primary-container/30 w-12 h-12 rounded-lg flex items-center justify-center mb-xs text-primary">
-                <span class="material-symbols-outlined text-[24px]">{{ getIconoServicio(servicio.codigoServicio) }}</span>
+              <div
+                class="bg-primary-container/30 w-12 h-12 rounded-lg flex items-center justify-center mb-xs text-primary"
+              >
+                <span class="material-symbols-outlined text-[24px]">{{
+                  getIconoServicio(servicio.codigoServicio)
+                }}</span>
               </div>
-              
+
               <div>
                 @if (servicio.estadoServicio) {
-                  <span class="inline-block px-2 py-1 bg-surface-container-high text-on-surface-variant text-label-sm font-label-caps uppercase rounded-md mb-2">
+                  <span
+                    class="inline-block px-2 py-1 bg-surface-container-high text-on-surface-variant text-label-sm font-label-caps uppercase rounded-md mb-2"
+                  >
                     Estado: {{ servicio.estadoServicio }}
                   </span>
                 }
-                
-                <h3 class="font-h3 text-h3 text-on-surface leading-tight mb-2 uppercase">{{ servicio.codigoServicio }}</h3>
-                
+
+                <h3 class="font-h3 text-h3 text-on-surface leading-tight mb-2 uppercase">
+                  {{ servicio.codigoServicio }}
+                </h3>
+
                 <p class="font-body-md text-body-md text-on-surface-variant line-clamp-3">
                   {{ servicio.descripcionDetallada || 'Sin descripción disponible.' }}
                 </p>
@@ -75,26 +91,30 @@
             <div class="mt-xl relative z-10 flex flex-col gap-sm">
               @if (servicio.requisitos) {
                 <div class="flex items-start gap-xs text-on-surface-variant mb-2">
-                  <span class="material-symbols-outlined text-[16px] mt-1">assignment_turned_in</span>
-                  <span class="font-body-sm font-medium line-clamp-2" title="{{ servicio.requisitos }}">
+                  <span class="material-symbols-outlined text-[16px] mt-1"
+                    >assignment_turned_in</span
+                  >
+                  <span
+                    class="font-body-sm font-medium line-clamp-2"
+                    title="{{ servicio.requisitos }}"
+                  >
                     Requisitos: {{ servicio.requisitos }}
                   </span>
                 </div>
               }
-              
-              <button 
-                routerLink="/solicitar-servicio" 
-                [queryParams]="{ servicio: servicio.codigoServicio }"
+
+              <button
+                routerLink="/servicio-actividad"
+                [queryParams]="{ codigo: servicio.codigoServicio }"
                 class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md text-body-md py-sm rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
               >
-                <span>Solicitar</span>
-                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <span>Ver Detalles</span>
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
               </button>
             </div>
-            
           </div>
         }
-        
+
         @if (serviciosFiltrados.length === 0) {
           <div class="col-span-full text-center py-20 text-on-surface-variant">
             <span class="material-symbols-outlined text-[48px] opacity-50">search_off</span>

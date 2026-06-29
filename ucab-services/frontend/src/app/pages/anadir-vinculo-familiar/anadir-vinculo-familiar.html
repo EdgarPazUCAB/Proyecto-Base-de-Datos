@@ -2,9 +2,7 @@
   <main class="flex-grow w-full max-w-[1280px] mx-auto px-6 py-8">
     <div class="mb-8">
       <div class="flex items-center text-secondary font-body-sm text-body-sm mb-2">
-        <a class="hover:text-primary transition-colors" href="#">Profile</a>
-        <span class="material-symbols-outlined mx-2 text-[16px]">chevron_right</span>
-        <a class="hover:text-primary transition-colors" href="#">Family Members</a>
+        <a class="hover:text-primary transition-colors" routerLink="/profile">Perfil</a>
         <span class="material-symbols-outlined mx-2 text-[16px]">chevron_right</span>
         <span class="text-on-background font-medium">Añadir Vínculo Familiar</span>
       </div>
@@ -14,213 +12,145 @@
       </p>
     </div>
 
-    <div
-      class="bg-surface-container-lowest border border-gray-200 rounded-xl shadow-[0_4px_6px_rgba(0,0,0,0.02)] overflow-hidden"
-    >
-      <form action="#" method="POST">
+    @if (mensajeExito) {
+      <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span class="font-bold">{{ mensajeExito }} Redirigiendo...</span>
+      </div>
+    }
+    @if (mensajeError) {
+      <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center gap-2">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ mensajeError }}</span>
+      </div>
+    }
+
+    <div class="bg-surface-container-lowest border border-gray-200 rounded-xl shadow-[0_4px_6px_rgba(0,0,0,0.02)] overflow-hidden">
+      
+      <form (ngSubmit)="guardarVinculo()">
+        
         <div class="p-8 border-b border-gray-100">
           <div class="flex items-center mb-6">
-            <span
-              class="material-symbols-outlined text-primary mr-3 text-[28px]"
-              data-weight="fill"
-              style="font-variation-settings: 'FILL' 1"
-              >person</span
-            >
+            <span class="material-symbols-outlined text-primary mr-3 text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1">person</span>
             <h2 class="font-h3 text-h3 text-on-background">Información Personal</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="primer_nombre"
-                >Primer Nombre *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="primer_nombre"
-                name="primer_nombre"
-                required=""
-                type="text"
-              />
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="primer_nombre">Primer Nombre *</label>
+              <input [(ngModel)]="primerNombre" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="primer_nombre" name="primer_nombre" required type="text" />
             </div>
             <div class="flex flex-col">
-              <label
-                class="font-label-caps text-label-caps text-secondary mb-1"
-                for="segundo_nombre"
-                >Segundo Nombre</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="segundo_nombre"
-                name="segundo_nombre"
-                type="text"
-              />
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="segundo_nombre">Segundo Nombre</label>
+              <input [(ngModel)]="segundoNombre" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="segundo_nombre" name="segundo_nombre" type="text" />
             </div>
             <div class="flex flex-col">
-              <label
-                class="font-label-caps text-label-caps text-secondary mb-1"
-                for="primer_apellido"
-                >Primer Apellido *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="primer_apellido"
-                name="primer_apellido"
-                required=""
-                type="text"
-              />
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="primer_apellido">Primer Apellido *</label>
+              <input [(ngModel)]="primerApellido" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="primer_apellido" name="primer_apellido" required type="text" />
             </div>
             <div class="flex flex-col">
-              <label
-                class="font-label-caps text-label-caps text-secondary mb-1"
-                for="segundo_apellido"
-                >Segundo Apellido</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="segundo_apellido"
-                name="segundo_apellido"
-                type="text"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="cedula"
-                >Número de Cédula *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="cedula"
-                name="cedula"
-                required=""
-                type="text"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label
-                class="font-label-caps text-label-caps text-secondary mb-1"
-                for="fecha_nacimiento"
-                >Fecha de Nacimiento *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                required=""
-                type="date"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="sexo"
-                >Sexo *</label
-              >
-              <div class="relative">
-                <select
-                  class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all w-full appearance-none"
-                  id="sexo"
-                  name="sexo"
-                  required=""
-                >
-                  <option disabled="" selected="" value="">Seleccione</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                  <option value="O">Otro</option>
-                </select>
-                <span
-                  class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none"
-                  >arrow_drop_down</span
-                >
-              </div>
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="segundo_apellido">Segundo Apellido</label>
+              <input [(ngModel)]="segundoApellido" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="segundo_apellido" name="segundo_apellido" type="text" />
             </div>
           </div>
         </div>
 
         <div class="p-8">
           <div class="flex items-center mb-6">
-            <span
-              class="material-symbols-outlined text-primary mr-3 text-[28px]"
-              data-weight="fill"
-              style="font-variation-settings: 'FILL' 1"
-              >contact_mail</span
-            >
-            <h2 class="font-h3 text-h3 text-on-background">Información de Contacto</h2>
+            <span class="material-symbols-outlined text-primary mr-3 text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1">family_restroom</span>
+            <h2 class="font-h3 text-h3 text-on-background">Detalles del Vínculo</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="flex flex-col">
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="cedula">Documento de Identidad *</label>
+              <input [(ngModel)]="documentoIdentidad" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="cedula" name="cedula" required type="text" placeholder="Ej: V-12345678" />
+            </div>
+            
+            <div class="flex flex-col">
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="fecha_nacimiento">Fecha de Nacimiento *</label>
+              <input [(ngModel)]="fechaNacimiento" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-secondary" id="fecha_nacimiento" name="fecha_nacimiento" required type="date" />
+            </div>
+
             <div class="flex flex-col md:col-span-2">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="direccion"
-                >Dirección de Habitación Detallada *</label
-              >
-              <textarea
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
-                id="direccion"
-                name="direccion"
-                required=""
-                rows="3"
-              ></textarea>
-            </div>
-            <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="telefono"
-                >Número de Teléfono Personal *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="telefono"
-                name="telefono"
-                required=""
-                type="tel"
-              />
-            </div>
-            <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="correo"
-                >Cuenta de Correo Electrónico *</label
-              >
-              <input
-                class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                id="correo"
-                name="correo"
-                required=""
-                type="email"
-              />
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="parentesco">Parentesco *</label>
+              <div class="relative">
+                <select [(ngModel)]="parentesco" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all w-full appearance-none" id="parentesco" name="parentesco" required>
+                  <option disabled selected value="">Seleccione el parentesco</option>
+                  <option value="Cónyuge">Cónyuge</option>
+                  <option value="Hijo">Hijo(a)</option>
+                  <option value="Padre">Padre / Madre</option>
+                  <option value="Hermano">Hermano(a)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none">arrow_drop_down</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div
-          class="p-6 bg-surface-bright border-t border-gray-200 flex justify-end items-center space-x-4"
-        >
-          <button
-            class="px-6 py-2 bg-surface-container-lowest border border-gray-200 text-secondary font-body-md text-body-md rounded-DEFAULT hover:bg-gray-50 transition-colors"
-            type="button"
-          >
+        @if (esMayorDeEdad === false) {
+          <div class="p-8 border-t border-gray-100 bg-surface-bright">
+            <div class="flex items-center mb-6">
+              <span class="material-symbols-outlined text-primary mr-3 text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1">child_care</span>
+              <h2 class="font-h3 text-h3 text-on-background">Requisitos Cargo Menor</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <label class="font-label-caps text-label-caps text-secondary mb-1" for="esquema_vacunacion">Esquema de Vacunación</label>
+                <textarea [(ngModel)]="esquemaVacunacion" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="esquema_vacunacion" name="esquema_vacunacion" rows="2" placeholder="Detalle las vacunas..."></textarea>
+              </div>
+              <div class="flex flex-col">
+                <label class="font-label-caps text-label-caps text-secondary mb-1" for="centro_edu_inicial">Centro de Educación Inicial</label>
+                <input [(ngModel)]="centroEduInicial" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="centro_edu_inicial" name="centro_edu_inicial" type="text" placeholder="Ej: Preescolar Los Ositos" />
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (esMayorDeEdad === true) {
+          <div class="p-8 border-t border-gray-100 bg-surface-bright">
+            <div class="flex items-center mb-6">
+              <span class="material-symbols-outlined text-primary mr-3 text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1">school</span>
+              <h2 class="font-h3 text-h3 text-on-background">Requisitos Cargo Mayor</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <label class="font-label-caps text-label-caps text-secondary mb-1" for="constancia_est">Constancia Estudios Univ.</label>
+                <textarea [(ngModel)]="constanciaEstUniversitarios" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="constancia_est" name="constancia_est" rows="2" placeholder="Detalle la institución, semestre..."></textarea>
+              </div>
+              <div class="flex flex-col">
+                <label class="font-label-caps text-label-caps text-secondary mb-1" for="certificado_solteria">Certificado de Soltería</label>
+                <textarea [(ngModel)]="certificadoSolteria" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="certificado_solteria" name="certificado_solteria" rows="2" placeholder="Detalle del certificado..."></textarea>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="p-6 bg-surface-container-lowest border-t border-gray-200 flex justify-end items-center space-x-4">
+          <button routerLink="/profile" class="px-6 py-2 bg-surface-container-lowest border border-gray-200 text-secondary font-body-md text-body-md rounded-DEFAULT hover:bg-gray-50 transition-colors" type="button">
             Cancelar
           </button>
-          <button
-            class="px-6 py-2 bg-primary text-on-primary font-body-md text-body-md rounded-DEFAULT hover:bg-surface-tint transition-colors shadow-sm"
-            type="submit"
-          >
-            Guardar Vínculo
+          
+          <button [disabled]="cargando" class="px-6 py-2 bg-primary text-on-primary font-body-md text-body-md rounded-DEFAULT hover:bg-surface-tint transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" type="submit">
+            @if(cargando) {
+              <span class="material-symbols-outlined animate-spin text-[20px]">autorenew</span> Guardando...
+            } @else {
+              Guardar Vínculo
+            }
           </button>
         </div>
       </form>
     </div>
   </main>
 
-  <footer
-    class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 text-sm font-inter w-full border-t border-gray-200 dark:border-gray-800 flat no-shadows mt-auto"
-  >
-    <div
-      class="w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center max-w-[1280px] mx-auto"
-    >
+  <footer class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 text-sm font-inter w-full border-t border-gray-200 dark:border-gray-800 flat no-shadows mt-auto">
+    <div class="w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center max-w-[1280px] mx-auto">
       <div class="font-bold text-green-700 dark:text-green-500 mb-4 md:mb-0">
         © 2024 UCAB Services. Academic Excellence.
       </div>
       <div class="flex space-x-6">
-        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#"
-          >Privacy Policy</a
-        >
-        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#"
-          >Terms of Service</a
-        >
-        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#"
-          >Help Desk</a
-        >
+        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#">Privacy Policy</a>
+        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#">Terms of Service</a>
+        <a class="text-gray-500 hover:text-green-600 transition-colors duration-150" href="#">Help Desk</a>
       </div>
     </div>
   </footer>
