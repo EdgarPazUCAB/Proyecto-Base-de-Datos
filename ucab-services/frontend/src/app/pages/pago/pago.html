@@ -30,42 +30,53 @@
         </button>
       </div>
     }
-    @else if (folioPendiente) {
+    @else if (folioPendiente || isRecargaTai) {
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
         
         <div class="lg:col-span-4 flex flex-col gap-md">
           <div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-lg sticky top-32 transition-shadow hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]">
-            <h2 class="font-h3 text-h3 text-on-surface mb-md pb-sm border-b border-[#E2E8F0]">
-              Resumen de Solicitud
-            </h2>
-            <div class="flex flex-col gap-md">
-              <div>
-                <span class="font-label-caps text-label-caps text-secondary block mb-unit">FOLIO ASOCIADO</span>
-                <span class="font-body-md text-body-md text-on-surface font-medium font-mono">
-                  #{{ folioPendiente.identificador }}
-                </span>
+            @if (isRecargaTai) {
+              <h2 class="font-h3 text-h3 text-on-surface mb-md pb-sm border-b border-[#E2E8F0]">
+                Recargar Saldo TAI
+              </h2>
+              <div class="flex flex-col gap-md">
+                <div>
+                  <label class="font-label-caps text-label-caps text-secondary block mb-unit">MONTO A RECARGAR (BS)</label>
+                  <input type="number" [(ngModel)]="montoRecarga" min="1" class="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-on-surface text-h2 font-bold h-12">
+                </div>
               </div>
-              <div>
-                <span class="font-label-caps text-label-caps text-secondary block mb-unit">FECHA APERTURA</span>
-                <span class="font-body-md text-body-md text-on-surface">
-                  {{ folioPendiente.fechaApertura | date:'longDate' }}
-                </span>
+            } @else {
+              <h2 class="font-h3 text-h3 text-on-surface mb-md pb-sm border-b border-[#E2E8F0]">
+                Resumen de Solicitud
+              </h2>
+              <div class="flex flex-col gap-md">
+                <div>
+                  <span class="font-label-caps text-label-caps text-secondary block mb-unit">FOLIO ASOCIADO</span>
+                  <span class="font-body-md text-body-md text-on-surface font-medium font-mono">
+                    #{{ folioPendiente?.identificador }}
+                  </span>
+                </div>
+                <div>
+                  <span class="font-label-caps text-label-caps text-secondary block mb-unit">FECHA APERTURA</span>
+                  <span class="font-body-md text-body-md text-on-surface">
+                    {{ folioPendiente?.fechaApertura | date:'longDate' }}
+                  </span>
+                </div>
+                <div>
+                  <span class="font-label-caps text-label-caps text-secondary block mb-unit">ESTATUS</span>
+                  <span class="inline-block bg-primary-container/20 text-primary px-2 py-1 rounded font-bold text-xs uppercase">
+                    {{ folioPendiente?.estadoFolio }}
+                  </span>
+                </div>
+                
+                <div class="pt-sm mt-sm border-t border-[#E2E8F0]">
+                  <span class="font-label-caps text-label-caps text-secondary block mb-unit">TOTAL A PAGAR (USD)</span>
+                  <span class="font-h2 text-h2 text-primary font-bold">
+                    ${{ totalAPagarUsd | number:'1.2-2' }}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span class="font-label-caps text-label-caps text-secondary block mb-unit">ESTATUS</span>
-                <span class="inline-block bg-primary-container/20 text-primary px-2 py-1 rounded font-bold text-xs uppercase">
-                  {{ folioPendiente.estadoFolio }}
-                </span>
-              </div>
-              
-              <div class="pt-sm mt-sm border-t border-[#E2E8F0]">
-                <span class="font-label-caps text-label-caps text-secondary block mb-unit">TOTAL A PAGAR (USD)</span>
-                <span class="font-h2 text-h2 text-primary font-bold">
-                  ${{ totalAPagarUsd | number:'1.2-2' }}
-                </span>
-              </div>
-              
-            </div>
+            }
           </div>
         </div>
 
@@ -82,13 +93,15 @@
                 </div>
               </label>
               
-              <label class="cursor-pointer relative group">
-                <input [(ngModel)]="metodoSeleccionado" class="peer sr-only" name="payment_method" type="radio" value="tai" />
-                <div class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]">
-                  <span class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors" data-icon="account_balance">account_balance</span>
-                  <span class="font-body-md text-body-md text-on-surface text-center font-medium">Tarjeta TAI</span>
-                </div>
-              </label>
+              @if (!isRecargaTai) {
+                <label class="cursor-pointer relative group">
+                  <input [(ngModel)]="metodoSeleccionado" class="peer sr-only" name="payment_method" type="radio" value="tai" />
+                  <div class="h-full bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT p-md flex flex-col items-center justify-center gap-sm transition-all peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)]">
+                    <span class="material-symbols-outlined text-[32px] text-secondary peer-checked:text-primary transition-colors" data-icon="account_balance">account_balance</span>
+                    <span class="font-body-md text-body-md text-on-surface text-center font-medium">Tarjeta TAI</span>
+                  </div>
+                </label>
+              }
               
               <label class="cursor-pointer relative group">
                 <input [(ngModel)]="metodoSeleccionado" class="peer sr-only" name="payment_method" type="radio" value="pagomovil" />

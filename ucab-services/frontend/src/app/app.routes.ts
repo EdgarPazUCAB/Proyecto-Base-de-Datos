@@ -18,6 +18,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { CatalogoServicios } from './pages/catalogo-servicios/catalogo-servicios';
 import { AnadirAcompananteTemporal } from './pages/anadir-acompanante-temporal/anadir-acompanante-temporal';
 import { GestionarSolicitudes } from './pages/gestionar-solicitudes/gestionar-solicitudes';
+import { ReporteResolucion } from './pages/reporte-resolucion/reporte-resolucion';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -39,5 +40,6 @@ export const routes: Routes = [
   { path: 'dashboard', component: Dashboard },
   { path: 'catalogo-servicios', component: CatalogoServicios },
   { path: 'anadir-acompanante-temporal', component: AnadirAcompananteTemporal },
-  { path: 'gestionar-solicitudes', component: GestionarSolicitudes }
+  { path: 'gestionar-solicitudes', component: GestionarSolicitudes },
+  { path: 'reporte-resolucion', component: ReporteResolucion }
 ];

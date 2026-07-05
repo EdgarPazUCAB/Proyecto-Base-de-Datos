@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { BilleteraService } from '../../services/billetera.service'; 
 // INYECTAMOS EL SERVICIO DE SOLICITUDES
 import { SolicitudServicioService } from '../../services/solicitud-servicio.service'; 
+import { ServicioService, Servicio } from '../../services/servicio.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,10 +26,15 @@ export class Dashboard implements OnInit {
   misSolicitudes: any[] = [];
   cargandoSolicitudes: boolean = true;
 
+  // VARIABLES PARA SERVICIOS RECIENTES
+  serviciosRecientes: Servicio[] = [];
+  cargandoServicios: boolean = true;
+
   constructor(
     private authService: AuthService,
     private billeteraService: BilleteraService,
-    private solicitudService: SolicitudServicioService, // <-- NUEVA INYECCIÓN
+    private solicitudService: SolicitudServicioService, 
+    private servicioService: ServicioService,
     private cdr: ChangeDetectorRef 
   ) {}
 
@@ -67,6 +73,9 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       }
     }
+    
+    // --- 3. CARGAMOS LOS SERVICIOS RECIENTES ---
+    this.cargarServiciosRecientes();
   }
 
   // MÉTODO PARA TRAER Y FILTRAR SOLICITUDES
@@ -87,6 +96,23 @@ export class Dashboard implements OnInit {
       error: (err) => {
         console.error('❌ Error al cargar solicitudes:', err);
         this.cargandoSolicitudes = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+  
+  // MÉTODO PARA TRAER SERVICIOS RECIENTES
+  cargarServiciosRecientes(): void {
+    this.servicioService.obtenerServicios().subscribe({
+      next: (todos) => {
+        // Tomamos los últimos 2 para mostrarlos
+        this.serviciosRecientes = todos.slice(-2).reverse();
+        this.cargandoServicios = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error al cargar servicios:', err);
+        this.cargandoServicios = false;
         this.cdr.detectChanges();
       }
     });

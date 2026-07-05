@@ -9,6 +9,8 @@ import { throwError } from 'rxjs';
 // IMPORTACIÓN DE SERVICIOS
 import { TasaCambioService } from '../../../services/tasa-cambio.service'; 
 import { FolioConsumoService } from '../../../services/folio-consumo.service'; 
+import { BilleteraService } from '../../../services/billetera.service';
+import { AuthService } from '../../../services/auth.service'; 
 
 @Component({
   selector: 'app-pago-movil',
@@ -23,6 +25,9 @@ export class PagoMovil implements OnInit {
   public cargandoTasa: boolean = true;
   public procesandoPago: boolean = false;
   public pagoExitoso: boolean = false;
+
+  public isRecargaTai: boolean = false;
+  public montoRecargaVes: number = 0;
 
   // Datos dinámicos del Folio obtenidos del backend
   public folioId: string = ''; 
@@ -52,11 +57,20 @@ export class PagoMovil implements OnInit {
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private tasaCambioService: TasaCambioService,
-    private folioConsumoService: FolioConsumoService
+    private folioConsumoService: FolioConsumoService,
+    private billeteraService: BilleteraService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.cargarFolioDinamico();
+    const tipo = this.route.snapshot.queryParamMap.get('tipo');
+    if (tipo === 'recarga_tai') {
+      this.isRecargaTai = true;
+      this.montoRecargaVes = Number(this.route.snapshot.queryParamMap.get('monto') || 0);
+      this.asignarValoresPrueba('RECARGA-TAI', this.montoRecargaVes);
+    } else {
+      this.cargarFolioDinamico();
+    }
   }
 
   /**
@@ -151,14 +165,32 @@ export class PagoMovil implements OnInit {
     });
   }
 
-  /**
-   * Asigna valores por defecto estables en caso de excepciones o datos vacíos.
-   */
   private asignarValoresPrueba(id: string, monto: number): void {
     this.folioId = id;
-    this.subtotalUsd = monto;
-    this.ivaUsd = this.subtotalUsd * 0.16;
-    this.obtenerTasaYCalcularMontos();
+    if (this.isRecargaTai) {
+      this.subtotalVes = monto;
+      this.ivaVes = 0;
+      this.tasaCambioService.obtenerTasaVES().subscribe({
+        next: (tasaBCV) => {
+          this.tasaActual = tasaBCV;
+          this.subtotalUsd = monto / tasaBCV;
+          this.ivaUsd = 0;
+          const subtotalMasIvaVes = this.subtotalVes + this.ivaVes;
+          this.tasaProcesamientoVes = subtotalMasIvaVes * 0.015; 
+          this.totalPagarVes = subtotalMasIvaVes + this.tasaProcesamientoVes;
+          this.cargandoTasa = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.cargandoTasa = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.subtotalUsd = monto;
+      this.ivaUsd = this.subtotalUsd * 0.16;
+      this.obtenerTasaYCalcularMontos();
+    }
   }
 
   /**
@@ -201,6 +233,29 @@ export class PagoMovil implements OnInit {
     }
 
     this.procesandoPago = true;
+    
+    if (this.isRecargaTai) {
+      const usuario = this.authService.obtenerUsuarioActual();
+      if (!usuario || !usuario.cedulaMiembro) {
+        alert('Debe iniciar sesión para recargar');
+        this.procesandoPago = false;
+        return;
+      }
+      this.billeteraService.recargarSaldo(usuario.cedulaMiembro, this.subtotalVes).subscribe({
+        next: () => {
+          this.procesandoPago = false;
+          this.pagoExitoso = true;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.procesandoPago = false;
+          alert('Error al recargar saldo: ' + (err.error?.error || err.message || 'Error desconocido'));
+          this.cdr.detectChanges();
+        }
+      });
+      return;
+    }
+
     const telefonoCompleto = `${this.telefonoPrefix}-${this.telefonoNumero}`;
 
     const payload = {

@@ -1,0 +1,208 @@
+<div class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md">
+
+  <!-- ── Error de acceso ── -->
+  <div *ngIf="errorAcceso" class="flex-grow flex items-center justify-center p-lg">
+    <div class="max-w-md w-full bg-surface border border-error-container rounded-xl p-xl text-center shadow-lg">
+      <span class="material-symbols-outlined text-[56px] text-error block mb-md">lock</span>
+      <h2 class="font-h3 text-h3 text-error mb-sm">Acceso Restringido</h2>
+      <p class="text-on-surface-variant mb-lg">{{ errorMensaje }}</p>
+      <button routerLink="/catalogo-servicios"
+              class="bg-primary text-on-primary font-label-caps text-label-caps py-sm px-lg rounded-lg hover:opacity-90 transition-opacity cursor-pointer">
+        Volver al Catálogo
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Contenido principal ── -->
+  <ng-container *ngIf="!errorAcceso">
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-8 pb-xl px-lg max-w-container-max mx-auto w-full flex flex-col md:flex-row gap-gutter">
+
+      <!-- ── Sidebar / Filtros ── -->
+      <aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-md">
+        <div class="bg-surface border border-outline-variant rounded-lg p-md">
+          <h3 class="font-h3 text-h3 mb-md text-on-surface">Filtros</h3>
+
+          <div class="mb-md">
+            <label class="block font-label-caps text-label-caps text-secondary mb-xs">
+              Fecha del Reporte
+            </label>
+            <input
+              id="fechaReporte"
+              type="date"
+              [(ngModel)]="fechaReporte"
+              class="w-full bg-surface border border-outline-variant rounded px-sm py-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none"
+            />
+          </div>
+
+          <!-- Error msg -->
+          <div *ngIf="errorMensaje" class="mb-md bg-error-container border border-error rounded p-sm">
+            <p class="font-label-caps text-label-caps text-on-error-container">⚠️ {{ errorMensaje }}</p>
+          </div>
+
+          <div class="flex flex-col gap-sm mt-lg">
+            <button id="btn-exportar-pdf"
+                    (click)="descargarPdf()"
+                    [disabled]="cargandoPdf || cargandoExcel"
+                    class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-sm px-md rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-xs cursor-pointer disabled:opacity-60">
+              <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+              {{ cargandoPdf ? 'Generando PDF...' : 'Exportar a PDF' }}
+            </button>
+            <button id="btn-exportar-excel"
+                    (click)="descargarExcel()"
+                    [disabled]="cargandoPdf || cargandoExcel"
+                    class="w-full bg-surface text-secondary border border-outline-variant font-label-caps text-label-caps py-sm px-md rounded hover:bg-surface-variant transition-colors flex items-center justify-center gap-xs cursor-pointer disabled:opacity-60">
+              <span class="material-symbols-outlined text-[18px]">table_view</span>
+              {{ cargandoExcel ? 'Generando Excel...' : 'Exportar a Excel' }}
+            </button>
+          </div>
+
+          <!-- Volver -->
+          <div class="mt-lg border-t border-outline-variant pt-md">
+            <a routerLink="/catalogo-servicios"
+               class="flex items-center gap-xs text-secondary font-body-sm text-body-sm hover:text-primary transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+              Volver al Catálogo
+            </a>
+          </div>
+        </div>
+
+        <!-- Badge de rol -->
+        <div class="bg-primary/10 border border-primary/20 rounded-lg p-sm flex items-center gap-sm">
+          <span class="material-symbols-outlined text-primary text-[18px]">shield</span>
+          <span class="font-label-caps text-label-caps text-primary">Personal Administrativo</span>
+        </div>
+      </aside>
+
+      <!-- ── Canvas / Reporte ── -->
+      <div class="flex-grow flex flex-col gap-gutter">
+
+        <!-- Encabezado -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-outline-variant pb-md">
+          <div>
+            <h1 class="font-h1 text-h1 text-on-background">Reporte Diario de Conciliación</h1>
+            <p class="font-body-lg text-body-lg text-secondary mt-xs">
+              {{ fechaFormateada || 'Seleccione una fecha' }}
+            </p>
+          </div>
+          <!-- Loader inline -->
+          <div *ngIf="cargandoPdf || cargandoExcel" class="flex items-center gap-sm text-secondary">
+            <div class="spinner-sm"></div>
+            <span class="font-body-sm text-body-sm">Generando reporte...</span>
+          </div>
+        </div>
+
+        <!-- ── KPIs (Bento) ── -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+          <div class="bg-surface border border-outline-variant rounded-lg p-md hover:shadow-sm transition-shadow flex flex-col gap-sm">
+            <span class="font-label-caps text-label-caps text-secondary">Total Ingresos Sistema</span>
+            <span class="font-h3 text-h3 text-on-surface">Ver en PDF / Excel</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Suma de todos los pagos del día seleccionado.</span>
+          </div>
+          <div class="bg-surface border border-outline-variant rounded-lg p-md hover:shadow-sm transition-shadow flex flex-col gap-sm">
+            <span class="font-label-caps text-label-caps text-secondary">Canales Incluidos</span>
+            <div class="flex flex-wrap gap-xs mt-xs">
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">Pago Móvil</span>
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">Zelle</span>
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">Criptomonedas</span>
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">Efectivo</span>
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">Tarjeta</span>
+              <span class="bg-surface-container-high text-on-surface font-label-caps text-label-caps px-sm py-xs rounded-full">TAI</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-high border border-outline-variant rounded-lg p-md flex flex-col gap-sm">
+            <span class="font-label-caps text-label-caps text-secondary">Estados de Conciliación</span>
+            <div class="flex flex-col gap-xs mt-xs">
+              <div class="flex items-center gap-xs">
+                <span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+                <span class="font-body-sm text-body-sm text-on-surface">Conciliado — referencia verificada</span>
+              </div>
+              <div class="flex items-center gap-xs">
+                <span class="material-symbols-outlined text-error text-[16px]">error</span>
+                <span class="font-body-sm text-body-sm text-on-surface">Discrepancia — validación manual requerida</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Instrucciones ── -->
+        <div class="bg-surface border border-outline-variant rounded-lg p-lg flex flex-col gap-md">
+          <h2 class="font-h3 text-h3 text-on-surface">Contenido del Reporte</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <div class="flex items-start gap-sm">
+              <span class="material-symbols-outlined text-primary text-[22px] mt-xs">receipt_long</span>
+              <div>
+                <h4 class="font-label-caps text-label-caps text-on-surface uppercase mb-xs">Detalle de Transacciones</h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Nro. de factura, canal, referencia específica, tasa de conversión y monto en Bs para cada pago del día.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="material-symbols-outlined text-primary text-[22px] mt-xs">bar_chart</span>
+              <div>
+                <h4 class="font-label-caps text-label-caps text-on-surface uppercase mb-xs">Resumen Ejecutivo</h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Total ingresos, monto conciliado, monto con discrepancia y % de conciliación al cierre del día.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="material-symbols-outlined text-primary text-[22px] mt-xs">swap_horiz</span>
+              <div>
+                <h4 class="font-label-caps text-label-caps text-on-surface uppercase mb-xs">Tasa de Cambio</h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Para Criptomonedas y Efectivo se muestra la tasa registrada al momento de la transacción.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-sm">
+              <span class="material-symbols-outlined text-primary text-[22px] mt-xs">schedule</span>
+              <div>
+                <h4 class="font-label-caps text-label-caps text-on-surface uppercase mb-xs">Hora de Operación</h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Marca de tiempo exacta (HH:mm:ss) de cada pago para trazabilidad completa.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Acciones principales ── -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+          <div (click)="descargarPdf()"
+               class="bg-surface border border-outline-variant rounded-lg p-lg flex items-center gap-md cursor-pointer hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-[40px] text-primary group-hover:scale-110 transition-transform">picture_as_pdf</span>
+            <div>
+              <h4 class="font-h3 text-h3 text-on-surface mb-xs">Exportar PDF</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Reporte ejecutivo orientado apaisado, listo para imprimir o archivar.
+              </p>
+            </div>
+          </div>
+          <div (click)="descargarExcel()"
+               class="bg-surface border border-outline-variant rounded-lg p-lg flex items-center gap-md cursor-pointer hover:border-secondary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-[40px] text-secondary group-hover:scale-110 transition-transform">table_view</span>
+            <div>
+              <h4 class="font-h3 text-h3 text-on-surface mb-xs">Exportar Excel</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Hoja de cálculo para análisis adicional y cruce con reportes bancarios.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-outline-variant w-full py-lg px-lg flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto mt-auto">
+      <span class="font-label-caps text-label-caps text-primary mb-sm md:mb-0">UCAB SERVICES</span>
+      <span class="font-body-sm text-body-sm text-secondary text-center">
+        © 2026 UCAB SERVICES — Documento confidencial. Uso exclusivo Personal Administrativo.
+      </span>
+    </footer>
+
+  </ng-container>
+</div>

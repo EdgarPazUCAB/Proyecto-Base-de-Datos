@@ -80,6 +80,42 @@
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-crypto</artifactId>
 		</dependency>
+
+		<!-- ===== JasperReports ===== -->
+		<!-- Motor principal de JasperReports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.21.3</version>
+			<exclusions>
+				<!-- Excluir commons-logging para evitar conflictos con Spring -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Fuentes para JasperReports (necesario para renderizar texto correctamente) -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>6.21.3</version>
+		</dependency>
+
+		<!-- iText para exportar reportes a PDF -->
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+
+		<!-- Apache POI para exportar reportes a Excel (opcional pero útil) -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>

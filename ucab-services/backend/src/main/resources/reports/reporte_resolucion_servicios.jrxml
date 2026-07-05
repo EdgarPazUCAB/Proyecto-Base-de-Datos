@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+            http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="reporte_resolucion_servicios"
+        pageWidth="842"
+        pageHeight="595"
+        orientation="Landscape"
+        columnWidth="782"
+        leftMargin="30"
+        rightMargin="30"
+        topMargin="30"
+        bottomMargin="30"
+        uuid="b2c3d4e5-f6a7-4901-bcde-f12345678901">
+
+    <parameter name="fechaInicio" class="java.lang.String">
+        <defaultValueExpression><![CDATA["2000-01-01"]]></defaultValueExpression>
+    </parameter>
+    <parameter name="fechaFin" class="java.lang.String">
+        <defaultValueExpression><![CDATA["2099-12-31"]]></defaultValueExpression>
+    </parameter>
+
+    <queryString language="SQL">
+        <![CDATA[
+            SELECT
+                s.Codigo_Servicio                                        AS "codigoServicio",
+                s.Descripcion_detallada                                  AS "descripcionServicio",
+                CASE ep.tipo_entidad
+                    WHEN 'Interna' THEN COALESCE(i.director_oficina, 'Entidad Interna #' || ep.id_entidad::text)
+                    WHEN 'Externa' THEN COALESCE(e.razon_social,     'Entidad Externa #' || ep.id_entidad::text)
+                    ELSE 'Desconocida'
+                END                                                      AS "dependencia",
+                COUNT(ss.Identificador)                                  AS "totalSolicitudes",
+                COUNT(CASE WHEN ss.Estado_actual = 'Completada' THEN 1 END) AS "completadas",
+                COUNT(CASE WHEN ss.Estado_actual = 'Pendiente'  THEN 1 END) AS "pendientes",
+                COUNT(CASE WHEN ss.Estado_actual = 'En_Proceso' THEN 1 END) AS "enProceso",
+                COUNT(CASE WHEN ss.Estado_actual = 'Cancelada'  THEN 1 END) AS "canceladas",
+                ROUND(
+                    AVG(EXTRACT(EPOCH FROM ss.Tiempo_resolucion) / 86400.0)
+                    FILTER (WHERE ss.Tiempo_resolucion IS NOT NULL AND ss.Estado_actual = 'Completada'),
+                    1
+                )                                                        AS "tiempoPromediosDias",
+                ROUND(
+                    100.0 * COUNT(
+                        CASE
+                            WHEN ss.Estado_actual = 'Completada'
+                             AND ss.Tiempo_resolucion IS NOT NULL
+                             AND EXTRACT(EPOCH FROM ss.Tiempo_resolucion)/86400.0 <= 5
+                            THEN 1
+                        END
+                    ) / NULLIF(COUNT(CASE WHEN ss.Estado_actual = 'Completada' THEN 1 END), 0),
+                    1
+                )                                                        AS "porcentajeATiempo"
+            FROM Solicitud_Servicio ss
+            JOIN Servicio s            ON ss.Codigo_Servicio = s.Codigo_Servicio
+            JOIN Entidad_Prestadora ep ON s.id_entidad = ep.id_entidad
+            LEFT JOIN Interna i        ON ep.id_entidad = i.id_entidad
+            LEFT JOIN Externa e        ON ep.id_entidad = e.id_entidad
+            WHERE ss.Fecha_creacion::date BETWEEN $P{fechaInicio}::date AND $P{fechaFin}::date
+            GROUP BY
+                s.Codigo_Servicio,
+                s.Descripcion_detallada,
+                ep.tipo_entidad,
+                ep.id_entidad,
+                i.director_oficina,
+                e.razon_social
+            ORDER BY COUNT(ss.Identificador) DESC
+        ]]>
+    </queryString>
+
+    <field name="codigoServicio"      class="java.lang.String"/>
+    <field name="descripcionServicio" class="java.lang.String"/>
+    <field name="dependencia"         class="java.lang.String"/>
+    <field name="totalSolicitudes"    class="java.lang.Long"/>
+    <field name="completadas"         class="java.lang.Long"/>
+    <field name="pendientes"          class="java.lang.Long"/>
+    <field name="enProceso"           class="java.lang.Long"/>
+    <field name="canceladas"          class="java.lang.Long"/>
+    <field name="tiempoPromediosDias" class="java.math.BigDecimal"/>
+    <field name="porcentajeATiempo"   class="java.math.BigDecimal"/>
+
+    <variable name="totalGlobal" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{totalSolicitudes}]]></variableExpression>
+    </variable>
+    <variable name="totalCompletadasGlobal" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{completadas}]]></variableExpression>
+    </variable>
+    <variable name="rowNum" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[true]]></variableExpression>
+    </variable>
+
+    <!-- ═══════════ TÍTULO ═══════════ -->
+    <title>
+        <band height="100" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="60" backcolor="#006E2F"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000001"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="12" y="8" width="400" height="24" forecolor="#FFFFFF"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000002"/>
+                <textElement><font fontName="Arial" size="16" isBold="true"/></textElement>
+                <text><![CDATA[UCAB SERVICES]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="12" y="34" width="580" height="18" forecolor="#A8F0C2"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000003"/>
+                <textElement><font fontName="Arial" size="11"/></textElement>
+                <text><![CDATA[Reporte de Resolución de Servicios — Análisis Ejecutivo de Eficiencia Operativa]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="580" y="34" width="202" height="18" forecolor="#A8F0C2"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000004"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="9"/></textElement>
+                <textFieldExpression><![CDATA["Generado: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="12" y="68" width="400" height="16"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000005"/>
+                <textElement><font fontName="Arial" size="9" isItalic="true"/></textElement>
+                <textFieldExpression><![CDATA["Período: " + $P{fechaInicio} + "  al  " + $P{fechaFin}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="580" y="68" width="202" height="16" forecolor="#BA1A1A"
+                               uuid="1a2b3c4d-0001-4000-a001-000000000006"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="8" isBold="true"/></textElement>
+                <text><![CDATA[ACCESO: PERSONAL ADMINISTRATIVO]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- ═══════════ ENCABEZADO DE COLUMNAS ═══════════ -->
+    <columnHeader>
+        <band height="28" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="28" backcolor="#283593"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000001"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="4" y="7" width="14" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000002"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[#]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="20" y="7" width="55" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000003"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[CÓDIGO]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="80" y="7" width="180" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000004"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[SERVICIO / DESCRIPCIÓN]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="265" y="7" width="100" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000005"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[DEPENDENCIA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="368" y="7" width="55" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000006"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[SOLICITUDES]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="428" y="7" width="48" height="14" forecolor="#A8F0C2"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000007"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[COMPLET.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="480" y="7" width="45" height="14" forecolor="#FFF9C4"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000008"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[PENDIENT.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="528" y="7" width="45" height="14" forecolor="#FFD54F"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000009"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[EN PROC.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="576" y="7" width="45" height="14" forecolor="#FFCDD2"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000010"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[CANCEL.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="624" y="7" width="68" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000011"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[T. PROM. (d)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="696" y="7" width="86" height="14" forecolor="#FFFFFF"
+                               uuid="2b3c4d5e-0002-4000-b002-000000000012"/>
+                <textElement textAlignment="Center"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[SLA % A TIEMPO]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- ═══════════ DETALLE ═══════════ -->
+    <detail>
+        <band height="22" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="22" backcolor="#EFF4FF"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000001">
+                    <printWhenExpression><![CDATA[$V{rowNum} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <line>
+                <reportElement x="0" y="21" width="782" height="1" forecolor="#BCCBB9"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000002"/>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
+            </line>
+            <textField>
+                <reportElement x="4" y="5" width="16" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000003"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$V{rowNum} + "."]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="20" y="5" width="55" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000004"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{codigoServicio}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="80" y="5" width="180" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000005"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{descripcionServicio} != null ? $F{descripcionServicio} : "—"]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="265" y="5" width="100" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000006"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{dependencia}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="368" y="5" width="55" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000007"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{totalSolicitudes}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="428" y="5" width="48" height="12" forecolor="#006E2F"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000008"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{completadas}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="480" y="5" width="45" height="12" forecolor="#1A237E"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000009"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{pendientes}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="528" y="5" width="45" height="12" forecolor="#E65100"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000010"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{enProceso}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="576" y="5" width="45" height="12" forecolor="#B71C1C"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000011"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{canceladas}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.0">
+                <reportElement x="624" y="5" width="68" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000012"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{tiempoPromediosDias} != null ? $F{tiempoPromediosDias} : java.math.BigDecimal.ZERO]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="696" y="5" width="86" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000013">
+                    <printWhenExpression><![CDATA[$F{porcentajeATiempo} != null]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{porcentajeATiempo} + " %"]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="696" y="5" width="86" height="12"
+                               uuid="3c4d5e6f-0003-4000-c003-000000000014">
+                    <printWhenExpression><![CDATA[$F{porcentajeATiempo} == null]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font fontName="Arial" size="7"/></textElement>
+                <text><![CDATA[N/A]]></text>
+            </staticText>
+        </band>
+    </detail>
+
+    <!-- ═══════════ PIE DE PÁGINA ═══════════ -->
+    <pageFooter>
+        <band height="22" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="782" height="1" forecolor="#006E2F"
+                               uuid="4d5e6f7a-0004-4000-d004-000000000001"/>
+                <graphicElement><pen lineWidth="1.0"/></graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="5" width="350" height="12"
+                               uuid="4d5e6f7a-0004-4000-d004-000000000002"/>
+                <textElement><font fontName="Arial" size="7" isItalic="true"/></textElement>
+                <text><![CDATA[Documento confidencial — Uso interno / Personal Administrativo UCAB]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="636" y="5" width="146" height="12"
+                               uuid="4d5e6f7a-0004-4000-d004-000000000003"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de " + $V{PAGE_COUNT}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <!-- ═══════════ RESUMEN FINAL ═══════════ -->
+    <summary>
+        <band height="100" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="782" height="1" forecolor="#006E2F"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000001"/>
+                <graphicElement><pen lineWidth="2.0"/></graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="8" width="782" height="18"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000002"/>
+                <textElement><font fontName="Arial" size="12" isBold="true"/></textElement>
+                <text><![CDATA[Resumen Global del Período]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="32" width="140" height="14"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000003"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Total de Solicitudes:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="145" y="32" width="80" height="14" forecolor="#006E2F"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000004"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalGlobal}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="240" y="32" width="130" height="14"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000005"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Solicitudes Completadas:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="375" y="32" width="80" height="14" forecolor="#006E2F"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000006"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalCompletadasGlobal}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="480" y="32" width="160" height="14"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000007"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[% Completadas del total:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="645" y="32" width="137" height="14" forecolor="#006E2F"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000008"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalGlobal} != null && $V{totalGlobal} > 0 ? String.format("%.1f %%", 100.0 * $V{totalCompletadasGlobal} / $V{totalGlobal}) : "N/A"]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="60" width="782" height="36" forecolor="#565E74"
+                               uuid="5e6f7a8b-0005-4000-e005-000000000009"/>
+                <textElement><font fontName="Arial" size="7" isItalic="true"/></textElement>
+                <text><![CDATA[Nota: SLA de referencia = 5 días calendario. Solicitudes Pendientes/En Proceso no se incluyen en el tiempo promedio.
+Tiempo_resolucion = diferencia entre Fecha_Fin y Fecha_Inicio de cada solicitud completada.
+SLA% = (Completadas en <= 5 días / Total completadas) x 100.]]></text>
+            </staticText>
+        </band>
+    </summary>
+
+</jasperReport>

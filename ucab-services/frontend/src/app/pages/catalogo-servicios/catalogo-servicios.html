@@ -1,11 +1,21 @@
 <div class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
   <header class="bg-surface shadow-sm border-b border-outline-variant py-xl">
     <div class="max-w-container-max mx-auto px-lg flex flex-col gap-md">
-      <h1 class="font-h1 text-h1 text-on-surface font-black">Catálogo de Servicios</h1>
-      <p class="text-on-surface-variant font-body-lg">
-        Explore y solicite los servicios disponibles para la comunidad UCAB.
-      </p>
-
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-md">
+        <div>
+          <h1 class="font-h1 text-h1 text-on-surface font-black">Catálogo de Servicios</h1>
+          <p class="text-on-surface-variant font-body-lg">
+            Explore y solicite los servicios disponibles para la comunidad UCAB.
+          </p>
+        </div>
+        @if (esAdmin) {
+          <a routerLink="/reporte-resolucion"
+             class="inline-flex items-center gap-sm px-md py-sm bg-primary text-on-primary font-body-sm text-body-sm font-semibold rounded-lg hover:bg-on-primary-fixed-variant transition-colors shadow-[0_2px_6px_rgba(0,110,47,0.25)] whitespace-nowrap self-start mt-xs">
+            <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+            Reporte de Resolución
+          </a>
+        }
+      </div>
       <div class="flex flex-col md:flex-row gap-sm mt-md">
         <div class="relative flex-grow">
           <span

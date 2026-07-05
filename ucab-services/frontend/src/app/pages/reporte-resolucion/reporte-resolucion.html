@@ -1,0 +1,127 @@
+<!-- Reporte de Resolución de Servicios — Solo PERSONAL_ADMINISTRATIVO -->
+<div class="reporte-page">
+
+  <!-- ── Acceso denegado ── -->
+  <div *ngIf="errorAcceso" class="error-acceso">
+    <div class="error-icon">🔒</div>
+    <h2>Acceso Restringido</h2>
+    <p>{{ errorMensaje }}</p>
+    <button class="btn-back" routerLink="/dashboard">Volver al Dashboard</button>
+  </div>
+
+  <!-- ── Contenido principal ── -->
+  <div *ngIf="!errorAcceso" class="reporte-contenido">
+
+    <!-- Encabezado -->
+    <header class="reporte-header">
+      <div class="header-left">
+        <button class="btn-back-sm" routerLink="/dashboard">
+          ← Dashboard
+        </button>
+        <div>
+          <span class="badge-admin">Personal Administrativo</span>
+          <h1 class="titulo">Reporte de Resolución de Servicios</h1>
+          <p class="subtitulo">
+            Análisis ejecutivo de eficiencia operativa y tiempos de respuesta.
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-excel" (click)="descargarExcel()" [disabled]="cargando">
+          <span class="icon">📊</span>
+          {{ cargando ? 'Generando...' : 'Exportar Excel' }}
+        </button>
+        <button class="btn-pdf" (click)="descargarPdf()" [disabled]="cargando">
+          <span class="icon">📄</span>
+          {{ cargando ? 'Generando...' : 'Exportar PDF' }}
+        </button>
+      </div>
+    </header>
+
+    <!-- Panel de filtros -->
+    <section class="filtros-panel">
+      <h3 class="filtros-titulo">Parámetros del Reporte</h3>
+      <div class="filtros-grid">
+        <div class="filtro-group">
+          <label for="fechaInicio">Fecha Inicio</label>
+          <input
+            id="fechaInicio"
+            type="date"
+            [(ngModel)]="fechaInicio"
+            class="input-fecha"
+          />
+        </div>
+        <div class="filtro-group">
+          <label for="fechaFin">Fecha Fin</label>
+          <input
+            id="fechaFin"
+            type="date"
+            [(ngModel)]="fechaFin"
+            class="input-fecha"
+          />
+        </div>
+      </div>
+      <p class="filtros-nota">
+        💡 Los filtros aplican sobre la fecha de creación de cada solicitud.
+        Deja los campos vacíos para obtener el historial completo.
+      </p>
+    </section>
+
+    <!-- Loader -->
+    <div *ngIf="cargando" class="loader-container">
+      <div class="spinner"></div>
+      <p>Generando reporte desde la base de datos...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMensaje && !cargando" class="error-msg">
+      ⚠️ {{ errorMensaje }}
+    </div>
+
+    <!-- Info del reporte -->
+    <section class="info-section">
+      <h3>¿Qué incluye este reporte?</h3>
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-icon">⏱️</span>
+          <h4>Tiempo Promedio</h4>
+          <p>Días promedio para resolver cada servicio (solo solicitudes completadas).</p>
+        </div>
+        <div class="info-card">
+          <span class="info-icon">✅</span>
+          <h4>Cumplimiento SLA</h4>
+          <p>% de solicitudes resueltas en 5 días o menos (SLA de referencia).</p>
+        </div>
+        <div class="info-card">
+          <span class="info-icon">📋</span>
+          <h4>Volumen por Servicio</h4>
+          <p>Total, completadas, pendientes, en proceso y canceladas por servicio.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-icon">🏢</span>
+          <h4>Por Dependencia</h4>
+          <p>Agrupado por entidad prestadora interna (director) o externa (razón social).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acciones principales -->
+    <section class="actions-section">
+      <div class="action-card action-pdf" (click)="descargarPdf()">
+        <span class="action-icon">📄</span>
+        <div>
+          <h4>Descargar PDF</h4>
+          <p>Reporte ejecutivo listo para imprimir o compartir.</p>
+        </div>
+      </div>
+      <div class="action-card action-excel" (click)="descargarExcel()">
+        <span class="action-icon">📊</span>
+        <div>
+          <h4>Descargar Excel</h4>
+          <p>Datos tabulados para análisis y cruce con otras fuentes.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>

@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <-- 1. IMPORTAMOS FORMS MODULE PARA LOS FILTROS
+import { FormsModule } from '@angular/forms';
 import { ServicioService, Servicio } from '../../services/servicio.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-catalogo-servicios',
@@ -21,13 +22,17 @@ export class CatalogoServicios implements OnInit {
   
   cargando: boolean = true;
   error: string = '';
+  esAdmin: boolean = false;
 
   constructor(
     private servicioService: ServicioService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const usuario = this.authService.obtenerUsuarioActual();
+    this.esAdmin = (usuario?.correo ?? '').includes('@adm.');
     this.cargarServicios();
   }
 

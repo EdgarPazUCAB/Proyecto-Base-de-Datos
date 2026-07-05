@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+            http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="reporte_conciliacion_diaria"
+        pageWidth="842"
+        pageHeight="595"
+        orientation="Landscape"
+        columnWidth="782"
+        leftMargin="30"
+        rightMargin="30"
+        topMargin="30"
+        bottomMargin="30"
+        uuid="a1b2c3d4-0010-4000-a010-000000000001">
+
+    <!-- ── Parámetros ── -->
+    <parameter name="fechaReporte" class="java.lang.String">
+        <defaultValueExpression><![CDATA[java.time.LocalDate.now().toString()]]></defaultValueExpression>
+    </parameter>
+
+    <!-- ══════════════════════════════════════════════════════════
+         QUERY PRINCIPAL: todos los pagos del día con su subtipo
+         ══════════════════════════════════════════════════════════ -->
+    <queryString language="SQL">
+        <![CDATA[
+        SELECT
+            p.Numero_control_Factura                   AS "referencia",
+            p.tipo_pago                                AS "canal",
+            p.canal_origen                             AS "canalOrigen",
+            p.monto_liquidacion                        AS "montoLiquidacion",
+            p.fecha_operacion                          AS "fechaOperacion",
+            /* Referencia específica según subtipo */
+            COALESCE(
+                pm.referencia,
+                cr.dxid,
+                ze.codigo_confirmacion,
+                ta.num_tarjeta,
+                ef.divisa,
+                'TAI-' || pt.pos_terminal
+            )                                          AS "referenciaDetalle",
+            /* Tasa de conversión cuando aplica */
+            COALESCE(cr.tasa_conversion, ef.tasa_bcv)  AS "tasaConversion",
+            /* Divisa / origen */
+            CASE p.tipo_pago
+                WHEN 'Zelle'         THEN 'USD'
+                WHEN 'Criptomonedas' THEN COALESCE(cr.red_blockchain, 'CRIPTO')
+                WHEN 'Efectivo'      THEN COALESCE(ef.divisa, 'VES')
+                ELSE 'VES'
+            END                                        AS "divisa",
+            /* Datos adicionales por tipo */
+            COALESCE(pm.banco, ze.nombre_titular, cr.billetera, ta.compania, ef.divisa, '') AS "infoAdicional",
+            /* Estado simplificado: si hay referencia detalle = Conciliado */
+            CASE
+                WHEN pm.referencia IS NOT NULL       THEN 'Conciliado'
+                WHEN ze.codigo_confirmacion IS NOT NULL THEN 'Conciliado'
+                WHEN ta.num_tarjeta IS NOT NULL      THEN 'Conciliado'
+                WHEN pt.pos_terminal IS NOT NULL     THEN 'Conciliado'
+                WHEN cr.dxid IS NOT NULL             THEN 'Discrepancia'
+                WHEN ef.divisa IS NOT NULL           THEN 'Discrepancia'
+                ELSE 'Pendiente'
+            END                                        AS "estado"
+        FROM Pago p
+        LEFT JOIN Pago_Movil     pm ON pm.Numero_control_Factura = p.Numero_control_Factura
+                                   AND pm.fecha_operacion = p.fecha_operacion
+        LEFT JOIN Criptomonedas  cr ON cr.Numero_control_Factura = p.Numero_control_Factura
+                                   AND cr.fecha_operacion = p.fecha_operacion
+        LEFT JOIN Zelle          ze ON ze.Numero_control_Factura = p.Numero_control_Factura
+                                   AND ze.fecha_operacion = p.fecha_operacion
+        LEFT JOIN Efectivo       ef ON ef.Numero_control_Factura = p.Numero_control_Factura
+                                   AND ef.fecha_operacion = p.fecha_operacion
+        LEFT JOIN Tarjeta        ta ON ta.Numero_control_Factura = p.Numero_control_Factura
+                                   AND ta.fecha_operacion = p.fecha_operacion
+        LEFT JOIN Pago_TAI       pt ON pt.Numero_control_Factura = p.Numero_control_Factura
+                                   AND pt.fecha_operacion = p.fecha_operacion
+        WHERE p.fecha_operacion::date = $P{fechaReporte}::date
+        ORDER BY p.canal_origen, p.tipo_pago, p.fecha_operacion
+        ]]>
+    </queryString>
+
+    <!-- ── Campos ── -->
+    <field name="referencia"      class="java.lang.String"/>
+    <field name="canal"           class="java.lang.String"/>
+    <field name="canalOrigen"     class="java.lang.String"/>
+    <field name="montoLiquidacion" class="java.math.BigDecimal"/>
+    <field name="fechaOperacion"  class="java.sql.Timestamp"/>
+    <field name="referenciaDetalle" class="java.lang.String"/>
+    <field name="tasaConversion"  class="java.math.BigDecimal"/>
+    <field name="divisa"          class="java.lang.String"/>
+    <field name="infoAdicional"   class="java.lang.String"/>
+    <field name="estado"          class="java.lang.String"/>
+
+    <!-- ── Variables ── -->
+    <variable name="totalIngresos" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{montoLiquidacion}]]></variableExpression>
+    </variable>
+    <variable name="totalConciliados" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA["Conciliado".equals($F{estado}) ? $F{montoLiquidacion} : java.math.BigDecimal.ZERO]]></variableExpression>
+    </variable>
+    <variable name="totalDiscrepancia" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA["Discrepancia".equals($F{estado}) ? $F{montoLiquidacion} : java.math.BigDecimal.ZERO]]></variableExpression>
+    </variable>
+    <variable name="conteoTotal" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[true]]></variableExpression>
+    </variable>
+    <variable name="rowNum" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[true]]></variableExpression>
+    </variable>
+
+    <!-- ══════════════════════════════════════════
+         TÍTULO
+    ══════════════════════════════════════════ -->
+    <title>
+        <band height="88" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="56" backcolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000002"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="12" y="8" width="300" height="22" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000003"/>
+                <textElement><font fontName="Arial" size="15" isBold="true"/></textElement>
+                <text><![CDATA[UCAB SERVICES]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="12" y="30" width="500" height="16" forecolor="#A8F0C2"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000004"/>
+                <textElement><font fontName="Arial" size="10"/></textElement>
+                <text><![CDATA[Reporte Diario de Conciliación Financiera]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="12" y="62" width="400" height="16"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000005"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["Fecha del Reporte: " + $P{fechaReporte} + "   |   Generado: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="600" y="62" width="182" height="16" forecolor="#BA1A1A"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000006"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="8" isBold="true"/></textElement>
+                <text><![CDATA[CONFIDENCIAL — PERSONAL ADMINISTRATIVO]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- ══════════════════════════════════════════
+         ENCABEZADO DE COLUMNAS
+    ══════════════════════════════════════════ -->
+    <columnHeader>
+        <band height="26" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="26" backcolor="#1A237E"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000007"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="4" y="6" width="14" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000008"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[#]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="20" y="6" width="90" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000009"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[FACTURA / REF]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="115" y="6" width="70" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000010"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[CANAL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="188" y="6" width="60" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000011"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[ORIGEN]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="252" y="6" width="120" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000012"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[REF. ESPECÍFICA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="376" y="6" width="60" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000013"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[DIVISA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="440" y="6" width="80" height="14" forecolor="#FFF9C4"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000014"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[TASA CONV.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="524" y="6" width="100" height="14" forecolor="#A8F0C2"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000015"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[MONTO (Bs)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="628" y="6" width="90" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000016"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[HORA OP.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="722" y="6" width="60" height="14" forecolor="#FFFFFF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000017"/>
+                <textElement textAlignment="Center"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <text><![CDATA[ESTADO]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- ══════════════════════════════════════════
+         DETALLE
+    ══════════════════════════════════════════ -->
+    <detail>
+        <band height="20" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="20" backcolor="#EFF4FF"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000018">
+                    <printWhenExpression><![CDATA[$V{rowNum} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <line>
+                <reportElement x="0" y="19" width="782" height="1" forecolor="#D3E4FE"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000019"/>
+                <graphicElement><pen lineWidth="0.4"/></graphicElement>
+            </line>
+            <!-- # -->
+            <textField>
+                <reportElement x="4" y="4" width="14" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000020"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$V{rowNum} + "."]]></textFieldExpression>
+            </textField>
+            <!-- Factura -->
+            <textField isStretchWithOverflow="true">
+                <reportElement x="20" y="4" width="90" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000021"/>
+                <textElement><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{referencia}]]></textFieldExpression>
+            </textField>
+            <!-- Canal -->
+            <textField>
+                <reportElement x="115" y="4" width="70" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000022"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{canal}]]></textFieldExpression>
+            </textField>
+            <!-- Origen Digital/Presencial -->
+            <textField>
+                <reportElement x="188" y="4" width="60" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000023"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{canalOrigen} != null ? $F{canalOrigen} : "—"]]></textFieldExpression>
+            </textField>
+            <!-- Ref específica -->
+            <textField isStretchWithOverflow="true">
+                <reportElement x="252" y="4" width="120" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000024"/>
+                <textElement><font fontName="Arial" size="6"/></textElement>
+                <textFieldExpression><![CDATA[$F{referenciaDetalle} != null ? $F{referenciaDetalle} : "—"]]></textFieldExpression>
+            </textField>
+            <!-- Divisa -->
+            <textField>
+                <reportElement x="376" y="4" width="60" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000025"/>
+                <textElement><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{divisa}]]></textFieldExpression>
+            </textField>
+            <!-- Tasa -->
+            <textField pattern="#,##0.00">
+                <reportElement x="440" y="4" width="80" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000026">
+                    <printWhenExpression><![CDATA[$F{tasaConversion} != null]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{tasaConversion}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="440" y="4" width="80" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000027">
+                    <printWhenExpression><![CDATA[$F{tasaConversion} == null]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <text><![CDATA[—]]></text>
+            </staticText>
+            <!-- Monto Bs -->
+            <textField pattern="#,##0.00">
+                <reportElement x="524" y="4" width="100" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000028"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{montoLiquidacion}]]></textFieldExpression>
+            </textField>
+            <!-- Hora operación -->
+            <textField pattern="HH:mm:ss">
+                <reportElement x="628" y="4" width="90" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000029"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{fechaOperacion}]]></textFieldExpression>
+            </textField>
+            <!-- Estado -->
+            <textField>
+                <reportElement x="722" y="4" width="60" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000030">
+                    <printWhenExpression><![CDATA["Conciliado".equals($F{estado})]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font fontName="Arial" size="6" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="722" y="4" width="60" height="12" forecolor="#BA1A1A"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000031">
+                    <printWhenExpression><![CDATA[!"Conciliado".equals($F{estado})]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font fontName="Arial" size="6" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- ══════════════════════════════════════════
+         PIE DE PÁGINA
+    ══════════════════════════════════════════ -->
+    <pageFooter>
+        <band height="20" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="782" height="1" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000032"/>
+                <graphicElement><pen lineWidth="0.8"/></graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="5" width="400" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000033"/>
+                <textElement><font fontName="Arial" size="7" isItalic="true"/></textElement>
+                <text><![CDATA[Documento confidencial — Uso exclusivo del Personal Administrativo UCAB]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="636" y="5" width="146" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000034"/>
+                <textElement textAlignment="Right"><font fontName="Arial" size="7"/></textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de " + $V{PAGE_COUNT}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <!-- ══════════════════════════════════════════
+         RESUMEN FINAL — KPIs
+    ══════════════════════════════════════════ -->
+    <summary>
+        <band height="120" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="782" height="1" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000035"/>
+                <graphicElement><pen lineWidth="2.0"/></graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="8" width="400" height="16"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000036"/>
+                <textElement><font fontName="Arial" size="12" isBold="true"/></textElement>
+                <text><![CDATA[Resumen Ejecutivo de Conciliación]]></text>
+            </staticText>
+
+            <!-- KPI: Total Ingresos -->
+            <staticText>
+                <reportElement x="0" y="32" width="180" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000037"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Total Ingresos (Bs):]]></text>
+            </staticText>
+            <textField pattern="Bs. #,##0.00">
+                <reportElement x="185" y="32" width="130" height="12" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000038"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalIngresos}]]></textFieldExpression>
+            </textField>
+
+            <!-- KPI: Monto Conciliado -->
+            <staticText>
+                <reportElement x="0" y="50" width="180" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000039"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Monto Conciliado (Bs):]]></text>
+            </staticText>
+            <textField pattern="Bs. #,##0.00">
+                <reportElement x="185" y="50" width="130" height="12" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000040"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalConciliados}]]></textFieldExpression>
+            </textField>
+
+            <!-- KPI: Discrepancias -->
+            <staticText>
+                <reportElement x="0" y="68" width="180" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000041"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Monto con Discrepancia (Bs):]]></text>
+            </staticText>
+            <textField pattern="Bs. #,##0.00">
+                <reportElement x="185" y="68" width="130" height="12" forecolor="#BA1A1A"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000042"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalDiscrepancia}]]></textFieldExpression>
+            </textField>
+
+            <!-- KPI: Total transacciones -->
+            <staticText>
+                <reportElement x="400" y="32" width="180" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000043"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[Total Transacciones:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="585" y="32" width="80" height="12" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000044"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{conteoTotal}]]></textFieldExpression>
+            </textField>
+
+            <!-- KPI: % Conciliado -->
+            <staticText>
+                <reportElement x="400" y="50" width="180" height="12"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000045"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <text><![CDATA[% Monto Conciliado:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="585" y="50" width="130" height="12" forecolor="#006E2F"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000046"/>
+                <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$V{totalIngresos} != null && $V{totalIngresos}.compareTo(java.math.BigDecimal.ZERO) > 0 ? String.format("%.1f %%", $V{totalConciliados}.multiply(new java.math.BigDecimal(100)).divide($V{totalIngresos}, 1, java.math.RoundingMode.HALF_UP)) : "N/A"]]></textFieldExpression>
+            </textField>
+
+            <!-- Nota metodológica -->
+            <staticText>
+                <reportElement x="0" y="90" width="782" height="26" forecolor="#565E74"
+                               uuid="a1b2c3d4-0010-4000-a010-000000000047"/>
+                <textElement><font fontName="Arial" size="7" isItalic="true"/></textElement>
+                <text><![CDATA[Notas: Estado "Conciliado" = pago con referencia verificable (PM con n. referencia, Zelle con codigo de confirmacion, Tarjeta con num. tarjeta, TAI con terminal POS).
+Estado "Discrepancia" = Criptomonedas y Efectivo requieren validacion manual adicional de la tasa de cambio. Monto en Bs segun monto_liquidacion registrado en el sistema.]]></text>
+            </staticText>
+        </band>
+    </summary>
+
+</jasperReport>

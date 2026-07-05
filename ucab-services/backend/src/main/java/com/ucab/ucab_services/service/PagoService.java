@@ -881,10 +881,10 @@ public class PagoService {
                 throw new RuntimeException("Saldo insuficiente en la Billetera TAI. Saldo actual: " + saldoBilletera);
             }
 
-            // Descontar saldo de Billetera TAI
+            // Descontar saldo de Billetera TAI (ambas columnas para mantener consistencia)
             double nuevoSaldo = saldoBilletera - monto;
-            String updateBilletera = "UPDATE Billetera_TAI SET Saldo_Restante = ? WHERE UID = ?";
-            jdbcTemplate.update(updateBilletera, nuevoSaldo, uidBilletera);
+            String updateBilletera = "UPDATE Billetera_TAI SET Saldo_Restante = ?, Saldo_Virtual = ? WHERE UID = ?";
+            jdbcTemplate.update(updateBilletera, nuevoSaldo, nuevoSaldo, uidBilletera);
 
 
             // 3. Actualizamos Folio_Consumo y Solicitud_Servicio

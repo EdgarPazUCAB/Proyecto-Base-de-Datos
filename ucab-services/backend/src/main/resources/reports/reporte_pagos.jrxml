@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ═══════════════════════════════════════════════════════════════════
+     REPORTE: Historial de Pagos por Miembro
+     ARCHIVO: reporte_pagos.jrxml
+     UBICACIÓN: src/main/resources/reports/reporte_pagos.jrxml
+
+     CÓMO USAR EN JASPERSOFT STUDIO:
+     1. Abre este archivo en Jaspersoft Studio (File → Open File)
+     2. Configura la conexión a PostgreSQL en el panel "Data Adapters"
+        (Window → Preferences → Jaspersoft Studio → Data Adapters)
+     3. Haz clic derecho sobre el archivo → "Compile Report" para generar .jasper
+     4. Copia el .jasper compilado a src/main/resources/reports/
+     5. Llama al endpoint: GET /api/reportes/reporte_pagos/pdf?cedula=V-12345678
+     ═══════════════════════════════════════════════════════════════════ -->
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+            http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="reporte_pagos"
+        pageWidth="595"
+        pageHeight="842"
+        columnWidth="535"
+        leftMargin="30"
+        rightMargin="30"
+        topMargin="30"
+        bottomMargin="30"
+        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+
+    <!-- ── Parámetros recibidos desde el endpoint ────────────────── -->
+    <parameter name="cedula" class="java.lang.String">
+        <defaultValueExpression><![CDATA["V-12345678"]]></defaultValueExpression>
+    </parameter>
+
+    <!-- ── Query SQL principal ───────────────────────────────────── -->
+    <queryString language="SQL">
+        <![CDATA[
+            SELECT
+                p.Numero_control_Factura   AS "numeroControl",
+                TO_CHAR(p.fecha_operacion, 'DD/MM/YYYY HH24:MI') AS "fechaOperacion",
+                p.tipo_pago                AS "tipoPago",
+                p.monto_liquidacion        AS "montoLiquidacion",
+                f.Estatus_factura          AS "estatusFactura",
+                f.Monto_total              AS "montoTotal",
+                m.nombre_completo          AS "nombreMiembro",
+                f.Cedula_Miembro           AS "cedulaMiembro"
+            FROM Pago p
+            JOIN Factura f ON p.Numero_control_Factura = f.Numero_control
+            JOIN Miembro m ON f.Cedula_Miembro = m.Cedula_Miembro
+            WHERE f.Cedula_Miembro = $P{cedula}
+            ORDER BY p.fecha_operacion DESC
+        ]]>
+    </queryString>
+
+    <!-- ── Campos que vienen del query ───────────────────────────── -->
+    <field name="numeroControl"    class="java.lang.String"/>
+    <field name="fechaOperacion"   class="java.lang.String"/>
+    <field name="tipoPago"         class="java.lang.String"/>
+    <field name="montoLiquidacion" class="java.math.BigDecimal"/>
+    <field name="estatusFactura"   class="java.lang.String"/>
+    <field name="montoTotal"       class="java.math.BigDecimal"/>
+    <field name="nombreMiembro"    class="java.lang.String"/>
+    <field name="cedulaMiembro"    class="java.lang.String"/>
+
+    <!-- ── Variables calculadas ──────────────────────────────────── -->
+    <variable name="totalPagado" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{montoLiquidacion}]]></variableExpression>
+    </variable>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SECCIONES DEL REPORTE
+         ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ── Encabezado de página (aparece una sola vez al inicio) ─── -->
+    <title>
+        <band height="90" splitType="Stretch">
+            <!-- Fondo del título -->
+            <rectangle>
+                <reportElement x="0" y="0" width="535" height="60" backcolor="#1A237E" uuid="rect-title-bg"/>
+                <graphicElement>
+                    <pen lineWidth="0.0"/>
+                </graphicElement>
+            </rectangle>
+            <!-- Logo / Nombre institución -->
+            <staticText>
+                <reportElement x="10" y="8" width="300" height="22" forecolor="#FFFFFF" uuid="txt-institution"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[UCAB Services]]></text>
+            </staticText>
+            <!-- Subtítulo del reporte -->
+            <staticText>
+                <reportElement x="10" y="32" width="515" height="20" forecolor="#C5CAE9" uuid="txt-subtitle"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[Historial de Pagos por Miembro]]></text>
+            </staticText>
+            <!-- Nombre del miembro -->
+            <textField>
+                <reportElement x="0" y="65" width="350" height="18" uuid="tf-miembro"/>
+                <textElement>
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Miembro: " + $F{nombreMiembro} + "  |  Cédula: " + $F{cedulaMiembro}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- ── Encabezado de columnas (se repite en cada página) ─────── -->
+    <columnHeader>
+        <band height="24" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="535" height="24" backcolor="#283593" uuid="rect-header-bg"/>
+                <graphicElement>
+                    <pen lineWidth="0.0"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="2"   y="5" width="110" height="14" forecolor="#FFFFFF" uuid="hdr-control"/>
+                <textElement><font size="8" isBold="true"/></textElement>
+                <text><![CDATA[N° Control]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="112" y="5" width="100" height="14" forecolor="#FFFFFF" uuid="hdr-fecha"/>
+                <textElement><font size="8" isBold="true"/></textElement>
+                <text><![CDATA[Fecha]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="212" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="hdr-tipo"/>
+                <textElement><font size="8" isBold="true"/></textElement>
+                <text><![CDATA[Método]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="292" y="5" width="90" height="14" forecolor="#FFFFFF" uuid="hdr-monto"/>
+                <textElement><font size="8" isBold="true" isItalic="false"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <text><![CDATA[Monto Pagado (Bs)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="382" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="hdr-estatus"/>
+                <textElement><font size="8" isBold="true"/></textElement>
+                <text><![CDATA[Estatus]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="462" y="5" width="73" height="14" forecolor="#FFFFFF" uuid="hdr-total"/>
+                <textElement>
+                    <font size="8" isBold="true"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <text><![CDATA[Total Fact. (Bs)]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- ── Detalle: una fila por cada pago ───────────────────────── -->
+    <detail>
+        <band height="20" splitType="Stretch">
+            <!-- Fondo alternado por fila -->
+            <rectangle>
+                <reportElement x="0" y="0" width="535" height="20" backcolor="#E8EAF6"
+                               uuid="rect-row-alt" isPrintWhenDetailOverflows="false">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="2"   y="4" width="110" height="12" uuid="tf-control"/>
+                <textElement><font size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{numeroControl}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="112" y="4" width="100" height="12" uuid="tf-fecha"/>
+                <textElement><font size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{fechaOperacion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="212" y="4" width="80" height="12" uuid="tf-tipo"/>
+                <textElement><font size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{tipoPago}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="292" y="4" width="90" height="12" uuid="tf-monto"/>
+                <textElement>
+                    <font size="7"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{montoLiquidacion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="382" y="4" width="80" height="12" uuid="tf-estatus"/>
+                <textElement><font size="7"/></textElement>
+                <textFieldExpression><![CDATA[$F{estatusFactura}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="462" y="4" width="73" height="12" uuid="tf-total"/>
+                <textElement>
+                    <font size="7"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{montoTotal}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- ── Pie de página ─────────────────────────────────────────── -->
+    <pageFooter>
+        <band height="25" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="535" height="1" uuid="line-footer"/>
+                <graphicElement>
+                    <pen lineColor="#283593"/>
+                </graphicElement>
+            </line>
+            <textField>
+                <reportElement x="0" y="5" width="350" height="15" uuid="tf-footer-date"/>
+                <textElement><font size="7" isItalic="true"/></textElement>
+                <textFieldExpression><![CDATA["Generado el: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="5" width="185" height="15" uuid="tf-footer-page"/>
+                <textElement>
+                    <font size="7"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <!-- ── Resumen final (última página) ─────────────────────────── -->
+    <summary>
+        <band height="35" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="535" height="1" uuid="line-summary"/>
+                <graphicElement><pen lineColor="#1A237E" lineWidth="1.5"/></graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="8" width="290" height="18" uuid="txt-total-label"/>
+                <textElement>
+                    <font size="10" isBold="true"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <text><![CDATA[TOTAL PAGADO:]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="292" y="8" width="90" height="18" forecolor="#1A237E" uuid="tf-grand-total"/>
+                <textElement>
+                    <font size="10" isBold="true"/>
+                    <paragraph textAlignment="Right"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{totalPagado}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="382" y="8" width="153" height="18" forecolor="#1A237E" uuid="txt-bs-label"/>
+                <textElement><font size="10" isBold="true"/></textElement>
+                <text><![CDATA[ Bs.]]></text>
+            </staticText>
+        </band>
+    </summary>
+
+</jasperReport>
