@@ -7,11 +7,19 @@
       <span class="text-on-background font-medium">Pago de Servicio</span>
     </div>
 
-    <div class="mb-lg">
-      <h1 class="font-h1 text-h1 text-on-background">Procesar Pago</h1>
-      <p class="font-body-lg text-body-lg text-secondary mt-xs">
-        Seleccione el método de pago para completar su solicitud de servicio.
-      </p>
+    <div class="mb-lg flex justify-between items-center">
+      <div>
+        <h1 class="font-h1 text-h1 text-on-background">Procesar Pago</h1>
+        <p class="font-body-lg text-body-lg text-secondary mt-xs">
+          Seleccione el método de pago para completar su solicitud de servicio.
+        </p>
+      </div>
+      @if (esAdmin) {
+        <button routerLink="/reporte-conciliacion" class="bg-primary text-on-primary font-label-caps text-label-caps py-sm px-md rounded-lg hover:opacity-90 transition-opacity flex items-center gap-xs cursor-pointer shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+          Reporte de Conciliación
+        </button>
+      }
     </div>
 
     @if (cargando) {

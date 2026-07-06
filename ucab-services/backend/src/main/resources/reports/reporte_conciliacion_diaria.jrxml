@@ -13,7 +13,8 @@
         rightMargin="30"
         topMargin="30"
         bottomMargin="30"
-        uuid="a1b2c3d4-0010-4000-a010-000000000001">
+        uuid="a1b2c3d4-0010-4000-a010-000000000001"
+        whenNoDataType="AllSectionsNoDetail">
 
     <!-- ── Parámetros ── -->
     <parameter name="fechaReporte" class="java.lang.String">

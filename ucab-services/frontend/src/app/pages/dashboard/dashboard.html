@@ -63,6 +63,16 @@
             <span class="font-body-md text-body-md text-on-surface font-bold mt-sm">Pagar Servicios</span>
             <span class="font-body-sm text-body-sm text-on-surface-variant">Aranceles, biblioteca y otros</span>
           </button>
+          
+          @if (esAdmin) {
+            <button routerLink="/reporte-demografico" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-sm hover:shadow-[0px_4px_6px_rgba(0,0,0,0.05)] hover:border-primary transition-all text-center group cursor-pointer md:col-span-2">
+              <div class="bg-primary-container p-md rounded-full group-hover:bg-primary/20 transition-colors">
+                <span class="material-symbols-outlined text-primary text-[32px]">analytics</span>
+              </div>
+              <span class="font-body-md text-body-md text-on-surface font-bold mt-sm">Reporte Demográfico</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">Evolución y Proyección de Beneficiarios</span>
+            </button>
+          }
         </div>
       </div>
 

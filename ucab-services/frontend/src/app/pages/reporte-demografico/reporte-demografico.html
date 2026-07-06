@@ -1,0 +1,248 @@
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-lg py-xl flex flex-col gap-xl">
+    <!-- Header Section -->
+    <section class="flex flex-col gap-sm">
+        <h1 class="text-h1 font-h1 text-on-background">Reporte de Evolución y Proyección Demográfica</h1>
+        <p class="text-body-lg font-body-lg text-secondary">Análisis de beneficiarios familiares y proyección de demanda de servicios.</p>
+    </section>
+    <!-- Filters -->
+    <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-wrap gap-md items-end shadow-sm">
+        <div class="flex flex-col gap-xs flex-grow min-w-[200px]">
+            <label class="text-label-caps font-label-caps text-on-surface-variant">Rango de Fecha</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-secondary text-[20px]">calendar_today</span>
+                <select [(ngModel)]="rangoFecha" (change)="onFilterChange()" class="w-full pl-xl pr-md py-sm bg-surface rounded border border-outline-variant text-body-md font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary appearance-none">
+                    <option value="2024">Año Fiscal Actual (2024)</option>
+                    <option value="2023">Año Fiscal Anterior (2023)</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex flex-col gap-xs flex-grow min-w-[200px]">
+            <label class="text-label-caps font-label-caps text-on-surface-variant">Tipo de Personal</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-secondary text-[20px]">badge</span>
+                <select [(ngModel)]="tipoPersonal" (change)="onFilterChange()" class="w-full pl-xl pr-md py-sm bg-surface rounded border border-outline-variant text-body-md font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary appearance-none">
+                    <option value="Todos">Todos</option>
+                    <option value="Docente">Docente</option>
+                    <option value="Administrativo">Administrativo</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex flex-col gap-xs flex-grow min-w-[200px]">
+            <label class="text-label-caps font-label-caps text-on-surface-variant">Dependencia</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-secondary text-[20px]">domain</span>
+                <select [(ngModel)]="dependencia" (change)="onFilterChange()" class="w-full pl-xl pr-md py-sm bg-surface rounded border border-outline-variant text-body-md font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary appearance-none">
+                    <option value="Todas las Facultades">Todas las Facultades</option>
+                    <option value="Ingeniería">Ingeniería</option>
+                    <option value="Humanidades">Humanidades</option>
+                </select>
+            </div>
+        </div>
+        <button class="bg-surface text-on-surface border border-outline-variant px-md py-sm rounded text-label-caps font-label-caps hover:bg-surface-container-low flex items-center gap-xs h-[42px]" (click)="descargarReporte('pdf')">
+            <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+            Descargar PDF
+        </button>
+        <button class="bg-surface text-on-surface border border-outline-variant px-md py-sm rounded text-label-caps font-label-caps hover:bg-surface-container-low flex items-center gap-xs h-[42px]" (click)="descargarReporte('excel')">
+            <span class="material-symbols-outlined text-[18px]">table</span>
+            Descargar Excel
+        </button>
+    </section>
+
+    @if (cargando) {
+        <div class="flex justify-center py-xl">
+            <span class="material-symbols-outlined animate-spin text-primary text-[48px]">refresh</span>
+        </div>
+    } @else {
+        <!-- Bento Grid Layout for Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+            <!-- KPIs (Top Row) -->
+            <div class="md:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <div class="p-sm bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined text-primary">child_care</span>
+                    </div>
+                    <span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-caps font-label-caps">Actual</span>
+                </div>
+                <div>
+                    <h3 class="text-h2 font-h2 text-on-background">{{ totalMenores }}</h3>
+                    <p class="text-body-sm font-body-sm text-secondary">Total Beneficiarios Menores</p>
+                </div>
+            </div>
+            <div class="md:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <div class="p-sm bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined text-primary">trending_up</span>
+                    </div>
+                    <span class="bg-primary-container/20 text-primary px-2 py-1 rounded text-label-caps font-label-caps">+5.2%</span>
+                </div>
+                <div>
+                    <h3 class="text-h2 font-h2 text-on-background">Crecimiento</h3>
+                    <p class="text-body-sm font-body-sm text-secondary">Variación Anual</p>
+                </div>
+            </div>
+            <div class="md:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <div class="p-sm bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined text-tertiary">school</span>
+                    </div>
+                    <span class="bg-error-container text-on-error-container px-2 py-1 rounded text-label-caps font-label-caps">Atención</span>
+                </div>
+                <div>
+                    <h3 class="text-h2 font-h2 text-on-background">{{ proximos18 }}</h3>
+                    <p class="text-body-sm font-body-sm text-secondary">Próximos a Mayoría de Edad</p>
+                </div>
+            </div>
+            <div class="md:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <div class="p-sm bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined text-primary">health_and_safety</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-h2 font-h2 text-on-background">$1.2M</h3>
+                    <p class="text-body-sm font-body-sm text-secondary">Presupuesto Proyectado Salud</p>
+                </div>
+            </div>
+            <!-- Charts Row -->
+            <div class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-lg">
+                <h3 class="text-h3 font-h3 text-on-background">Distribución por Rango de Edad</h3>
+                <div class="flex-grow flex flex-col justify-end gap-md min-h-[200px] border-b border-outline-variant pb-sm">
+                    <div class="flex flex-col gap-xs">
+                        <div class="flex items-end gap-sm h-32">
+                            <div class="w-16 bg-primary rounded-t-sm transition-all duration-500" [style.height.%]="h_0_5_doc"></div>
+                            <div class="w-16 bg-secondary rounded-t-sm transition-all duration-500" [style.height.%]="h_0_5_adm"></div>
+                        </div>
+                        <div class="flex text-label-caps font-label-caps text-secondary">
+                            <span class="w-16 text-center">0-5 Años</span>
+                            <span class="w-16 text-center"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <div class="flex items-end gap-sm h-32">
+                            <div class="w-16 bg-primary rounded-t-sm transition-all duration-500" [style.height.%]="h_6_12_doc"></div>
+                            <div class="w-16 bg-secondary rounded-t-sm transition-all duration-500" [style.height.%]="h_6_12_adm"></div>
+                        </div>
+                        <div class="flex text-label-caps font-label-caps text-secondary">
+                            <span class="w-16 text-center">6-12 Años</span>
+                            <span class="w-16 text-center"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                        <div class="flex items-end gap-sm h-32">
+                            <div class="w-16 bg-primary rounded-t-sm transition-all duration-500" [style.height.%]="h_13_17_doc"></div>
+                            <div class="w-16 bg-secondary rounded-t-sm transition-all duration-500" [style.height.%]="h_13_17_adm"></div>
+                        </div>
+                        <div class="flex text-label-caps font-label-caps text-secondary">
+                            <span class="w-16 text-center">13-17 Años</span>
+                            <span class="w-16 text-center"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-md">
+                    <div class="flex items-center gap-xs text-body-sm font-body-sm text-secondary">
+                        <div class="w-3 h-3 rounded-full bg-primary"></div> Docentes
+                    </div>
+                    <div class="flex items-center gap-xs text-body-sm font-body-sm text-secondary">
+                        <div class="w-3 h-3 rounded-full bg-secondary"></div> Administrativo
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col gap-lg">
+                <h3 class="text-h3 font-h3 text-on-background">Distribución por Tipo de Titular</h3>
+                <div class="flex-grow flex items-center justify-center gap-xl min-h-[200px]">
+                    <div class="relative w-48 h-48 rounded-full transition-all duration-500" [style.background]="pieChartGradient">
+                        <div class="absolute inset-0 m-auto w-32 h-32 bg-surface-container-lowest rounded-full"></div>
+                    </div>
+                    <div class="flex flex-col gap-md">
+                        <div class="flex flex-col gap-xs">
+                            <div class="flex items-center gap-sm text-body-md font-body-md text-on-background">
+                                <div class="w-3 h-3 rounded-full bg-primary"></div>
+                                <span>Docentes ({{ pctDocentes }}%)</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <div class="flex items-center gap-sm text-body-md font-body-md text-on-background">
+                                <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                                <span>Administrativo ({{ pctAdministrativo }}%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Table Section -->
+            <div class="md:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+                <div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+                    <h3 class="text-h3 font-h3 text-on-background">Alertas de Mayoría de Edad</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low border-b border-outline-variant">
+                                <th class="p-md text-label-caps font-label-caps text-secondary font-semibold">Nombre del Beneficiario</th>
+                                <th class="p-md text-label-caps font-label-caps text-secondary font-semibold">Titular</th>
+                                <th class="p-md text-label-caps font-label-caps text-secondary font-semibold">Fecha de Nacimiento</th>
+                                <th class="p-md text-label-caps font-label-caps text-secondary font-semibold">Días para 18</th>
+                                <th class="p-md text-label-caps font-label-caps text-secondary font-semibold">Estatus de Documentación</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-body-sm font-body-sm text-on-background">
+                            @if (!beneficiarios || beneficiarios.length === 0) {
+                                <tr>
+                                    <td colspan="5" class="p-lg text-center text-secondary">No se encontraron resultados para los filtros seleccionados.</td>
+                                </tr>
+                            }
+                            @for (beneficiario of beneficiarios; track beneficiario.beneficiario_nombre) {
+                                <tr class="border-b border-outline-variant/50 hover:bg-surface-container-low/50 transition-colors">
+                                    <td class="p-md font-medium">{{ beneficiario.beneficiario_nombre }}</td>
+                                    <td class="p-md">
+                                        <div class="flex flex-col">
+                                            <span>{{ beneficiario.titular_nombre }}</span>
+                                            <span class="text-label-caps font-label-caps text-secondary">{{ beneficiario.rol_titular }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-md">{{ beneficiario.fecha_nac | date:'dd MMM yyyy' }}</td>
+                                    <td class="p-md">
+                                        <span class="font-semibold" [ngClass]="beneficiario.dias_para_18 <= 180 ? 'text-error' : 'text-tertiary'">
+                                            {{ beneficiario.dias_para_18 }} días
+                                        </span>
+                                    </td>
+                                    <td class="p-md">
+                                        @if (beneficiario.dias_para_18 <= 180) {
+                                            <span class="inline-flex items-center gap-xs bg-error-container text-on-error-container px-2 py-1 rounded text-label-caps font-label-caps">
+                                                <span class="material-symbols-outlined text-[14px]">warning</span>
+                                                Requiere Constancia
+                                            </span>
+                                        } @else {
+                                            <span class="inline-flex items-center gap-xs bg-primary-container/20 text-primary px-2 py-1 rounded text-label-caps font-label-caps">
+                                                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                Al Día
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest full-width bottom border-t border-outline-variant mt-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center w-full px-lg py-xl max-w-container-max mx-auto gap-md">
+        <div class="text-body-lg font-h2 text-primary font-bold">
+            UCAB SERVICES
+        </div>
+        <div class="text-body-sm font-body-sm text-secondary text-center md:text-left">
+            © 2026 Institutional Human Resources &amp; Student Welfare Division. All rights reserved.
+        </div>
+        <div class="flex flex-wrap gap-md justify-center text-label-caps font-label-caps">
+            <a class="text-secondary hover:text-primary hover:underline transition-all cursor-pointer">Privacy Policy</a>
+            <a class="text-secondary hover:text-primary hover:underline transition-all cursor-pointer">Terms of Service</a>
+            <a class="text-secondary hover:text-primary hover:underline transition-all cursor-pointer">Accessibility</a>
+            <a class="text-secondary hover:text-primary hover:underline transition-all cursor-pointer">Contact Support</a>
+        </div>
+    </div>
+</footer>

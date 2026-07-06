@@ -16,6 +16,7 @@ import { ServicioService, Servicio } from '../../services/servicio.service';
 })
 export class Dashboard implements OnInit {
   nombreUsuario: string = 'Usuario'; 
+  esAdmin: boolean = false;
   
   // Variables TAI
   saldoTai: number = 0;
@@ -42,6 +43,7 @@ export class Dashboard implements OnInit {
     const usuario = this.authService.obtenerUsuarioActual();
     
     if (usuario) {
+      this.esAdmin = usuario.correo?.includes('@adm.') ?? false;
       if (usuario.nombre) {
         this.nombreUsuario = usuario.nombre.trim().split(' ')[0];
       }

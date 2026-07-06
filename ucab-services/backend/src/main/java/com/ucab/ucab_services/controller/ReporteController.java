@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Controlador para generación y descarga de reportes JasperReports.
@@ -215,6 +216,116 @@ public class ReporteController {
             return ResponseEntity.internalServerError()
                     .body(("Error al generar reporte: " + e.getMessage()).getBytes());
         }
+    }
+
+    /**
+     * Reporte de Evolución y Proyección Demográfica.
+     * ACCESO RESTRINGIDO: solo PERSONAL_ADMINISTRATIVO (correo @adm.).
+     *
+     * Parámetros query:
+     *   cedula        → cédula del usuario que solicita (para verificar rol)
+     *   rangoFecha    → filtro de fecha
+     *   tipoPersonal  → filtro
+     *   dependencia   → filtro
+     *   formato       → "pdf" (default) o "excel"
+     */
+    @GetMapping("/evolucion-demografica/{formato}")
+    public ResponseEntity<byte[]> reporteEvolucionDemografica(
+            @PathVariable String formato,
+            @RequestParam Map<String, String> parametros) {
+
+        // ── Verificación de rol ──
+        String cedula = parametros.get("cedula");
+        if (cedula == null || cedula.isBlank()) {
+            return ResponseEntity.status(401).body("Sin identificación".getBytes());
+        }
+        try {
+            String correo = jdbcTemplate.queryForObject(
+                    "SELECT correo_institucional FROM Miembro WHERE cedula_miembro = ?",
+                    String.class, cedula);
+            if (correo == null || !correo.contains("@adm.")) {
+                return ResponseEntity.status(403)
+                        .body("Acceso denegado: se requiere rol PERSONAL_ADMINISTRATIVO".getBytes());
+            }
+        } catch (Exception ex) {
+            return ResponseEntity.status(403)
+                    .body("No se pudo verificar el rol del usuario".getBytes());
+        }
+
+        // ── Parámetros del reporte ──
+        Map<String, String> reportParams = new HashMap<>();
+        reportParams.put("rangoFecha", parametros.getOrDefault("rangoFecha", "2024"));
+        reportParams.put("tipoPersonal", parametros.getOrDefault("tipoPersonal", "Todos"));
+        reportParams.put("dependencia", parametros.getOrDefault("dependencia", "Todas las Facultades"));
+
+        try {
+            boolean esPdf = !"excel".equalsIgnoreCase(formato);
+            byte[] bytes = generarReporte("reporte_demografico", reportParams, esPdf ? "pdf" : "xlsx");
+            String nombreArchivo = "evolucion_demografica_" + reportParams.get("rangoFecha");
+
+            if (esPdf) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + nombreArchivo + ".pdf\"")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(bytes);
+            } else {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + nombreArchivo + ".xlsx\"")
+                        .contentType(MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(("Error al generar reporte: " + e.getMessage()).getBytes());
+        }
+    }
+
+    /**
+     * Datos para el Dashboard de Evolución y Proyección Demográfica.
+     * ACCESO RESTRINGIDO: solo PERSONAL_ADMINISTRATIVO.
+     */
+    @GetMapping("/evolucion-demografica/datos")
+    public ResponseEntity<?> obtenerDatosDemograficos(@RequestParam Map<String, String> parametros) {
+        String cedula = parametros.get("cedula");
+        if (cedula == null || cedula.isBlank()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Sin identificación"));
+        }
+        try {
+            String correo = jdbcTemplate.queryForObject(
+                    "SELECT correo_institucional FROM Miembro WHERE cedula_miembro = ?",
+                    String.class, cedula);
+            if (correo == null || !correo.contains("@adm.")) {
+                return ResponseEntity.status(403)
+                        .body(Map.of("error", "Acceso denegado"));
+            }
+        } catch (Exception ex) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("error", "No se pudo verificar el rol"));
+        }
+
+        String sql = "SELECT " +
+                "b.Nombre AS beneficiario_nombre, " +
+                "m.Nombres_Completos || ' ' || m.Apellidos_Completos AS titular_nombre, " +
+                "CASE " +
+                "    WHEN d.Cedula_Miembro IS NOT NULL THEN 'Docente' " +
+                "    WHEN pa.Cedula_Miembro IS NOT NULL THEN 'Administrativo' " +
+                "    ELSE 'Otro' " +
+                "END AS rol_titular, " +
+                "TO_CHAR(b.fecha_nacimiento_beneficiario, 'YYYY-MM-DD') AS fecha_nac, " +
+                "((b.fecha_nacimiento_beneficiario + INTERVAL '18 years')::DATE - CURRENT_DATE) AS dias_para_18, " +
+                "EXTRACT(YEAR FROM age(CURRENT_DATE, b.fecha_nacimiento_beneficiario)) AS edad " +
+                "FROM Beneficiario b " +
+                "JOIN Miembro m ON b.Cedula_Miembro = m.Cedula_Miembro " +
+                "LEFT JOIN Docente d ON m.Cedula_Miembro = d.Cedula_Miembro " +
+                "LEFT JOIN Personal_Administrativo pa ON m.Cedula_Miembro = pa.Cedula_Miembro " +
+                "WHERE b.fecha_nacimiento_beneficiario > CURRENT_DATE - INTERVAL '18 years' " +
+                "ORDER BY dias_para_18 ASC";
+
+        List<Map<String, Object>> resultados = jdbcTemplate.queryForList(sql);
+        return ResponseEntity.ok(resultados);
     }
 
 

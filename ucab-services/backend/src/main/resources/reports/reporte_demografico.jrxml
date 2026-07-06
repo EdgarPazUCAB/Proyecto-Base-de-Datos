@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte_demografico" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="e0639d67-67c2-48df-9b24-9b51cd971037" whenNoDataType="AllSectionsNoDetail">
+	<parameter name="rangoFecha" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2024"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="tipoPersonal" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Todos"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dependencia" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Todas las Facultades"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[
+            SELECT 
+                b.Nombre AS beneficiario_nombre,
+                m.Nombres_Completos || ' ' || m.Apellidos_Completos AS titular_nombre,
+                CASE 
+                    WHEN d.Cedula_Miembro IS NOT NULL THEN 'Docente'
+                    WHEN pa.Cedula_Miembro IS NOT NULL THEN 'Administrativo'
+                    ELSE 'Otro'
+                END AS rol_titular,
+                TO_CHAR(b.fecha_nacimiento_beneficiario, 'DD/MM/YYYY') AS fecha_nac,
+                ((b.fecha_nacimiento_beneficiario + INTERVAL '18 years')::DATE - CURRENT_DATE) AS dias_para_18
+            FROM Beneficiario b
+            JOIN Miembro m ON b.Cedula_Miembro = m.Cedula_Miembro
+            LEFT JOIN Docente d ON m.Cedula_Miembro = d.Cedula_Miembro
+            LEFT JOIN Personal_Administrativo pa ON m.Cedula_Miembro = pa.Cedula_Miembro
+            WHERE b.fecha_nacimiento_beneficiario > CURRENT_DATE - INTERVAL '18 years'
+            ORDER BY dias_para_18 ASC
+        ]]>
+	</queryString>
+	<field name="beneficiario_nombre" class="java.lang.String"/>
+	<field name="titular_nombre" class="java.lang.String"/>
+	<field name="rol_titular" class="java.lang.String"/>
+	<field name="fecha_nac" class="java.lang.String"/>
+	<field name="dias_para_18" class="java.lang.Integer"/>
+	<variable name="total_menores" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{beneficiario_nombre}]]></variableExpression>
+	</variable>
+	<variable name="proximos_18" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[($F{dias_para_18} != null && $F{dias_para_18} <= 180) ? 1 : 0]]></variableExpression>
+	</variable>
+	<title>
+		<band height="100" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="535" height="70" backcolor="#006E2F" uuid="88bbbf1b-b4a1-4de2-80ba-3b027b407ec4"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="10" width="300" height="25" forecolor="#FFFFFF" uuid="071aabf2-10f6-4a1d-a0b2-4d2c88d8b671"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UCAB SERVICES - RRHH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="40" width="515" height="20" forecolor="#E5EEFF" uuid="69a9b0c7-d1a1-432a-bc91-d2ed20141c2c"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Reporte de Evolución y Proyección Demográfica]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="75" width="200" height="15" uuid="e06d9d06-0371-4632-944a-9ec5352c8cf0"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Año: " + $P{rangoFecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="75" width="335" height="15" uuid="5fa75d9f-a0bb-4de5-8c7c-473d5771d643"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Personal: " + $P{tipoPersonal} + " | Dep: " + $P{dependencia}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="535" height="25" backcolor="#DCE9FF" uuid="2b6be008-0b5c-4d89-aba6-2a8d38865c37"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="5" width="140" height="15" forecolor="#002109" uuid="23b2c3ab-b8f4-42f1-ae9a-52f14309be04"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Beneficiario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="145" y="5" width="140" height="15" forecolor="#002109" uuid="eb2fcf24-94e8-466f-bc7a-579c09c730e7"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Titular]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="285" y="5" width="80" height="15" forecolor="#002109" uuid="87d5eabf-2d7c-4c40-ab96-a0b411d33f7c"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rol Titular]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="365" y="5" width="80" height="15" forecolor="#002109" uuid="f93018e7-ff47-4934-bc28-11b3bc2cb6a0"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nacimiento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="5" width="85" height="15" forecolor="#002109" uuid="c24a5e3e-4d43-4aeb-bcbf-478ad29a0de5"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Días para 18]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="535" height="20" backcolor="#F8F9FF" uuid="fbcd79ab-1ef8-4981-b519-74d1a49df5db">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="5" y="3" width="140" height="15" uuid="be2d2b59-1e3f-4e00-845f-c7c4b4d632f1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{beneficiario_nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="3" width="140" height="15" uuid="521f5fb2-53b0-4bce-9226-c21ad2db6f70"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{titular_nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="285" y="3" width="80" height="15" uuid="45ccf464-927b-4df2-a3f2-1fb3a1cc0a51"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rol_titular}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="365" y="3" width="80" height="15" uuid="d61de42e-1435-41e9-bad0-bc10d2be2b1a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_nac}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="445" y="3" width="85" height="15" forecolor="#BA1A1A" uuid="2a537d82-c2c6-47b7-9571-08149e663a84">
+					<printWhenExpression><![CDATA[$F{dias_para_18} != null && $F{dias_para_18} <= 180]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dias_para_18}.intValue() + " días"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="445" y="3" width="85" height="15" forecolor="#0B1C30" uuid="0920400b-d2c6-4d56-9da9-52e8d91c7820">
+					<printWhenExpression><![CDATA[$F{dias_para_18} != null && $F{dias_para_18} > 180]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dias_para_18}.intValue() + " días"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="535" height="1" forecolor="#BCCBB9" uuid="209cc3e8-580a-4fb4-814c-1979b9b7d341"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="5" width="200" height="15" uuid="16dc9c7f-94d0-4e35-a1be-745a5d2eb392"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generado el: " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="5" width="100" height="15" uuid="6077559e-db2f-410f-8c31-90a612502de5"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="50" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="10" width="260" height="30" backcolor="#EFF4FF" uuid="d6e32d66-ecb8-4770-ae54-526487e4dfc0"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#BCCBB9"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="15" width="150" height="20" forecolor="#002109" uuid="6d1b1f86-0925-412f-b4db-ed011c1d88a1"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Menores:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="160" y="15" width="90" height="20" uuid="7cf446e1-9543-4cc0-90a6-16ce349646c2"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_menores}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="275" y="10" width="260" height="30" backcolor="#FFDAD6" uuid="e05c8d0e-5491-496e-bc3d-1a84f3ab66fc"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#93000A"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="285" y="15" width="150" height="20" forecolor="#93000A" uuid="a6dc5e56-1df2-42e6-aeb5-3cbf17c462e0"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Próximos a 18 (< 6 meses):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="435" y="15" width="90" height="20" forecolor="#93000A" uuid="6e4ff2d2-8809-467f-94d1-c1bc6e5d2673"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{proximos_18}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -76,14 +76,14 @@
         <band height="90" splitType="Stretch">
             <!-- Fondo del título -->
             <rectangle>
-                <reportElement x="0" y="0" width="535" height="60" backcolor="#1A237E" uuid="rect-title-bg"/>
+                <reportElement x="0" y="0" width="535" height="60" backcolor="#1A237E" uuid="275633eb-0417-43f7-a1d5-7dc8314162e5"/>
                 <graphicElement>
                     <pen lineWidth="0.0"/>
                 </graphicElement>
             </rectangle>
             <!-- Logo / Nombre institución -->
             <staticText>
-                <reportElement x="10" y="8" width="300" height="22" forecolor="#FFFFFF" uuid="txt-institution"/>
+                <reportElement x="10" y="8" width="300" height="22" forecolor="#FFFFFF" uuid="db977cfa-14d1-44c8-ac17-07d7573e0340"/>
                 <textElement>
                     <font size="14" isBold="true"/>
                 </textElement>
@@ -91,7 +91,7 @@
             </staticText>
             <!-- Subtítulo del reporte -->
             <staticText>
-                <reportElement x="10" y="32" width="515" height="20" forecolor="#C5CAE9" uuid="txt-subtitle"/>
+                <reportElement x="10" y="32" width="515" height="20" forecolor="#C5CAE9" uuid="c106b458-b140-4adc-b315-a54a01d1062c"/>
                 <textElement>
                     <font size="10"/>
                 </textElement>
@@ -99,7 +99,7 @@
             </staticText>
             <!-- Nombre del miembro -->
             <textField>
-                <reportElement x="0" y="65" width="350" height="18" uuid="tf-miembro"/>
+                <reportElement x="0" y="65" width="350" height="18" uuid="4f07bf7d-85c5-4414-bc9f-8a6fb641e7a8"/>
                 <textElement>
                     <font size="10" isBold="true"/>
                 </textElement>
@@ -112,40 +112,40 @@
     <columnHeader>
         <band height="24" splitType="Stretch">
             <rectangle>
-                <reportElement x="0" y="0" width="535" height="24" backcolor="#283593" uuid="rect-header-bg"/>
+                <reportElement x="0" y="0" width="535" height="24" backcolor="#283593" uuid="51b908b7-ae98-4cf5-8fc9-450ccd5289ad"/>
                 <graphicElement>
                     <pen lineWidth="0.0"/>
                 </graphicElement>
             </rectangle>
             <staticText>
-                <reportElement x="2"   y="5" width="110" height="14" forecolor="#FFFFFF" uuid="hdr-control"/>
+                <reportElement x="2"   y="5" width="110" height="14" forecolor="#FFFFFF" uuid="78c35374-150d-4042-b150-3c4b79b89cc1"/>
                 <textElement><font size="8" isBold="true"/></textElement>
                 <text><![CDATA[N° Control]]></text>
             </staticText>
             <staticText>
-                <reportElement x="112" y="5" width="100" height="14" forecolor="#FFFFFF" uuid="hdr-fecha"/>
+                <reportElement x="112" y="5" width="100" height="14" forecolor="#FFFFFF" uuid="07daedd8-1a0d-46eb-85b1-3fa717b124f9"/>
                 <textElement><font size="8" isBold="true"/></textElement>
                 <text><![CDATA[Fecha]]></text>
             </staticText>
             <staticText>
-                <reportElement x="212" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="hdr-tipo"/>
+                <reportElement x="212" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="eb2612ce-59fc-466a-b96e-40ea812983cd"/>
                 <textElement><font size="8" isBold="true"/></textElement>
                 <text><![CDATA[Método]]></text>
             </staticText>
             <staticText>
-                <reportElement x="292" y="5" width="90" height="14" forecolor="#FFFFFF" uuid="hdr-monto"/>
+                <reportElement x="292" y="5" width="90" height="14" forecolor="#FFFFFF" uuid="26d4012c-e288-452f-96b4-b2187851d388"/>
                 <textElement><font size="8" isBold="true" isItalic="false"/>
                     <paragraph textAlignment="Right"/>
                 </textElement>
                 <text><![CDATA[Monto Pagado (Bs)]]></text>
             </staticText>
             <staticText>
-                <reportElement x="382" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="hdr-estatus"/>
+                <reportElement x="382" y="5" width="80" height="14" forecolor="#FFFFFF" uuid="dbd54f3d-5d5a-483b-82e5-7d492ba45810"/>
                 <textElement><font size="8" isBold="true"/></textElement>
                 <text><![CDATA[Estatus]]></text>
             </staticText>
             <staticText>
-                <reportElement x="462" y="5" width="73" height="14" forecolor="#FFFFFF" uuid="hdr-total"/>
+                <reportElement x="462" y="5" width="73" height="14" forecolor="#FFFFFF" uuid="c061765e-a192-4f61-aaba-f466bffead4f"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                     <paragraph textAlignment="Right"/>
@@ -161,28 +161,28 @@
             <!-- Fondo alternado por fila -->
             <rectangle>
                 <reportElement x="0" y="0" width="535" height="20" backcolor="#E8EAF6"
-                               uuid="rect-row-alt" isPrintWhenDetailOverflows="false">
+                               uuid="7a436211-dba2-4c0f-ae2f-427e990a66a3" isPrintWhenDetailOverflows="false">
                     <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
                 </reportElement>
                 <graphicElement><pen lineWidth="0.0"/></graphicElement>
             </rectangle>
             <textField isStretchWithOverflow="true">
-                <reportElement x="2"   y="4" width="110" height="12" uuid="tf-control"/>
+                <reportElement x="2"   y="4" width="110" height="12" uuid="d5a46c66-a317-47ca-bfbb-5a30365704c5"/>
                 <textElement><font size="7"/></textElement>
                 <textFieldExpression><![CDATA[$F{numeroControl}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="112" y="4" width="100" height="12" uuid="tf-fecha"/>
+                <reportElement x="112" y="4" width="100" height="12" uuid="3dd64451-26a3-44eb-9fee-6d97f1ce8d08"/>
                 <textElement><font size="7"/></textElement>
                 <textFieldExpression><![CDATA[$F{fechaOperacion}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="212" y="4" width="80" height="12" uuid="tf-tipo"/>
+                <reportElement x="212" y="4" width="80" height="12" uuid="f07a500a-9e99-4261-8000-e75d1dacf50c"/>
                 <textElement><font size="7"/></textElement>
                 <textFieldExpression><![CDATA[$F{tipoPago}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="292" y="4" width="90" height="12" uuid="tf-monto"/>
+                <reportElement x="292" y="4" width="90" height="12" uuid="f9b48e1c-bd8f-4f82-b170-6c8616fbf4e7"/>
                 <textElement>
                     <font size="7"/>
                     <paragraph textAlignment="Right"/>
@@ -190,12 +190,12 @@
                 <textFieldExpression><![CDATA[$F{montoLiquidacion}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="382" y="4" width="80" height="12" uuid="tf-estatus"/>
+                <reportElement x="382" y="4" width="80" height="12" uuid="cea6478a-10b4-4569-8eec-d21b237bb646"/>
                 <textElement><font size="7"/></textElement>
                 <textFieldExpression><![CDATA[$F{estatusFactura}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="462" y="4" width="73" height="12" uuid="tf-total"/>
+                <reportElement x="462" y="4" width="73" height="12" uuid="75544824-4830-4b90-982f-a78e735f05b5"/>
                 <textElement>
                     <font size="7"/>
                     <paragraph textAlignment="Right"/>
@@ -209,18 +209,18 @@
     <pageFooter>
         <band height="25" splitType="Stretch">
             <line>
-                <reportElement x="0" y="0" width="535" height="1" uuid="line-footer"/>
+                <reportElement x="0" y="0" width="535" height="1" uuid="dd0c7962-5225-47d1-819b-fe60822bcb16"/>
                 <graphicElement>
                     <pen lineColor="#283593"/>
                 </graphicElement>
             </line>
             <textField>
-                <reportElement x="0" y="5" width="350" height="15" uuid="tf-footer-date"/>
+                <reportElement x="0" y="5" width="350" height="15" uuid="936008b3-c151-4244-bf46-c6edb4d1558c"/>
                 <textElement><font size="7" isItalic="true"/></textElement>
                 <textFieldExpression><![CDATA["Generado el: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="350" y="5" width="185" height="15" uuid="tf-footer-page"/>
+                <reportElement x="350" y="5" width="185" height="15" uuid="681d754e-38a8-476f-b9cb-ee11c10ceebe"/>
                 <textElement>
                     <font size="7"/>
                     <paragraph textAlignment="Right"/>
@@ -234,11 +234,11 @@
     <summary>
         <band height="35" splitType="Stretch">
             <line>
-                <reportElement x="0" y="0" width="535" height="1" uuid="line-summary"/>
+                <reportElement x="0" y="0" width="535" height="1" uuid="b8285340-f6d8-4314-9494-98ff0026850b"/>
                 <graphicElement><pen lineColor="#1A237E" lineWidth="1.5"/></graphicElement>
             </line>
             <staticText>
-                <reportElement x="0" y="8" width="290" height="18" uuid="txt-total-label"/>
+                <reportElement x="0" y="8" width="290" height="18" uuid="b15d43d8-d217-4a16-b1e1-262034757e14"/>
                 <textElement>
                     <font size="10" isBold="true"/>
                     <paragraph textAlignment="Right"/>
@@ -246,7 +246,7 @@
                 <text><![CDATA[TOTAL PAGADO:]]></text>
             </staticText>
             <textField pattern="#,##0.00">
-                <reportElement x="292" y="8" width="90" height="18" forecolor="#1A237E" uuid="tf-grand-total"/>
+                <reportElement x="292" y="8" width="90" height="18" forecolor="#1A237E" uuid="8281b8bb-2609-4f47-b058-bcd067c7b1e4"/>
                 <textElement>
                     <font size="10" isBold="true"/>
                     <paragraph textAlignment="Right"/>
@@ -254,7 +254,7 @@
                 <textFieldExpression><![CDATA[$V{totalPagado}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="382" y="8" width="153" height="18" forecolor="#1A237E" uuid="txt-bs-label"/>
+                <reportElement x="382" y="8" width="153" height="18" forecolor="#1A237E" uuid="e87cbfce-6f41-40fa-a27c-42c71ccbf66c"/>
                 <textElement><font size="10" isBold="true"/></textElement>
                 <text><![CDATA[ Bs.]]></text>
             </staticText>

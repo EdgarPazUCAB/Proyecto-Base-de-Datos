@@ -19,6 +19,8 @@ import { CatalogoServicios } from './pages/catalogo-servicios/catalogo-servicios
 import { AnadirAcompananteTemporal } from './pages/anadir-acompanante-temporal/anadir-acompanante-temporal';
 import { GestionarSolicitudes } from './pages/gestionar-solicitudes/gestionar-solicitudes';
 import { ReporteResolucion } from './pages/reporte-resolucion/reporte-resolucion';
+import { ReporteConciliacion } from './pages/reporte-conciliacion/reporte-conciliacion';
+import { ReporteDemografico } from './pages/reporte-demografico/reporte-demografico';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -41,5 +43,7 @@ export const routes: Routes = [
   { path: 'catalogo-servicios', component: CatalogoServicios },
   { path: 'anadir-acompanante-temporal', component: AnadirAcompananteTemporal },
   { path: 'gestionar-solicitudes', component: GestionarSolicitudes },
-  { path: 'reporte-resolucion', component: ReporteResolucion }
+  { path: 'reporte-resolucion', component: ReporteResolucion },
+  { path: 'reporte-conciliacion', component: ReporteConciliacion },
+  { path: 'reporte-demografico', component: ReporteDemografico }
 ];

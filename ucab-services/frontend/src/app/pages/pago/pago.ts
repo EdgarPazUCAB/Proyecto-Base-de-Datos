@@ -27,6 +27,7 @@ export class Pago implements OnInit {
 
   historialPagos: any[] = [];
   cargandoHistorial: boolean = true;
+  esAdmin: boolean = false;
 
   constructor(
     private folioService: FolioConsumoService,
@@ -43,6 +44,8 @@ export class Pago implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    this.esAdmin = sesion.correo?.includes('@adm.') ?? false;
 
     // Cargar historial de pagos siempre
     this.pagoService.obtenerHistorialPagos(sesion.cedulaMiembro).subscribe({
