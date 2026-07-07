@@ -29,6 +29,10 @@ export class Pago implements OnInit {
   cargandoHistorial: boolean = true;
   esAdmin: boolean = false;
 
+  mostrandoModalFactura: boolean = false;
+  cargandoFactura: boolean = false;
+  detalleFactura: any = null;
+
   constructor(
     private folioService: FolioConsumoService,
     private pagoService: PagoService,
@@ -149,5 +153,32 @@ export class Pago implements OnInit {
           break;
       }
     }
+  }
+
+  abrirModalFactura(numeroControl: string): void {
+    if (!numeroControl) return;
+    this.mostrandoModalFactura = true;
+    this.cargandoFactura = true;
+    this.detalleFactura = null;
+    
+    this.pagoService.obtenerDetalleFactura(numeroControl).subscribe({
+      next: (detalle) => {
+        this.detalleFactura = detalle;
+        this.cargandoFactura = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error cargando detalle de factura:', err);
+        alert('No se pudo cargar el detalle de la factura. Verifique su conexión.');
+        this.cargandoFactura = false;
+        this.mostrandoModalFactura = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cerrarModalFactura(): void {
+    this.mostrandoModalFactura = false;
+    this.detalleFactura = null;
   }
 }

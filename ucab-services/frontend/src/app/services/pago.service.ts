@@ -25,4 +25,8 @@ export class PagoService {
   obtenerHistorialPagos(cedula: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/historial/${cedula}`);
   }
+
+  obtenerDetalleFactura(numeroControl: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/factura/${numeroControl}`);
+  }
 }

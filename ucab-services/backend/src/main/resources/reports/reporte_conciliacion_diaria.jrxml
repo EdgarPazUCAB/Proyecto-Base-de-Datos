@@ -378,7 +378,7 @@
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
                 <text><![CDATA[Total Ingresos (Bs):]]></text>
             </staticText>
-            <textField pattern="Bs. #,##0.00">
+            <textField pattern="'Bs.' #,##0.00">
                 <reportElement x="185" y="32" width="130" height="12" forecolor="#006E2F"
                                uuid="a1b2c3d4-0010-4000-a010-000000000038"/>
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
@@ -392,7 +392,7 @@
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
                 <text><![CDATA[Monto Conciliado (Bs):]]></text>
             </staticText>
-            <textField pattern="Bs. #,##0.00">
+            <textField pattern="'Bs.' #,##0.00">
                 <reportElement x="185" y="50" width="130" height="12" forecolor="#006E2F"
                                uuid="a1b2c3d4-0010-4000-a010-000000000040"/>
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
@@ -406,7 +406,7 @@
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
                 <text><![CDATA[Monto con Discrepancia (Bs):]]></text>
             </staticText>
-            <textField pattern="Bs. #,##0.00">
+            <textField pattern="'Bs.' #,##0.00">
                 <reportElement x="185" y="68" width="130" height="12" forecolor="#BA1A1A"
                                uuid="a1b2c3d4-0010-4000-a010-000000000042"/>
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>

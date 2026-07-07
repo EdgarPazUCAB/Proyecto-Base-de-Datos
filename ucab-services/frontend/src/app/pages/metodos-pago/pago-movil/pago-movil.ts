@@ -42,6 +42,7 @@ export class PagoMovil implements OnInit {
   public ivaVes: number = 0;
   public tasaProcesamientoVes: number = 0;
   public totalPagarVes: number = 0;
+  public montoAPagarVes: number = 0;
 
   // Modelos del formulario HTML
   public bancoEmisor: string = '';
@@ -178,6 +179,7 @@ export class PagoMovil implements OnInit {
           const subtotalMasIvaVes = this.subtotalVes + this.ivaVes;
           this.tasaProcesamientoVes = subtotalMasIvaVes * 0.015; 
           this.totalPagarVes = subtotalMasIvaVes + this.tasaProcesamientoVes;
+        this.montoAPagarVes = this.totalPagarVes;
           this.cargandoTasa = false;
           this.cdr.detectChanges();
         },
@@ -211,6 +213,7 @@ export class PagoMovil implements OnInit {
         
         // Gran total neto a pagar en Bolívares (VES)
         this.totalPagarVes = subtotalMasIvaVes + this.tasaProcesamientoVes;
+        this.montoAPagarVes = this.totalPagarVes;
         
         this.cargandoTasa = false;
         this.cdr.detectChanges(); 
@@ -263,7 +266,8 @@ export class PagoMovil implements OnInit {
       bancoEmisor: this.bancoEmisor,
       telefonoEmisor: telefonoCompleto,
       referencia: this.referencia,
-      totalPagado: this.totalPagarVes
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

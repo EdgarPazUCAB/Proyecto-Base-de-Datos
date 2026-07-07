@@ -17,4 +17,7 @@ public class TaiRequest {
 
     @NotNull(message = "El total pagado es obligatorio.")
     private Double totalPagado;
+
+    @NotNull(message = "El montoTotalVes es obligatorio.")
+    private Double montoTotalVes;
 }

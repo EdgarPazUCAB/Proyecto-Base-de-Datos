@@ -34,7 +34,8 @@ public class PagoController {
                 request.getTotalPagado(),
                 request.getBancoEmisor(),
                 request.getTelefonoEmisor(),
-                request.getReferencia()
+                request.getReferencia(),
+                request.getMontoTotalVes()
             );
 
             return ResponseEntity.ok("Pago móvil procesado exitosamente.");
@@ -62,7 +63,8 @@ public class PagoController {
                 request.getTipoRed(),
                 request.getFechaVencimiento(),
                 request.getCompania(),
-                request.getNumTarjeta()
+                request.getNumTarjeta(),
+                request.getMontoTotalVes()
             );
 
             return ResponseEntity.ok(
@@ -90,7 +92,8 @@ public class PagoController {
                 request.getDxid(),
                 request.getRedBlockchain(),
                 request.getBilletera(),
-                request.getTasaConversion()
+                request.getTasaConversion(),
+                request.getMontoTotalVes()
             );
 
             return ResponseEntity.ok(
@@ -117,7 +120,8 @@ public class PagoController {
                 request.getTotalPagado(),
                 request.getNombreTitular(),
                 request.getCorreoOrigen(),
-                request.getCodigoConfirmacion()
+                request.getCodigoConfirmacion(),
+                request.getMontoTotalVes()
             );
 
             return ResponseEntity.ok(
@@ -143,7 +147,8 @@ public class PagoController {
                 request.getFolioId(),
                 request.getTotalPagado(),
                 request.getPosTerminal(),
-                request.getReciboDigital()
+                request.getReciboDigital(),
+                request.getMontoTotalVes()
             );
 
             return ResponseEntity.ok(
@@ -167,6 +172,21 @@ public class PagoController {
         try {
             java.util.List<java.util.Map<String, Object>> historial = pagoService.obtenerHistorialPagos(cedula);
             return ResponseEntity.ok(historial);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/factura/{numeroControl}")
+    public ResponseEntity<java.util.Map<String, Object>> obtenerDetalleFactura(
+        @PathVariable String numeroControl
+    ) {
+        try {
+            java.util.Map<String, Object> detalle = pagoService.obtenerDetalleFactura(numeroControl);
+            if (detalle.containsKey("error")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(detalle);
+            }
+            return ResponseEntity.ok(detalle);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

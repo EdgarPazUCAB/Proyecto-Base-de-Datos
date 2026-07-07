@@ -32,6 +32,7 @@ export class TarjetaTai implements OnInit {
   public subtotalVes: number = 0;
   public ivaVes: number = 0;
   public totalPagarVes: number = 0;
+  public montoAPagarVes: number = 0;
 
   public posTerminal: string = '';
   public reciboDigital: string = '';
@@ -140,6 +141,7 @@ export class TarjetaTai implements OnInit {
         
         // TAI might have processing fees or not, assume none for now.
         this.totalPagarVes = this.subtotalVes + this.ivaVes;
+        this.montoAPagarVes = this.totalPagarVes;
         
         this.cargandoTasa = false;
         this.cdr.detectChanges(); 
@@ -164,7 +166,8 @@ export class TarjetaTai implements OnInit {
       posTerminal: this.posTerminal,
       reciboDigital: this.reciboDigital,
       // Se pasa el totalPagado en Bs porque el backend verifica deuda en Bs.
-      totalPagado: this.totalPagarVes
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

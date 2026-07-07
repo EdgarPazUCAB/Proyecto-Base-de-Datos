@@ -23,4 +23,7 @@ public class ZelleRequest {
 
     @NotNull(message = "El total pagado es obligatorio.")
     private Double totalPagado; // This should be in VES for the backend to record
+
+    @NotNull(message = "El montoTotalVes es obligatorio.")
+    private Double montoTotalVes;
 }

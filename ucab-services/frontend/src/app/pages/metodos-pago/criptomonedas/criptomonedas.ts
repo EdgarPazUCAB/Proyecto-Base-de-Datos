@@ -35,6 +35,7 @@ export class Criptomonedas implements OnInit {
   public subtotalVes: number = 0;
   public ivaVes: number = 0;
   public totalPagarVes: number = 0;
+  public montoAPagarVes: number = 0;
 
   public totalPagarUsdt: number = 0;
 
@@ -161,6 +162,7 @@ export class Criptomonedas implements OnInit {
           this.ivaUsd = 0;
           this.totalPagarUsdt = this.subtotalUsd;
           this.totalPagarVes = this.subtotalVes;
+        this.montoAPagarVes = this.totalPagarVes;
           this.cargandoTasa = false;
           this.cdr.detectChanges();
         },
@@ -191,6 +193,7 @@ export class Criptomonedas implements OnInit {
 
         // El total pagado que se asienta en base de datos será su equivalente en Bolívares
         this.totalPagarVes = this.totalPagarUsdt * this.tasaActual;
+        this.montoAPagarVes = this.totalPagarVes;
 
         this.cargandoTasa = false;
         this.cdr.detectChanges();
@@ -238,7 +241,8 @@ export class Criptomonedas implements OnInit {
       redBlockchain: this.redBlockchain,
       billetera: this.billeteraDestino,
       tasaConversion: this.tasaActual,
-      totalPagado: this.totalPagarVes,
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes,
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

@@ -20,10 +20,11 @@ public class PagoService {
     @Transactional
     public void procesarPagoMovil(
         String identificador,
-        double monto,
+        Double monto,
         String banco,
         String telefono,
-        String referencia
+        String referencia,
+        Double montoTotalVes
     ) {
         try {
             // 1. Buscamos el Numero_control de la Factura y el saldo adeudado
@@ -57,22 +58,9 @@ public class PagoService {
 
                 totalAdeudado = saldoBd != null ? saldoBd.doubleValue() : 0.0;
 
-                // Margen de tolerancia de 1 Bolívar
-                if (monto < totalAdeudado - 1.0) {
-                    throw new RuntimeException(
-                        "El monto enviado (Bs. " +
-                            monto +
-                            ") es menor a la deuda actual (Bs. " +
-                            totalAdeudado +
-                            ")."
-                    );
-                }
+                
 
-                // 2. Actualizamos la Factura
-                String updateFactura =
-                    "UPDATE Factura SET Estatus_factura = 'Pagada', Saldo_restante_pagar = 0 " +
-                    "WHERE Numero_control = ?";
-                jdbcTemplate.update(updateFactura, numeroControlFactura);
+                
             } else {
                 // Generar la factura a partir del Folio/Solicitud
                 String checkFolio =
@@ -91,24 +79,18 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular deuda de Items
-                    java.math.BigDecimal totalItemsBd =
-                        jdbcTemplate.queryForObject(
-                            "SELECT COALESCE(SUM(Precio_unitario * Cantidad + Impuesto), 0) FROM Item_consumo WHERE Identificador = ?",
-                            java.math.BigDecimal.class,
-                            identificador
-                        );
-                    totalAdeudado =
-                        totalItemsBd != null ? totalItemsBd.doubleValue() : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
-                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, 'Pagada', ?, 0)",
+                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, \'Pendiente\', ?, ?)",
                         numeroControlFactura,
                         identificador,
                         cedula,
+                        totalAdeudado,
                         totalAdeudado
                     );
                 } else {
@@ -119,54 +101,7 @@ public class PagoService {
                 }
             }
 
-            // 3. Actualizamos Folio_Consumo y Solicitud_Servicio
-            try {
-                String selectIdent =
-                    "SELECT Identificador FROM Factura WHERE Numero_control = ?";
-                String identFactura = jdbcTemplate.queryForObject(
-                    selectIdent,
-                    String.class,
-                    numeroControlFactura
-                );
-
-                // Usamos los Repositories para asegurar que la caché de Hibernate se actualice
-                if (identFactura != null) {
-                    java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                        folioConsumoRepository.findByIdentificador(
-                            identFactura
-                        );
-                    for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                        folio.setEstadoCierre("Cerrado");
-                        folioConsumoRepository.save(folio);
-                    }
-
-                    java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                        solicitudServicioRepository.findById(identFactura);
-                    if (optSolicitud.isPresent()) {
-                        com.ucab.ucab_services.entity.SolicitudServicio sol =
-                            optSolicitud.get();
-                        sol.setEstadoActual("Completada");
-                        solicitudServicioRepository.save(sol);
-                        System.out.println(
-                            "Solicitud " +
-                                identFactura +
-                                " actualizada a Completada exitosamente."
-                        );
-                    } else {
-                        System.err.println(
-                            "ADVERTENCIA: No se encontró la solicitud " +
-                                identFactura +
-                                " en JPA."
-                        );
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(
-                    "Nota: Error al cerrar folio_consumo o solicitud: " +
-                        e.getMessage()
-                );
-                e.printStackTrace();
-            }
+            
 
             // 4. Registramos el Pago base
             java.sql.Timestamp now = new java.sql.Timestamp(
@@ -191,6 +126,66 @@ public class PagoService {
                 new java.sql.Date(System.currentTimeMillis())
             );
 
+
+            // 6. Verificar si la factura quedó pagada (según el trigger de BD) y cerrar folio
+            String estatusFacturaActual = null;
+            try {
+                estatusFacturaActual = jdbcTemplate.queryForObject(
+                    "SELECT Estatus_factura FROM Factura WHERE Numero_control = ?",
+                    String.class, numeroControlFactura
+                );
+            } catch (Exception ex) {
+                System.err.println("Error consultando estatus de factura: " + ex.getMessage());
+            }
+            if ("Pagada".equals(estatusFacturaActual)) {
+                try {
+                    String selectIdent =
+                        "SELECT Identificador FROM Factura WHERE Numero_control = ?";
+                    String identFactura = jdbcTemplate.queryForObject(
+                        selectIdent,
+                        String.class,
+                        numeroControlFactura
+                    );
+
+                    if (identFactura != null) {
+                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
+                            folioConsumoRepository.findByIdentificador(
+                                identFactura
+                            );
+                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
+                            folio.setEstadoCierre("Cerrado");
+                            folioConsumoRepository.save(folio);
+                        }
+
+                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
+                            solicitudServicioRepository.findById(identFactura);
+                        if (optSolicitud.isPresent()) {
+                            com.ucab.ucab_services.entity.SolicitudServicio sol =
+                                optSolicitud.get();
+                            sol.setEstadoActual("Completada");
+                            solicitudServicioRepository.save(sol);
+                            System.out.println(
+                                "Solicitud " +
+                                    identFactura +
+                                    " actualizada a Completada exitosamente."
+                            );
+                        } else {
+                            System.err.println(
+                                "ADVERTENCIA: No se encontró la solicitud " +
+                                    identFactura +
+                                    " en JPA."
+                            );
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "Nota: Error al cerrar folio_consumo o solicitud: " +
+                            e.getMessage()
+                    );
+                    e.printStackTrace();
+                }
+            }
+
             System.out.println(
                 "Pago móvil procesado con éxito para factura: " +
                     numeroControlFactura
@@ -211,11 +206,12 @@ public class PagoService {
     @Transactional
     public void procesarPagoTarjeta(
         String identificador,
-        double monto,
+        Double monto,
         String tipoRed,
         java.time.LocalDate fechaVencimiento,
         String compania,
-        String numTarjeta
+        String numTarjeta,
+        Double montoTotalVes
     ) {
         try {
             // 1. Buscamos el Numero_control de la Factura y el saldo adeudado
@@ -249,22 +245,9 @@ public class PagoService {
 
                 totalAdeudado = saldoBd != null ? saldoBd.doubleValue() : 0.0;
 
-                // Margen de tolerancia de 1 Bolívar
-                if (monto < totalAdeudado - 1.0) {
-                    throw new RuntimeException(
-                        "El monto enviado (Bs. " +
-                            monto +
-                            ") es menor a la deuda actual (Bs. " +
-                            totalAdeudado +
-                            ")."
-                    );
-                }
+                
 
-                // 2. Actualizamos la Factura
-                String updateFactura =
-                    "UPDATE Factura SET Estatus_factura = 'Pagada', Saldo_restante_pagar = 0 " +
-                    "WHERE Numero_control = ?";
-                jdbcTemplate.update(updateFactura, numeroControlFactura);
+                
             } else {
                 // Generar la factura a partir del Folio/Solicitud
                 String checkFolio =
@@ -283,24 +266,18 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular deuda de Items
-                    java.math.BigDecimal totalItemsBd =
-                        jdbcTemplate.queryForObject(
-                            "SELECT COALESCE(SUM(Precio_unitario * Cantidad + Impuesto), 0) FROM Item_consumo WHERE Identificador = ?",
-                            java.math.BigDecimal.class,
-                            identificador
-                        );
-                    totalAdeudado =
-                        totalItemsBd != null ? totalItemsBd.doubleValue() : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
-                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, 'Pagada', ?, 0)",
+                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, \'Pendiente\', ?, ?)",
                         numeroControlFactura,
                         identificador,
                         cedula,
+                        totalAdeudado,
                         totalAdeudado
                     );
                 } else {
@@ -311,54 +288,7 @@ public class PagoService {
                 }
             }
 
-            // 3. Actualizamos Folio_Consumo y Solicitud_Servicio
-            try {
-                String selectIdent =
-                    "SELECT Identificador FROM Factura WHERE Numero_control = ?";
-                String identFactura = jdbcTemplate.queryForObject(
-                    selectIdent,
-                    String.class,
-                    numeroControlFactura
-                );
-
-                // Usamos los Repositories para asegurar que la caché de Hibernate se actualice
-                if (identFactura != null) {
-                    java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                        folioConsumoRepository.findByIdentificador(
-                            identFactura
-                        );
-                    for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                        folio.setEstadoCierre("Cerrado");
-                        folioConsumoRepository.save(folio);
-                    }
-
-                    java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                        solicitudServicioRepository.findById(identFactura);
-                    if (optSolicitud.isPresent()) {
-                        com.ucab.ucab_services.entity.SolicitudServicio sol =
-                            optSolicitud.get();
-                        sol.setEstadoActual("Completada");
-                        solicitudServicioRepository.save(sol);
-                        System.out.println(
-                            "Solicitud " +
-                                identFactura +
-                                " actualizada a Completada exitosamente."
-                        );
-                    } else {
-                        System.err.println(
-                            "ADVERTENCIA: No se encontró la solicitud " +
-                                identFactura +
-                                " en JPA."
-                        );
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(
-                    "Nota: Error al cerrar folio_consumo o solicitud: " +
-                        e.getMessage()
-                );
-                e.printStackTrace();
-            }
+            
 
             // 4. Registramos el Pago base
             java.sql.Timestamp now = new java.sql.Timestamp(
@@ -383,6 +313,66 @@ public class PagoService {
                 numTarjeta
             );
 
+
+            // 6. Verificar si la factura quedó pagada (según el trigger de BD) y cerrar folio
+            String estatusFacturaActual = null;
+            try {
+                estatusFacturaActual = jdbcTemplate.queryForObject(
+                    "SELECT Estatus_factura FROM Factura WHERE Numero_control = ?",
+                    String.class, numeroControlFactura
+                );
+            } catch (Exception ex) {
+                System.err.println("Error consultando estatus de factura: " + ex.getMessage());
+            }
+            if ("Pagada".equals(estatusFacturaActual)) {
+                try {
+                    String selectIdent =
+                        "SELECT Identificador FROM Factura WHERE Numero_control = ?";
+                    String identFactura = jdbcTemplate.queryForObject(
+                        selectIdent,
+                        String.class,
+                        numeroControlFactura
+                    );
+
+                    if (identFactura != null) {
+                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
+                            folioConsumoRepository.findByIdentificador(
+                                identFactura
+                            );
+                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
+                            folio.setEstadoCierre("Cerrado");
+                            folioConsumoRepository.save(folio);
+                        }
+
+                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
+                            solicitudServicioRepository.findById(identFactura);
+                        if (optSolicitud.isPresent()) {
+                            com.ucab.ucab_services.entity.SolicitudServicio sol =
+                                optSolicitud.get();
+                            sol.setEstadoActual("Completada");
+                            solicitudServicioRepository.save(sol);
+                            System.out.println(
+                                "Solicitud " +
+                                    identFactura +
+                                    " actualizada a Completada exitosamente."
+                            );
+                        } else {
+                            System.err.println(
+                                "ADVERTENCIA: No se encontró la solicitud " +
+                                    identFactura +
+                                    " en JPA."
+                            );
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "Nota: Error al cerrar folio_consumo o solicitud: " +
+                            e.getMessage()
+                    );
+                    e.printStackTrace();
+                }
+            }
+
             System.out.println(
                 "Pago con tarjeta procesado con éxito para factura: " +
                     numeroControlFactura
@@ -403,11 +393,12 @@ public class PagoService {
     @Transactional
     public void procesarPagoCriptomonedas(
         String identificador,
-        double monto,
+        Double monto,
         String dxid,
         String redBlockchain,
         String billetera,
-        double tasaConversion
+        Double tasaConversion,
+        Double montoTotalVes
     ) {
         try {
             // 1. Buscamos el Numero_control de la Factura y el saldo adeudado
@@ -441,22 +432,9 @@ public class PagoService {
 
                 totalAdeudado = saldoBd != null ? saldoBd.doubleValue() : 0.0;
 
-                // Margen de tolerancia de 1 Bolívar
-                if (monto < totalAdeudado - 1.0) {
-                    throw new RuntimeException(
-                        "El monto enviado (Bs. " +
-                            monto +
-                            ") es menor a la deuda actual (Bs. " +
-                            totalAdeudado +
-                            ")."
-                    );
-                }
+                
 
-                // 2. Actualizamos la Factura
-                String updateFactura =
-                    "UPDATE Factura SET Estatus_factura = 'Pagada', Saldo_restante_pagar = 0 " +
-                    "WHERE Numero_control = ?";
-                jdbcTemplate.update(updateFactura, numeroControlFactura);
+                
             } else {
                 // Generar la factura a partir del Folio/Solicitud
                 String checkFolio =
@@ -474,22 +452,17 @@ public class PagoService {
                         identificador
                     );
 
-                    java.math.BigDecimal totalItemsBd =
-                        jdbcTemplate.queryForObject(
-                            "SELECT COALESCE(SUM(Precio_unitario * Cantidad + Impuesto), 0) FROM Item_consumo WHERE Identificador = ?",
-                            java.math.BigDecimal.class,
-                            identificador
-                        );
-                    totalAdeudado =
-                        totalItemsBd != null ? totalItemsBd.doubleValue() : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
-                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, 'Pagada', ?, 0)",
+                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, \'Pendiente\', ?, ?)",
                         numeroControlFactura,
                         identificador,
                         cedula,
+                        totalAdeudado,
                         totalAdeudado
                     );
                 } else {
@@ -559,6 +532,66 @@ public class PagoService {
                 tasaConversion
             );
 
+
+            // 6. Verificar si la factura quedó pagada (según el trigger de BD) y cerrar folio
+            String estatusFacturaActual = null;
+            try {
+                estatusFacturaActual = jdbcTemplate.queryForObject(
+                    "SELECT Estatus_factura FROM Factura WHERE Numero_control = ?",
+                    String.class, numeroControlFactura
+                );
+            } catch (Exception ex) {
+                System.err.println("Error consultando estatus de factura: " + ex.getMessage());
+            }
+            if ("Pagada".equals(estatusFacturaActual)) {
+                try {
+                    String selectIdent =
+                        "SELECT Identificador FROM Factura WHERE Numero_control = ?";
+                    String identFactura = jdbcTemplate.queryForObject(
+                        selectIdent,
+                        String.class,
+                        numeroControlFactura
+                    );
+
+                    if (identFactura != null) {
+                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
+                            folioConsumoRepository.findByIdentificador(
+                                identFactura
+                            );
+                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
+                            folio.setEstadoCierre("Cerrado");
+                            folioConsumoRepository.save(folio);
+                        }
+
+                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
+                            solicitudServicioRepository.findById(identFactura);
+                        if (optSolicitud.isPresent()) {
+                            com.ucab.ucab_services.entity.SolicitudServicio sol =
+                                optSolicitud.get();
+                            sol.setEstadoActual("Completada");
+                            solicitudServicioRepository.save(sol);
+                            System.out.println(
+                                "Solicitud " +
+                                    identFactura +
+                                    " actualizada a Completada exitosamente."
+                            );
+                        } else {
+                            System.err.println(
+                                "ADVERTENCIA: No se encontró la solicitud " +
+                                    identFactura +
+                                    " en JPA."
+                            );
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "Nota: Error al cerrar folio_consumo o solicitud: " +
+                            e.getMessage()
+                    );
+                    e.printStackTrace();
+                }
+            }
+
             System.out.println(
                 "Pago con criptomonedas procesado con éxito para factura: " +
                     numeroControlFactura
@@ -579,10 +612,11 @@ public class PagoService {
     @Transactional
     public void procesarPagoZelle(
         String identificador,
-        double monto,
+        Double monto,
         String nombreTitular,
         String correoOrigen,
-        String codigoConfirmacion
+        String codigoConfirmacion,
+        Double montoTotalVes
     ) {
         try {
             // 1. Buscamos el Numero_control de la Factura y el saldo adeudado
@@ -616,22 +650,9 @@ public class PagoService {
 
                 totalAdeudado = saldoBd != null ? saldoBd.doubleValue() : 0.0;
 
-                // Margen de tolerancia de 1 Bolívar
-                if (monto < totalAdeudado - 1.0) {
-                    throw new RuntimeException(
-                        "El monto enviado (Bs. " +
-                            monto +
-                            ") es menor a la deuda actual (Bs. " +
-                            totalAdeudado +
-                            ")."
-                    );
-                }
+                
 
-                // 2. Actualizamos la Factura
-                String updateFactura =
-                    "UPDATE Factura SET Estatus_factura = 'Pagada', Saldo_restante_pagar = 0 " +
-                    "WHERE Numero_control = ?";
-                jdbcTemplate.update(updateFactura, numeroControlFactura);
+                
             } else {
                 // Generar la factura a partir del Folio/Solicitud
                 String checkFolio =
@@ -649,22 +670,17 @@ public class PagoService {
                         identificador
                     );
 
-                    java.math.BigDecimal totalItemsBd =
-                        jdbcTemplate.queryForObject(
-                            "SELECT COALESCE(SUM(Precio_unitario * Cantidad + Impuesto), 0) FROM Item_consumo WHERE Identificador = ?",
-                            java.math.BigDecimal.class,
-                            identificador
-                        );
-                    totalAdeudado =
-                        totalItemsBd != null ? totalItemsBd.doubleValue() : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
-                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, 'Pagada', ?, 0)",
+                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, \'Pendiente\', ?, ?)",
                         numeroControlFactura,
                         identificador,
                         cedula,
+                        totalAdeudado,
                         totalAdeudado
                     );
                 } else {
@@ -733,6 +749,66 @@ public class PagoService {
                 codigoConfirmacion
             );
 
+
+            // 6. Verificar si la factura quedó pagada (según el trigger de BD) y cerrar folio
+            String estatusFacturaActual = null;
+            try {
+                estatusFacturaActual = jdbcTemplate.queryForObject(
+                    "SELECT Estatus_factura FROM Factura WHERE Numero_control = ?",
+                    String.class, numeroControlFactura
+                );
+            } catch (Exception ex) {
+                System.err.println("Error consultando estatus de factura: " + ex.getMessage());
+            }
+            if ("Pagada".equals(estatusFacturaActual)) {
+                try {
+                    String selectIdent =
+                        "SELECT Identificador FROM Factura WHERE Numero_control = ?";
+                    String identFactura = jdbcTemplate.queryForObject(
+                        selectIdent,
+                        String.class,
+                        numeroControlFactura
+                    );
+
+                    if (identFactura != null) {
+                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
+                            folioConsumoRepository.findByIdentificador(
+                                identFactura
+                            );
+                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
+                            folio.setEstadoCierre("Cerrado");
+                            folioConsumoRepository.save(folio);
+                        }
+
+                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
+                            solicitudServicioRepository.findById(identFactura);
+                        if (optSolicitud.isPresent()) {
+                            com.ucab.ucab_services.entity.SolicitudServicio sol =
+                                optSolicitud.get();
+                            sol.setEstadoActual("Completada");
+                            solicitudServicioRepository.save(sol);
+                            System.out.println(
+                                "Solicitud " +
+                                    identFactura +
+                                    " actualizada a Completada exitosamente."
+                            );
+                        } else {
+                            System.err.println(
+                                "ADVERTENCIA: No se encontró la solicitud " +
+                                    identFactura +
+                                    " en JPA."
+                            );
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "Nota: Error al cerrar folio_consumo o solicitud: " +
+                            e.getMessage()
+                    );
+                    e.printStackTrace();
+                }
+            }
+
             System.out.println(
                 "Pago con Zelle procesado con éxito para factura: " +
                     numeroControlFactura
@@ -753,9 +829,10 @@ public class PagoService {
     @Transactional
     public void procesarPagoTai(
         String identificador,
-        double monto,
+        Double monto,
         String posTerminal,
-        String reciboDigital
+        String reciboDigital,
+        Double montoTotalVes
     ) {
         try {
             // 1. Buscamos el Numero_control de la Factura y el saldo adeudado
@@ -793,22 +870,9 @@ public class PagoService {
                 cedula = (String) facturas.get(0).get("cedula_miembro");
                 if (cedula == null) cedula = (String) facturas.get(0).get("Cedula_Miembro");
 
-                // Margen de tolerancia de 1 Bolívar
-                if (monto < totalAdeudado - 1.0) {
-                    throw new RuntimeException(
-                        "El monto enviado (Bs. " +
-                            monto +
-                            ") es menor a la deuda actual (Bs. " +
-                            totalAdeudado +
-                            ")."
-                    );
-                }
+                
 
-                // 2. Actualizamos la Factura
-                String updateFactura =
-                    "UPDATE Factura SET Estatus_factura = 'Pagada', Saldo_restante_pagar = 0 " +
-                    "WHERE Numero_control = ?";
-                jdbcTemplate.update(updateFactura, numeroControlFactura);
+                
             } else {
                 // Generar la factura a partir del Folio/Solicitud
                 String checkFolio =
@@ -826,14 +890,8 @@ public class PagoService {
                         identificador
                     );
 
-                    java.math.BigDecimal totalItemsBd =
-                        jdbcTemplate.queryForObject(
-                            "SELECT COALESCE(SUM(Precio_unitario * Cantidad + Impuesto), 0) FROM Item_consumo WHERE Identificador = ?",
-                            java.math.BigDecimal.class,
-                            identificador
-                        );
-                    totalAdeudado =
-                        totalItemsBd != null ? totalItemsBd.doubleValue() : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     if (monto < totalAdeudado - 1.0) {
                         throw new RuntimeException(
@@ -848,10 +906,11 @@ public class PagoService {
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
-                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, 'Pagada', ?, 0)",
+                        "INSERT INTO Factura (Numero_control, Identificador, Cedula_Miembro, Estatus_factura, Monto_total, Saldo_restante_pagar) VALUES (?, ?, ?, \'Pendiente\', ?, ?)",
                         numeroControlFactura,
                         identificador,
                         cedula,
+                        totalAdeudado,
                         totalAdeudado
                     );
                 } else {
@@ -946,6 +1005,66 @@ public class PagoService {
                 uidBilletera
             );
 
+
+            // 6. Verificar si la factura quedó pagada (según el trigger de BD) y cerrar folio
+            String estatusFacturaActual = null;
+            try {
+                estatusFacturaActual = jdbcTemplate.queryForObject(
+                    "SELECT Estatus_factura FROM Factura WHERE Numero_control = ?",
+                    String.class, numeroControlFactura
+                );
+            } catch (Exception ex) {
+                System.err.println("Error consultando estatus de factura: " + ex.getMessage());
+            }
+            if ("Pagada".equals(estatusFacturaActual)) {
+                try {
+                    String selectIdent =
+                        "SELECT Identificador FROM Factura WHERE Numero_control = ?";
+                    String identFactura = jdbcTemplate.queryForObject(
+                        selectIdent,
+                        String.class,
+                        numeroControlFactura
+                    );
+
+                    if (identFactura != null) {
+                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
+                            folioConsumoRepository.findByIdentificador(
+                                identFactura
+                            );
+                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
+                            folio.setEstadoCierre("Cerrado");
+                            folioConsumoRepository.save(folio);
+                        }
+
+                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
+                            solicitudServicioRepository.findById(identFactura);
+                        if (optSolicitud.isPresent()) {
+                            com.ucab.ucab_services.entity.SolicitudServicio sol =
+                                optSolicitud.get();
+                            sol.setEstadoActual("Completada");
+                            solicitudServicioRepository.save(sol);
+                            System.out.println(
+                                "Solicitud " +
+                                    identFactura +
+                                    " actualizada a Completada exitosamente."
+                            );
+                        } else {
+                            System.err.println(
+                                "ADVERTENCIA: No se encontró la solicitud " +
+                                    identFactura +
+                                    " en JPA."
+                            );
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(
+                        "Nota: Error al cerrar folio_consumo o solicitud: " +
+                            e.getMessage()
+                    );
+                    e.printStackTrace();
+                }
+            }
+
             System.out.println(
                 "Pago con TAI procesado con éxito para factura: " +
                     numeroControlFactura
@@ -984,4 +1103,41 @@ public class PagoService {
             return new java.util.ArrayList<>();
         }
     }
+
+    public java.util.Map<String, Object> obtenerDetalleFactura(String numeroControl) {
+        java.util.Map<String, Object> resultado = new java.util.HashMap<>();
+        try {
+            String sqlFactura = "SELECT Numero_control as \"numeroControl\", " +
+                                "Identificador as \"identificador\", " +
+                                "Estatus_factura as \"estatusFactura\", " +
+                                "Monto_total as \"montoTotal\", " +
+                                "Saldo_restante_pagar as \"saldoRestante\" " +
+                                "FROM Factura WHERE Numero_control = ?";
+            
+            java.util.List<java.util.Map<String, Object>> facturas = jdbcTemplate.queryForList(sqlFactura, numeroControl);
+            
+            if (facturas.isEmpty()) {
+                resultado.put("error", "Factura no encontrada");
+                return resultado;
+            }
+            
+            resultado.put("factura", facturas.get(0));
+            
+            String sqlPagos = "SELECT fecha_operacion as \"fechaOperacion\", " +
+                              "tipo_pago as \"tipoPago\", " +
+                              "monto_liquidacion as \"montoLiquidacion\", " +
+                              "canal_origen as \"canalOrigen\" " +
+                              "FROM Pago WHERE Numero_control_Factura = ? " +
+                              "ORDER BY fecha_operacion DESC";
+            
+            java.util.List<java.util.Map<String, Object>> pagos = jdbcTemplate.queryForList(sqlPagos, numeroControl);
+            resultado.put("pagos", pagos);
+            
+        } catch (Exception e) {
+            System.err.println("Error obteniendo detalle de factura: " + e.getMessage());
+            resultado.put("error", e.getMessage());
+        }
+        return resultado;
+    }
 }
+

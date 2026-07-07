@@ -164,12 +164,13 @@
               <th class="py-sm px-md font-semibold">Folio / Factura</th>
               <th class="py-sm px-md font-semibold">Método</th>
               <th class="py-sm px-md font-semibold text-right">Monto</th>
+              <th class="py-sm px-md font-semibold text-center">Acciones</th>
             </tr>
           </thead>
           <tbody class="font-body-md text-body-md text-on-surface">
             @if (cargandoHistorial) {
               <tr>
-                <td colspan="4" class="py-xl text-center text-on-surface-variant animate-pulse">
+                <td colspan="5" class="py-xl text-center text-on-surface-variant animate-pulse">
                   Cargando historial de pagos...
                 </td>
               </tr>
@@ -196,6 +197,11 @@
                   <td class="py-md px-md text-right font-bold text-on-surface">
                     Bs. {{ pago.montoLiquidacion | number:'1.2-2' }}
                   </td>
+                  <td class="py-md px-md text-center">
+                    <button (click)="abrirModalFactura(pago.numeroControlFactura)" class="bg-surface border border-primary text-primary px-3 py-1 rounded-md text-sm font-bold hover:bg-primary hover:text-white transition-colors cursor-pointer">
+                      Factura
+                    </button>
+                  </td>
                 </tr>
               }
             }
@@ -204,4 +210,103 @@
       </div>
     </div>
   </main>
+
+  <!-- Modal Detalle Factura -->
+  @if (mostrandoModalFactura) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" (click)="cerrarModalFactura()"></div>
+      
+      <!-- Modal Content -->
+      <div class="relative bg-surface rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between p-md border-b border-outline-variant">
+          <h2 class="font-h2 text-h2 text-on-surface flex items-center gap-sm">
+            <span class="material-symbols-outlined text-primary">receipt_long</span>
+            Detalle de Factura
+          </h2>
+          <button (click)="cerrarModalFactura()" class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-lg overflow-y-auto">
+          @if (cargandoFactura) {
+            <div class="flex flex-col items-center justify-center py-xl">
+              <span class="material-symbols-outlined animate-spin text-[48px] text-primary">autorenew</span>
+              <p class="mt-4 font-bold text-body-lg text-secondary">Cargando detalles...</p>
+            </div>
+          } @else if (detalleFactura) {
+            
+            <div class="flex justify-between items-start mb-lg">
+              <div>
+                <p class="text-label-caps font-label-caps text-secondary mb-1">FACTURA #</p>
+                <p class="font-mono text-body-lg font-bold">{{ detalleFactura.factura?.numeroControl }}</p>
+                <p class="text-body-sm text-secondary mt-1">Folio Asociado: {{ detalleFactura.factura?.identificador }}</p>
+              </div>
+              
+              <div class="text-right">
+                <p class="text-label-caps font-label-caps text-secondary mb-1">ESTATUS</p>
+                @if (detalleFactura.factura?.estatusFactura === 'Pagada') {
+                  <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold uppercase text-sm">Pagada</span>
+                } @else if (detalleFactura.factura?.estatusFactura === 'Parcial') {
+                  <span class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold uppercase text-sm">Pago Parcial</span>
+                } @else {
+                  <span class="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full font-bold uppercase text-sm">Pendiente</span>
+                }
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-md mb-lg">
+              <div class="bg-surface-container-lowest border border-outline-variant p-md rounded-lg">
+                <p class="text-label-caps font-label-caps text-secondary mb-1">TOTAL FACTURADO</p>
+                <p class="font-h3 text-h3 text-on-surface">Bs. {{ detalleFactura.factura?.montoTotal | number:'1.2-2' }}</p>
+              </div>
+              <div class="bg-surface-container-low border border-primary/30 p-md rounded-lg">
+                <p class="text-label-caps font-label-caps text-primary mb-1">SALDO RESTANTE</p>
+                <p class="font-h3 text-h3 text-primary font-bold">Bs. {{ detalleFactura.factura?.saldoRestante | number:'1.2-2' }}</p>
+              </div>
+            </div>
+
+            <h3 class="font-h3 text-h3 text-on-surface mb-md">Abonos Aplicados</h3>
+            
+            @if (detalleFactura.pagos?.length > 0) {
+              <div class="border border-outline-variant rounded-lg overflow-hidden">
+                <table class="w-full text-left">
+                  <thead class="bg-surface-container-low border-b border-outline-variant">
+                    <tr>
+                      <th class="py-2 px-3 text-label-caps font-label-caps text-secondary">Fecha</th>
+                      <th class="py-2 px-3 text-label-caps font-label-caps text-secondary">Método</th>
+                      <th class="py-2 px-3 text-label-caps font-label-caps text-secondary text-right">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (abono of detalleFactura.pagos; track abono.fechaOperacion) {
+                      <tr class="border-b border-outline-variant last:border-0 hover:bg-surface-container-lowest transition-colors">
+                        <td class="py-2 px-3 text-body-sm">{{ abono.fechaOperacion | date:'medium' }}</td>
+                        <td class="py-2 px-3 text-body-sm font-medium">{{ abono.tipoPago }}</td>
+                        <td class="py-2 px-3 text-body-sm text-right font-bold text-on-surface">Bs. {{ abono.montoLiquidacion | number:'1.2-2' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <p class="text-secondary italic">No se han registrado abonos a esta factura aún.</p>
+            }
+          }
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-md border-t border-outline-variant bg-surface-container-lowest flex justify-end">
+          <button (click)="cerrarModalFactura()" class="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-primary/90 transition-colors">
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 </div>

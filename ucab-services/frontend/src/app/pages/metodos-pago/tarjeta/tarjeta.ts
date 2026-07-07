@@ -36,6 +36,7 @@ export class Tarjeta implements OnInit {
   public ivaVes: number = 0;
   public tasaProcesamientoVes: number = 0;
   public totalPagarVes: number = 0;
+  public montoAPagarVes: number = 0;
 
   // Modelos del formulario HTML
   public tipoRed: string = '';
@@ -162,6 +163,7 @@ export class Tarjeta implements OnInit {
           this.subtotalUsd = monto / tasaBCV;
           this.ivaUsd = 0;
           this.totalPagarVes = this.subtotalVes;
+        this.montoAPagarVes = this.totalPagarVes;
           this.cargandoTasa = false;
           this.cdr.detectChanges();
         },
@@ -189,6 +191,7 @@ export class Tarjeta implements OnInit {
         this.tasaProcesamientoVes = subtotalMasIvaVes * 0.03; // Tarjeta suele tener otra tasa, pongamos 3%
 
         this.totalPagarVes = subtotalMasIvaVes + this.tasaProcesamientoVes;
+        this.montoAPagarVes = this.totalPagarVes;
 
         this.cargandoTasa = false;
         this.cdr.detectChanges();
@@ -273,7 +276,8 @@ export class Tarjeta implements OnInit {
       compania: this.compania,
       fechaVencimiento: fechaDate,
       numTarjeta: this.numTarjeta,
-      totalPagado: this.totalPagarVes,
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes,
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

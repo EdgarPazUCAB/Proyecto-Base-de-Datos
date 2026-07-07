@@ -110,21 +110,7 @@
           </div>
         </div>
 
-        <div class="lg:col-span-4 flex flex-col gap-md">
-          <div class="bg-surface rounded-xl border border-outline-variant p-lg shadow-sm sticky top-xl flex flex-col gap-md">
-            <h3 class="font-h3 text-h3 text-on-background border-b border-outline-variant pb-xs">Postulación</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">
-              Asegúrate de cumplir con el índice académico mínimo solicitado antes de postularte a esta vacante.
-            </p>
-            <button class="w-full py-3 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg font-bold hover:bg-primary/90 transition-colors shadow-sm flex justify-center items-center gap-2" [disabled]="oferta().estatusVacante !== 'Disponible'" [ngClass]="{'opacity-50 cursor-not-allowed': oferta().estatusVacante !== 'Disponible'}">
-              <span class="material-symbols-outlined">send</span>
-              Postularme Ahora
-            </button>
-            <p class="font-body-sm text-body-sm text-secondary text-center">
-              Revisaremos tu expediente académico al enviar la solicitud.
-            </p>
-          </div>
-        </div>
+        
       </div>
     }
   </main>

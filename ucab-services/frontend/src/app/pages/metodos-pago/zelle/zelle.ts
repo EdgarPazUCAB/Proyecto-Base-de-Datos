@@ -42,6 +42,7 @@ export class Zelle implements OnInit {
   public subtotalVes: number = 0;
   public ivaVes: number = 0;
   public totalPagarVes: number = 0;
+  public montoAPagarVes: number = 0;
 
   // Modelos del formulario HTML
   public nombreTitular: string = '';
@@ -160,6 +161,7 @@ export class Zelle implements OnInit {
           this.ivaUsd = 0;
           this.totalPagarUsd = this.subtotalUsd;
           this.totalPagarVes = this.subtotalVes;
+        this.montoAPagarVes = this.totalPagarVes;
           this.cargandoTasa = false;
           this.cdr.detectChanges();
         },
@@ -189,6 +191,7 @@ export class Zelle implements OnInit {
         
         // Gran total neto a pagar en Bolívares (VES) - para el backend
         this.totalPagarVes = this.subtotalVes + this.ivaVes;
+        this.montoAPagarVes = this.totalPagarVes;
         
         this.cargandoTasa = false;
         this.cdr.detectChanges(); 
@@ -237,7 +240,8 @@ export class Zelle implements OnInit {
       correoOrigen: this.correoOrigen,
       codigoConfirmacion: this.codigoConfirmacion,
       // Se pasa el totalPagado en Bs porque el backend verifica deuda en Bs (o en la moneda configurada).
-      totalPagado: this.totalPagarVes
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

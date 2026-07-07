@@ -25,4 +25,7 @@ public class CriptomonedasRequest {
 
     @NotNull(message = "El totalPagado es obligatorio.")
     private Double totalPagado;
+
+    @NotNull(message = "El montoTotalVes es obligatorio.")
+    private Double montoTotalVes;
 }
