@@ -79,8 +79,13 @@ public class PagoService {
                         identificador
                     );
 
-                    // Usar el monto total en VES proporcionado por el frontend
-                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
+                    // Calcular el monto total en USD desde la tabla item_consumo
+                    Double totalUsd = jdbcTemplate.queryForObject(
+                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
+                        Double.class,
+                        identificador
+                    );
+                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
@@ -266,8 +271,13 @@ public class PagoService {
                         identificador
                     );
 
-                    // Usar el monto total en VES proporcionado por el frontend
-                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
+                    // Calcular el monto total en USD desde la tabla item_consumo
+                    Double totalUsd = jdbcTemplate.queryForObject(
+                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
+                        Double.class,
+                        identificador
+                    );
+                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
@@ -452,8 +462,13 @@ public class PagoService {
                         identificador
                     );
 
-                    // Usar el monto total en VES proporcionado por el frontend
-                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
+                    // Calcular el monto total en USD desde la tabla item_consumo
+                    Double totalUsd = jdbcTemplate.queryForObject(
+                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
+                        Double.class,
+                        identificador
+                    );
+                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
@@ -670,8 +685,13 @@ public class PagoService {
                         identificador
                     );
 
-                    // Usar el monto total en VES proporcionado por el frontend
-                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
+                    // Calcular el monto total en USD desde la tabla item_consumo
+                    Double totalUsd = jdbcTemplate.queryForObject(
+                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
+                        Double.class,
+                        identificador
+                    );
+                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
@@ -890,8 +910,13 @@ public class PagoService {
                         identificador
                     );
 
-                    // Usar el monto total en VES proporcionado por el frontend
-                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
+                    // Calcular el monto total en USD desde la tabla item_consumo
+                    Double totalUsd = jdbcTemplate.queryForObject(
+                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
+                        Double.class,
+                        identificador
+                    );
+                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
 
                     if (monto < totalAdeudado - 1.0) {
                         throw new RuntimeException(
