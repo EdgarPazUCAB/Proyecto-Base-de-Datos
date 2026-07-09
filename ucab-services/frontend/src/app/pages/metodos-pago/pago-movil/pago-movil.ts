@@ -10,7 +10,8 @@ import { throwError } from 'rxjs';
 import { TasaCambioService } from '../../../services/tasa-cambio.service'; 
 import { FolioConsumoService } from '../../../services/folio-consumo.service'; 
 import { BilleteraService } from '../../../services/billetera.service';
-import { AuthService } from '../../../services/auth.service'; 
+import { AuthService } from '../../../services/auth.service';
+import { PagoService } from '../../../services/pago.service';
 
 @Component({
   selector: 'app-pago-movil',
@@ -60,7 +61,8 @@ export class PagoMovil implements OnInit {
     private tasaCambioService: TasaCambioService,
     private folioConsumoService: FolioConsumoService,
     private billeteraService: BilleteraService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pagoService: PagoService
   ) {}
 
   ngOnInit(): void {
@@ -113,16 +115,7 @@ export class PagoMovil implements OnInit {
           );
         }
 
-        // 3. BÚSQUEDA POR SALDO ACTIVO: Si no hay URL, buscar el primero que tenga deuda pendiente
-        if (!folioSeleccionado) {
-          folioSeleccionado = listaFolios.find(f => {
-            if (!f) return false;
-            const deuda = f.saldoRestante ?? f.montoTotal ?? f.totalAcumulado ?? f.total_acumulado ?? f.monto ?? 0;
-            return deuda > 0;
-          });
-        }
-
-        // 4. FALLBACK DE LISTA: Si ninguno tiene deuda activa, tomar el primero disponible
+        // 3. BÚSQUEDA POR SALDO ACTIVO: Si no hay URL, tomar el primero disponible
         if (!folioSeleccionado) {
           folioSeleccionado = listaFolios[0];
         }
@@ -137,27 +130,69 @@ export class PagoMovil implements OnInit {
                          folioSeleccionado.identificador ?? 
                          (folioSeleccionado.id ? String(folioSeleccionado.id) : 'F-DESARROLLO');
 
-          // Extrae el monto de la deuda usando el nombre real de tus columnas
-          const saldo = folioSeleccionado.saldoRestante ?? 
-                        folioSeleccionado.montoTotal ?? 
-                        folioSeleccionado.totalAcumulado ?? 
-                        folioSeleccionado.total_acumulado ?? 
-                        folioSeleccionado.monto ?? 0;
+          // ================================================================
+          // CORRECCIÓN MULTI-PAGO:
+          // Consultar el saldo restante real de la factura (en VES/Bs).
+          // Si existe → el saldo en Bs ÷ tasa BCV = USD que queda por cobrar.
+          // Si no existe (primer pago) → usar los cargos originales en USD.
+          // ================================================================
+          this.pagoService.obtenerSaldoFacturaPorFolio(this.folioId).subscribe({
+            next: (saldoInfo) => {
+              if (saldoInfo.tieneFactura && saldoInfo.saldoRestanteVes != null && saldoInfo.saldoRestanteVes > 0) {
+                // Factura parcialmente pagada: convertir saldo Bs → USD usando la tasa actual
+                this.tasaCambioService.obtenerTasaVES().subscribe({
+                  next: (tasaBCV) => {
+                    this.tasaActual = tasaBCV;
+                    // saldoRestanteVes (Bs) ÷ tasa = USD restante
+                    const saldoUsdRestante = saldoInfo.saldoRestanteVes / tasaBCV;
+                    // El IVA ya está incluido en el saldo restante (se abona proporcionalmente)
+                    this.subtotalUsd = saldoUsdRestante;
+                    this.ivaUsd = 0; // El saldo ya incluye IVA y comisiones aplicadas anteriormente
 
-          if (saldo === 0) {
-            // Evita montos en cero durante pruebas locales si el registro de la BD está vacío
-            this.subtotalUsd = 50.00;
-            this.ivaUsd = 8.00;
-          } else {
-            this.subtotalUsd = saldo;
-            this.ivaUsd = this.subtotalUsd * 0.16; // 16% de IVA estipulado
-          }
+                    // Calcular montos en VES con la tasa actual
+                    this.subtotalVes = saldoInfo.saldoRestanteVes;
+                    this.ivaVes = 0;
+                    const tasaProcesamientoVes = this.subtotalVes * 0.015;
+                    this.totalPagarVes = this.subtotalVes + tasaProcesamientoVes;
+                    this.montoAPagarVes = this.totalPagarVes;
+                    this.tasaProcesamientoVes = tasaProcesamientoVes;
+
+                    this.cargandoTasa = false;
+                    this.cdr.detectChanges();
+                  },
+                  error: () => {
+                    this.cargandoTasa = false;
+                    this.cdr.detectChanges();
+                  }
+                });
+              } else {
+                // No hay factura pendiente: primer pago, usar cargos originales en USD
+                this.folioConsumoService.obtenerCargosPorFolio(this.folioId).subscribe({
+                  next: (cargos) => {
+                    let subtotal = cargos.reduce((suma, cargo) => suma + (Number(cargo.monto) || 0), 0);
+                    if (subtotal === 0) subtotal = 25.00;
+                    this.subtotalUsd = subtotal;
+                    this.ivaUsd = this.subtotalUsd * 0.16;
+                    this.obtenerTasaYCalcularMontos();
+                  },
+                  error: () => {
+                    this.subtotalUsd = 50.00;
+                    this.ivaUsd = this.subtotalUsd * 0.16;
+                    this.obtenerTasaYCalcularMontos();
+                  }
+                });
+              }
+            },
+            error: () => {
+              // Fallback: usar datos de prueba si no se puede consultar el saldo
+              this.subtotalUsd = 50.00;
+              this.ivaUsd = this.subtotalUsd * 0.16;
+              this.obtenerTasaYCalcularMontos();
+            }
+          });
         } else {
           this.asignarValoresPrueba('F-DESARROLLO', 50.00);
         }
-
-        // LLAMADA CRÍTICA: Ejecuta el cálculo en bolívares con los montos asignados
-        this.obtenerTasaYCalcularMontos();
       },
       error: (err) => {
         console.error('Error crítico al conectar con FolioConsumoService:', err);

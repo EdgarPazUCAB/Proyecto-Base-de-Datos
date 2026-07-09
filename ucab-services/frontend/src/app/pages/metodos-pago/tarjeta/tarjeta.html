@@ -93,7 +93,7 @@
         </h3>
         <div class="grid grid-cols-3 gap-sm">
           <button
-            routerLink="/pago-movil"
+            routerLink="/pago-movil" [queryParams]="{ folio: folioId }"
             class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer"
           >
             <span class="material-symbols-outlined text-[28px]">phone_iphone</span>
@@ -107,7 +107,7 @@
             <div class="absolute top-sm right-sm w-2 h-2 rounded-full bg-primary"></div>
           </button>
           <button
-            routerLink="/criptomonedas"
+            routerLink="/criptomonedas" [queryParams]="{ folio: folioId }"
             class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer"
           >
             <span

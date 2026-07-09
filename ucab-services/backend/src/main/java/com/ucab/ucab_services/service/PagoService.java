@@ -79,13 +79,8 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular el monto total en USD desde la tabla item_consumo
-                    Double totalUsd = jdbcTemplate.queryForObject(
-                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
-                        Double.class,
-                        identificador
-                    );
-                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
@@ -153,34 +148,19 @@ public class PagoService {
                     );
 
                     if (identFactura != null) {
-                        java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                            folioConsumoRepository.findByIdentificador(
-                                identFactura
-                            );
-                        for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                            folio.setEstadoCierre("Cerrado");
-                            folioConsumoRepository.save(folio);
-                        }
-
-                        java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                            solicitudServicioRepository.findById(identFactura);
-                        if (optSolicitud.isPresent()) {
-                            com.ucab.ucab_services.entity.SolicitudServicio sol =
-                                optSolicitud.get();
-                            sol.setEstadoActual("Completada");
-                            solicitudServicioRepository.save(sol);
-                            System.out.println(
-                                "Solicitud " +
-                                    identFactura +
-                                    " actualizada a Completada exitosamente."
-                            );
-                        } else {
-                            System.err.println(
-                                "ADVERTENCIA: No se encontró la solicitud " +
-                                    identFactura +
-                                    " en JPA."
-                            );
-                        }
+                        jdbcTemplate.update(
+                            "UPDATE Folio_Consumo SET Estado_cierre = 'Cerrado' WHERE Identificador = ?",
+                            identFactura
+                        );
+                        jdbcTemplate.update(
+                            "UPDATE Solicitud_Servicio SET estado_actual = 'Completada' WHERE Identificador = ?",
+                            identFactura
+                        );
+                        System.out.println(
+                            "Solicitud y Folio para " +
+                                identFactura +
+                                " actualizados a Cerrado/Completada exitosamente."
+                        );
                     }
                 } catch (Exception e) {
                     System.out.println(
@@ -271,13 +251,8 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular el monto total en USD desde la tabla item_consumo
-                    Double totalUsd = jdbcTemplate.queryForObject(
-                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
-                        Double.class,
-                        identificador
-                    );
-                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     // Generar nuevo Numero_control
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
@@ -462,13 +437,8 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular el monto total en USD desde la tabla item_consumo
-                    Double totalUsd = jdbcTemplate.queryForObject(
-                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
-                        Double.class,
-                        identificador
-                    );
-                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
@@ -685,13 +655,8 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular el monto total en USD desde la tabla item_consumo
-                    Double totalUsd = jdbcTemplate.queryForObject(
-                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
-                        Double.class,
-                        identificador
-                    );
-                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
@@ -910,13 +875,8 @@ public class PagoService {
                         identificador
                     );
 
-                    // Calcular el monto total en USD desde la tabla item_consumo
-                    Double totalUsd = jdbcTemplate.queryForObject(
-                        "SELECT SUM((precio_unitario * cantidad) + impuesto) FROM item_consumo WHERE identificador = ?",
-                        Double.class,
-                        identificador
-                    );
-                    totalAdeudado = totalUsd != null ? totalUsd : 0.0;
+                    // Usar el monto total en VES proporcionado por el frontend
+                    totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
                     if (monto < totalAdeudado - 1.0) {
                         throw new RuntimeException(
@@ -1127,6 +1087,53 @@ public class PagoService {
             System.err.println("Error obteniendo historial de pagos: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
+    }
+
+    /**
+     * Devuelve el saldo restante en VES (Bs) de la factura asociada a un folio/solicitud.
+     * Retorna null en el mapa si no existe factura todavía (primer pago).
+     */
+    public java.util.Map<String, Object> obtenerSaldoFacturaPorFolio(String identificador) {
+        java.util.Map<String, Object> resultado = new java.util.HashMap<>();
+        try {
+            String sql =
+                "SELECT Numero_control, Monto_total, Saldo_restante_pagar, Estatus_factura " +
+                "FROM Factura " +
+                "WHERE (Identificador = ? OR Numero_control = ?) " +
+                "  AND Estatus_factura NOT IN ('Pagada','Anulada') " +
+                "ORDER BY Fecha_emision DESC LIMIT 1";
+
+            java.util.List<java.util.Map<String, Object>> rows =
+                jdbcTemplate.queryForList(sql, identificador, identificador);
+
+            if (rows.isEmpty()) {
+                // No existe factura pendiente: primer pago
+                resultado.put("tieneFactura", false);
+                resultado.put("saldoRestanteVes", null);
+                resultado.put("montoTotalVes", null);
+            } else {
+                java.util.Map<String, Object> row = rows.get(0);
+
+                java.math.BigDecimal saldoBd = (java.math.BigDecimal) row.get("saldo_restante_pagar");
+                if (saldoBd == null) saldoBd = (java.math.BigDecimal) row.get("Saldo_restante_pagar");
+
+                java.math.BigDecimal totalBd = (java.math.BigDecimal) row.get("monto_total");
+                if (totalBd == null) totalBd = (java.math.BigDecimal) row.get("Monto_total");
+
+                resultado.put("tieneFactura", true);
+                resultado.put("saldoRestanteVes", saldoBd != null ? saldoBd.doubleValue() : 0.0);
+                resultado.put("montoTotalVes",   totalBd  != null ? totalBd.doubleValue()  : 0.0);
+                resultado.put("estatusFactura",  row.get("estatus_factura") != null
+                                                    ? row.get("estatus_factura")
+                                                    : row.get("Estatus_factura"));
+            }
+        } catch (Exception e) {
+            System.err.println("Error obteniendo saldo por folio: " + e.getMessage());
+            resultado.put("tieneFactura", false);
+            resultado.put("saldoRestanteVes", null);
+            resultado.put("montoTotalVes", null);
+        }
+        return resultado;
     }
 
     public java.util.Map<String, Object> obtenerDetalleFactura(String numeroControl) {

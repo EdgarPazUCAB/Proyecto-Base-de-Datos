@@ -177,6 +177,18 @@ public class PagoController {
         }
     }
 
+    @GetMapping("/saldo-folio/{identificador}")
+    public ResponseEntity<java.util.Map<String, Object>> obtenerSaldoFacturaPorFolio(
+        @PathVariable String identificador
+    ) {
+        try {
+            java.util.Map<String, Object> resultado = pagoService.obtenerSaldoFacturaPorFolio(identificador);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/factura/{numeroControl}")
     public ResponseEntity<java.util.Map<String, Object>> obtenerDetalleFactura(
         @PathVariable String numeroControl

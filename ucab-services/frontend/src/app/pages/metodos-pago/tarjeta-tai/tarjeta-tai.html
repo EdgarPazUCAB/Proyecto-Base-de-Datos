@@ -31,7 +31,7 @@
               >
             </div>
 
-            <div routerLink="/pago-movil"
+            <div routerLink="/pago-movil" [queryParams]="{ folio: folioId }"
               class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
             >
               <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"
@@ -45,7 +45,7 @@
               >
             </div>
 
-            <div routerLink="/zelle"
+            <div routerLink="/zelle" [queryParams]="{ folio: folioId }"
               class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-start cursor-pointer hover:border-outline hover:bg-surface-container-lowest transition-all opacity-70"
             >
               <span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm"

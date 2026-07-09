@@ -28,6 +28,10 @@ export class FolioConsumoService {
     return this.http.get<any[]>(this.apiUrlFolios);
   }
 
+  obtenerFoliosPorUsuario(cedula: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrlFolios}/usuario/${cedula}`);
+  }
+
   obtenerCargosPorFolio(identificador: string): Observable<Cargo[]> {
     // Asumiendo que el backend tiene un endpoint para filtrar cargos por identificador de solicitud
     return this.http.get<Cargo[]>(`${this.apiUrlCargos}/buscar?identificador=${identificador}`);

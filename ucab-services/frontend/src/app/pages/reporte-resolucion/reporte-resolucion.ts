@@ -40,11 +40,14 @@ export class ReporteResolucion implements OnInit {
       return;
     }
     this.cedula = usuario.cedulaMiembro ?? '';
-    // Defaults: año actual
+    // Defaults: fecha actual
     const ahora = new Date();
     const anio = ahora.getFullYear();
-    this.fechaInicio = `${anio}-01-01`;
-    this.fechaFin = `${anio}-12-31`;
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const hoyStr = `${anio}-${mes}-${dia}`;
+    this.fechaInicio = hoyStr;
+    this.fechaFin = hoyStr;
   }
 
   descargarPdf(): void {

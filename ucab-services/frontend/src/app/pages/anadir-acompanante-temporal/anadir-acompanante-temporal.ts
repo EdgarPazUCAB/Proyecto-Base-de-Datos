@@ -12,7 +12,11 @@ import { AcompananteTemporalService, AcompananteTemporal } from '../../services/
 })
 export class AnadirAcompananteTemporal implements OnInit {
   identificadorSolicitud: string = '';
-  documentoIdentidad: string = '';
+  
+  // Nuevas propiedades para manejar el flujo V-xxxxxxx
+  tipoDocumento: string = 'V'; 
+  numeroDocumento: string = '';
+  
   nombreAcompanante: string = '';
   
   cargando: boolean = false;
@@ -34,9 +38,22 @@ export class AnadirAcompananteTemporal implements OnInit {
     });
   }
 
+  limpiarError(): void {
+    if (this.mensajeError) {
+      this.mensajeError = '';
+    }
+  }
+
   guardarAcompanante(): void {
-    if (!this.documentoIdentidad.trim() || !this.nombreAcompanante.trim()) {
+    if (!this.numeroDocumento.trim() || !this.nombreAcompanante.trim()) {
       this.mensajeError = 'Por favor, complete todos los campos requeridos.';
+      return;
+    }
+
+    // Validación extra en TypeScript por seguridad
+    const cedulaRegExp = /^[0-9]{6,9}$/;
+    if (!cedulaRegExp.test(this.numeroDocumento.trim())) {
+      this.mensajeError = 'El número de cédula debe contener solo números (entre 6 y 9 dígitos).';
       return;
     }
 
@@ -49,9 +66,12 @@ export class AnadirAcompananteTemporal implements OnInit {
     this.mensajeError = '';
     this.mensajeExito = '';
 
+    // Formateamos el documento uniendo el tipo, el guion y el número
+    const documentoFormateado = `${this.tipoDocumento}-${this.numeroDocumento.trim()}`;
+
     const nuevoAcompanante: AcompananteTemporal = {
-      documentoIdentidadAcom: this.documentoIdentidad,
-      nombreAcompanante: this.nombreAcompanante,
+      documentoIdentidadAcom: documentoFormateado,
+      nombreAcompanante: this.nombreAcompanante.trim(),
       solicitudServicio: {
         identificador: this.identificadorSolicitud
       },
@@ -62,7 +82,6 @@ export class AnadirAcompananteTemporal implements OnInit {
       next: (res) => {
         this.cargando = false;
         this.mensajeExito = 'Acompañante guardado exitosamente.';
-        // Redirigimos al dashboard después de un momento
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
         }, 2000);
@@ -70,7 +89,14 @@ export class AnadirAcompananteTemporal implements OnInit {
       error: (err) => {
         this.cargando = false;
         console.error('Error al guardar el acompañante:', err);
-        this.mensajeError = 'Ocurrió un error al intentar guardar el acompañante.';
+        
+        if (err.error && typeof err.error === 'string') {
+          this.mensajeError = err.error;
+        } else if (err.error && err.error.message) {
+          this.mensajeError = err.error.message;
+        } else {
+          this.mensajeError = 'Ocurrió un error al intentar guardar el acompañante. Por favor, verifique los datos.';
+        }
       }
     });
   }

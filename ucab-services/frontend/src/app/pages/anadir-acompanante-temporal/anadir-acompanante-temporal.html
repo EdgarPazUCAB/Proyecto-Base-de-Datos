@@ -43,13 +43,53 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <div class="flex flex-col">
-              <label class="font-label-caps text-label-caps text-secondary mb-1" for="documento">Documento de Identidad *</label>
-              <input [(ngModel)]="documentoIdentidad" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="documento" name="documento" required type="text" placeholder="Ej: V-12345678" />
+              <label class="font-label-caps text-label-caps text-secondary mb-1" for="numeroDocumento">Documento de Identidad *</label>
+              
+              <div class="flex gap-2 w-full">
+                <select [(ngModel)]="tipoDocumento" 
+                        name="tipoDocumento" 
+                        class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-3 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all w-24 cursor-pointer">
+                  <option value="V">V</option>
+                  <option value="E">E</option>
+                </select>
+                
+                <input [(ngModel)]="numeroDocumento" 
+                       #documentoCtrl="ngModel"
+                       (ngModelChange)="limpiarError()"
+                       pattern="^[0-9]{6,9}$"
+                       [class.border-red-500]="documentoCtrl.invalid && (documentoCtrl.touched || form.submitted)"
+                       [class.focus:ring-red-200]="documentoCtrl.invalid && (documentoCtrl.touched || form.submitted)"
+                       class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-grow" 
+                       id="numeroDocumento" name="numeroDocumento" required type="text" inputmode="numeric" placeholder="Ej: 12345678" />
+              </div>
+              
+              @if (documentoCtrl.invalid && (documentoCtrl.touched || form.submitted)) {
+                <span class="text-xs text-red-600 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span>
+                  @if (documentoCtrl.errors?.['required']) {
+                    El número de documento es requerido.
+                  } @else if (documentoCtrl.errors?.['pattern']) {
+                    Ingrese un número de cédula válido (solo números, entre 6 y 9 dígitos).
+                  }
+                </span>
+              }
             </div>
             
             <div class="flex flex-col">
               <label class="font-label-caps text-label-caps text-secondary mb-1" for="nombre">Nombre Completo *</label>
-              <input [(ngModel)]="nombreAcompanante" class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="nombre" name="nombre" required type="text" placeholder="Ej: Juan Pérez" />
+              <input [(ngModel)]="nombreAcompanante" 
+                     #nombreCtrl="ngModel"
+                     (ngModelChange)="limpiarError()"
+                     [class.border-red-500]="nombreCtrl.invalid && (nombreCtrl.touched || form.submitted)"
+                     [class.focus:ring-red-200]="nombreCtrl.invalid && (nombreCtrl.touched || form.submitted)"
+                     class="font-body-md text-body-md border border-gray-200 rounded-DEFAULT px-4 py-3 bg-surface-container-lowest text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
+                     id="nombre" name="nombre" required type="text" placeholder="Ej: Juan Pérez" />
+              
+              @if (nombreCtrl.invalid && (nombreCtrl.touched || form.submitted)) {
+                <span class="text-xs text-red-600 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">error</span> El nombre completo es requerido.
+                </span>
+              }
             </div>
 
           </div>

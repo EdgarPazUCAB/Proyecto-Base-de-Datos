@@ -5,6 +5,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FolioConsumoService, Folio } from '../../services/folio-consumo.service';
 import { PagoService } from '../../services/pago.service';
 import { AuthService } from '../../services/auth.service';
+import { TasaCambioService } from '../../services/tasa-cambio.service';
 
 @Component({
   selector: 'app-pago',
@@ -39,7 +40,8 @@ export class Pago implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private tasaCambioService: TasaCambioService
   ) {}
 
   ngOnInit(): void {
@@ -73,25 +75,49 @@ export class Pago implements OnInit {
         this.cargando = false;
         this.cdr.detectChanges();
       } else {
-        this.folioService.obtenerFolios().subscribe({
+        this.folioService.obtenerFoliosPorUsuario(sesion.cedulaMiembro!).subscribe({
           next: (folios) => {
             const abierto = folios.find(f => f.estadoFolio?.toLowerCase() === 'abierto');
             
             if (abierto) {
               this.folioPendiente = abierto;
               
-              // Buscamos los cargos reales
-              this.folioService.obtenerCargosPorFolio(abierto.identificador).subscribe({
-                next: (cargos) => {
-                  let subtotal = cargos.reduce((suma, cargo) => suma + (Number(cargo.monto) || 0), 0);
-                  if (subtotal === 0) subtotal = 25.00;
-                  
-                  this.totalAPagarUsd = subtotal * 1.16;
-                  this.cargando = false;
-                  this.cdr.detectChanges();
+              // Verificamos primero si hay un saldo restante en una factura (pagos parciales)
+              this.pagoService.obtenerSaldoFacturaPorFolio(abierto.identificador).subscribe({
+                next: (saldoInfo) => {
+                  if (saldoInfo.tieneFactura && saldoInfo.saldoRestanteVes != null && saldoInfo.saldoRestanteVes > 0) {
+                    this.tasaCambioService.obtenerTasaVES().subscribe({
+                      next: (tasaBCV) => {
+                        this.totalAPagarUsd = saldoInfo.saldoRestanteVes / tasaBCV;
+                        this.cargando = false;
+                        this.cdr.detectChanges();
+                      },
+                      error: () => {
+                        this.totalAPagarUsd = saldoInfo.saldoRestanteVes / 36.5; // fallback
+                        this.cargando = false;
+                        this.cdr.detectChanges();
+                      }
+                    });
+                  } else {
+                    // Si no hay factura parcial, buscamos los cargos reales (primer pago)
+                    this.folioService.obtenerCargosPorFolio(abierto.identificador).subscribe({
+                      next: (cargos) => {
+                        let subtotal = cargos.reduce((suma, cargo) => suma + (Number(cargo.monto) || 0), 0);
+                        if (subtotal === 0) subtotal = 25.00;
+                        
+                        this.totalAPagarUsd = subtotal * 1.16;
+                        this.cargando = false;
+                        this.cdr.detectChanges();
+                      },
+                      error: () => {
+                        this.totalAPagarUsd = 25.00 * 1.16;
+                        this.cargando = false;
+                        this.cdr.detectChanges();
+                      }
+                    });
+                  }
                 },
                 error: () => {
-                  this.totalAPagarUsd = 25.00 * 1.16;
                   this.cargando = false;
                   this.cdr.detectChanges();
                 }

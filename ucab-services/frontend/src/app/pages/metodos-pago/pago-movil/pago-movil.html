@@ -76,11 +76,11 @@
             <span class="font-label-caps text-label-caps">Pago Móvil</span>
             <div class="absolute top-sm right-sm w-2 h-2 rounded-full bg-primary"></div>
           </button>
-          <button routerLink="/tarjeta" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
+          <button routerLink="/tarjeta" [queryParams]="{ folio: folioId }" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
             <span class="material-symbols-outlined text-[28px]">credit_card</span>
             <span class="font-label-caps text-label-caps">Tarjeta</span>
           </button>
-          <button routerLink="/criptomonedas" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
+          <button routerLink="/criptomonedas" [queryParams]="{ folio: folioId }" class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col items-center gap-xs text-secondary hover:border-outline transition-all cursor-pointer">
             <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">currency_bitcoin</span>
             <span class="font-label-caps text-label-caps">Criptos</span>
           </button>

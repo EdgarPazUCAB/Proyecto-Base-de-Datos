@@ -32,7 +32,7 @@
         </div>
 
         <div
-          routerLink="/pago-movil"
+          routerLink="/pago-movil" [queryParams]="{ folio: folioId }"
           class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-center justify-center gap-sm cursor-pointer hover:border-outline hover:bg-surface-container transition-all"
         >
           <div
@@ -44,7 +44,7 @@
         </div>
 
         <div
-          routerLink="/tarjeta"
+          routerLink="/tarjeta" [queryParams]="{ folio: folioId }"
           class="border border-outline-variant bg-surface rounded-xl p-md flex flex-col items-center justify-center gap-sm cursor-pointer hover:border-outline hover:bg-surface-container transition-all"
         >
           <div

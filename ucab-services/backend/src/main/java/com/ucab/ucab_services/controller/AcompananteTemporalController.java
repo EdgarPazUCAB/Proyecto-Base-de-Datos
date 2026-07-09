@@ -21,12 +21,30 @@ public class AcompananteTemporalController {
         return acompananteTemporalRepository.findAll();
     }
 
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
     @PostMapping
-    public AcompananteTemporal createAcompanante(@RequestBody AcompananteTemporal acompananteTemporal) {
-        // Asignamos por defecto el estado activo a true, como lo indica la BD
-        if (acompananteTemporal.getEstadoActivo() == null) {
-            acompananteTemporal.setEstadoActivo(true);
+    public ResponseEntity<?> createAcompanante(@RequestBody AcompananteTemporal acompananteTemporal) {
+        try {
+            if (acompananteTemporal.getEstadoActivo() == null) {
+                acompananteTemporal.setEstadoActivo(true);
+            }
+            
+            String identificador = acompananteTemporal.getSolicitudServicio().getIdentificador();
+            
+            jdbcTemplate.update(
+                "INSERT INTO Acompanante_Temporal (Documento_identidad_Acom, Identificador, Nombre_acompanante, Estado_activo) " +
+                "VALUES (?, ?, ?, ?)",
+                acompananteTemporal.getDocumentoIdentidadAcom(),
+                identificador,
+                acompananteTemporal.getNombreAcompanante(),
+                acompananteTemporal.getEstadoActivo()
+            );
+            
+            return ResponseEntity.ok(acompananteTemporal);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al guardar acompañante: " + e.getMessage());
         }
-        return acompananteTemporalRepository.save(acompananteTemporal);
     }
 }

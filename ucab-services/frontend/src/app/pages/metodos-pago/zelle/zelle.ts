@@ -10,7 +10,8 @@ import { throwError } from 'rxjs';
 import { TasaCambioService } from '../../../services/tasa-cambio.service'; 
 import { FolioConsumoService } from '../../../services/folio-consumo.service'; 
 import { BilleteraService } from '../../../services/billetera.service';
-import { AuthService } from '../../../services/auth.service'; 
+import { AuthService } from '../../../services/auth.service';
+import { PagoService } from '../../../services/pago.service';
 
 @Component({
   selector: 'app-zelle',
@@ -59,7 +60,8 @@ export class Zelle implements OnInit {
     private tasaCambioService: TasaCambioService,
     private folioConsumoService: FolioConsumoService,
     private billeteraService: BilleteraService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pagoService: PagoService
   ) {}
 
   ngOnInit(): void {
@@ -106,14 +108,6 @@ export class Zelle implements OnInit {
         }
 
         if (!folioSeleccionado) {
-          folioSeleccionado = listaFolios.find(f => {
-            if (!f) return false;
-            const deuda = f.saldoRestante ?? f.montoTotal ?? f.totalAcumulado ?? f.total_acumulado ?? f.monto ?? 0;
-            return deuda > 0;
-          });
-        }
-
-        if (!folioSeleccionado) {
           folioSeleccionado = listaFolios[0];
         }
 
@@ -123,24 +117,64 @@ export class Zelle implements OnInit {
                          folioSeleccionado.identificador ?? 
                          (folioSeleccionado.id ? String(folioSeleccionado.id) : 'F-DESARROLLO');
 
-          const saldo = folioSeleccionado.saldoRestante ?? 
-                        folioSeleccionado.montoTotal ?? 
-                        folioSeleccionado.totalAcumulado ?? 
-                        folioSeleccionado.total_acumulado ?? 
-                        folioSeleccionado.monto ?? 0;
+          // ================================================================
+          // CORRECCIÓN MULTI-PAGO:
+          // Consultar el saldo restante real de la factura (en VES/Bs).
+          // Si existe → saldo en Bs ÷ tasa BCV = USD restante por cobrar.
+          // Si no existe (primer pago) → usar cargos originales en USD.
+          // ================================================================
+          this.pagoService.obtenerSaldoFacturaPorFolio(this.folioId).subscribe({
+            next: (saldoInfo) => {
+              if (saldoInfo.tieneFactura && saldoInfo.saldoRestanteVes != null && saldoInfo.saldoRestanteVes > 0) {
+                // Factura parcialmente pagada: convertir saldo Bs → USD
+                this.tasaCambioService.obtenerTasaVES().subscribe({
+                  next: (tasaBCV) => {
+                    this.tasaActual = tasaBCV;
+                    const saldoUsdRestante = saldoInfo.saldoRestanteVes / tasaBCV;
+                    this.subtotalUsd = saldoUsdRestante;
+                    this.ivaUsd = 0; // El saldo ya incluye IVA aplicado anteriormente
+                    this.totalPagarUsd = saldoUsdRestante;
 
-          if (saldo === 0) {
-            this.subtotalUsd = 50.00;
-            this.ivaUsd = 8.00;
-          } else {
-            this.subtotalUsd = saldo;
-            this.ivaUsd = this.subtotalUsd * 0.16; 
-          }
+                    this.subtotalVes = saldoInfo.saldoRestanteVes;
+                    this.ivaVes = 0;
+                    this.totalPagarVes = this.subtotalVes;
+                    this.montoAPagarVes = this.totalPagarVes;
+
+                    this.cargandoTasa = false;
+                    this.cdr.detectChanges();
+                  },
+                  error: () => {
+                    this.cargandoTasa = false;
+                    this.cdr.detectChanges();
+                  }
+                });
+              } else {
+                // No hay factura pendiente: primer pago, usar cargos originales en USD
+                this.folioConsumoService.obtenerCargosPorFolio(this.folioId).subscribe({
+                  next: (cargos) => {
+                    let subtotal = cargos.reduce((suma, cargo) => suma + (Number(cargo.monto) || 0), 0);
+                    if (subtotal === 0) subtotal = 25.00;
+                    this.subtotalUsd = subtotal;
+                    this.ivaUsd = this.subtotalUsd * 0.16;
+                    this.obtenerTasaYCalcularMontos();
+                  },
+                  error: () => {
+                    this.subtotalUsd = 50.00;
+                    this.ivaUsd = this.subtotalUsd * 0.16;
+                    this.obtenerTasaYCalcularMontos();
+                  }
+                });
+              }
+            },
+            error: () => {
+              this.subtotalUsd = 50.00;
+              this.ivaUsd = this.subtotalUsd * 0.16;
+              this.obtenerTasaYCalcularMontos();
+            }
+          });
         } else {
           this.asignarValoresPrueba('F-DESARROLLO', 50.00);
         }
-
-        this.obtenerTasaYCalcularMontos();
       },
       error: (err) => {
         console.error('Error crítico al conectar con FolioConsumoService:', err);

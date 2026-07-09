@@ -26,6 +26,10 @@ export class PagoService {
     return this.http.get<any[]>(`${this.apiUrl}/historial/${cedula}`);
   }
 
+  obtenerSaldoFacturaPorFolio(identificador: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/saldo-folio/${identificador}`);
+  }
+
   obtenerDetalleFactura(numeroControl: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/factura/${numeroControl}`);
   }

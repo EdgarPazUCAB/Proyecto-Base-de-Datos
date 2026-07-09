@@ -77,7 +77,7 @@
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-xl">
-          <label class="cursor-pointer" routerLink="/tarjeta">
+          <label class="cursor-pointer" routerLink="/tarjeta" [queryParams]="{ folio: folioId }">
             <input class="peer sr-only" name="payment_method" type="radio" value="card" />
             <div
               class="h-full border border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-sm text-secondary hover:bg-surface-container transition-colors peer-checked:border-primary peer-checked:bg-surface-container-low peer-checked:text-primary"
@@ -108,7 +108,7 @@
               <div class="absolute top-sm right-sm w-2 h-2 rounded-full bg-primary"></div>
             </div>
           </label>
-          <label class="cursor-pointer" routerLink="/pago-movil">
+          <label class="cursor-pointer" routerLink="/pago-movil" [queryParams]="{ folio: folioId }">
             <input class="peer sr-only" name="payment_method" type="radio" value="bank" />
             <div
               class="h-full border border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-sm text-secondary hover:bg-surface-container transition-colors peer-checked:border-primary peer-checked:bg-surface-container-low peer-checked:text-primary"
