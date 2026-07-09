@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp; // <-- NUEVO IMPORT para manejar la fecha y hora
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -49,11 +50,13 @@ public class AuthService {
         }
 
         miembro.setIntentosFallidos(0);
-        miembroRepository.save(miembro);
-
         validarEstadoCuenta(miembro);
 
+        // CASO A: El usuario tiene MFA activo.
         if (Boolean.TRUE.equals(miembro.getMfaHabilitado())) {
+            // Guardamos el reset de intentos fallidos, pero NO actualizamos la última conexión todavía.
+            miembroRepository.save(miembro);
+
             String codigo = miembroRepository.generarCodigoMfa(miembro.getCedulaMiembro());
             LOG.info("[MFA] Código para " + miembro.getCorreoInstitucional() + ": " + codigo);
 
@@ -63,6 +66,11 @@ public class AuthService {
             response.setMensaje("Te enviamos un código de verificación a tu correo institucional.");
             return response;
         }
+
+        // CASO B: El usuario NO tiene MFA. Su ingreso al sistema es exitoso e inmediato aquí.
+        // ACTUALIZACIÓN DE ÚLTIMA CONEXIÓN
+        miembro.setUltimaConexion(new Timestamp(System.currentTimeMillis()));
+        miembroRepository.save(miembro);
 
         return construirRespuestaCompleta(miembro);
     }
@@ -80,6 +88,11 @@ public class AuthService {
         }
 
         validarEstadoCuenta(miembro);
+
+        // El código MFA es correcto, por lo tanto el usuario ya superó el segundo factor y entró al sistema.
+        // ACTUALIZACIÓN DE ÚLTIMA CONEXIÓN
+        miembro.setUltimaConexion(new Timestamp(System.currentTimeMillis()));
+        miembroRepository.save(miembro);
 
         return construirRespuestaCompleta(miembro);
     }
