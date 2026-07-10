@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/acompanantes-temporales")
@@ -21,30 +22,27 @@ public class AcompananteTemporalController {
         return acompananteTemporalRepository.findAll();
     }
 
-    @Autowired
-    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
-
     @PostMapping
     public ResponseEntity<?> createAcompanante(@RequestBody AcompananteTemporal acompananteTemporal) {
         try {
+            // 1. Validar proactivamente si el documento ya existe
+            if (acompananteTemporalRepository.existsById(acompananteTemporal.getDocumentoIdentidadAcom())) {
+                // Devolvemos código 400 (Bad Request) con un JSON que Angular leerá en err.error.message
+                return ResponseEntity.badRequest().body(Map.of("message", "El acompañante con este documento ya se encuentra registrado."));
+            }
+
             if (acompananteTemporal.getEstadoActivo() == null) {
                 acompananteTemporal.setEstadoActivo(true);
             }
             
-            String identificador = acompananteTemporal.getSolicitudServicio().getIdentificador();
+            // 2. Usar JPA para guardar en lugar de JdbcTemplate manual
+            AcompananteTemporal guardado = acompananteTemporalRepository.save(acompananteTemporal);
             
-            jdbcTemplate.update(
-                "INSERT INTO Acompanante_Temporal (Documento_identidad_Acom, Identificador, Nombre_acompanante, Estado_activo) " +
-                "VALUES (?, ?, ?, ?)",
-                acompananteTemporal.getDocumentoIdentidadAcom(),
-                identificador,
-                acompananteTemporal.getNombreAcompanante(),
-                acompananteTemporal.getEstadoActivo()
-            );
-            
-            return ResponseEntity.ok(acompananteTemporal);
+            return ResponseEntity.ok(guardado);
+
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error al guardar acompañante: " + e.getMessage());
+            // Devolver error estructurado en JSON
+            return ResponseEntity.internalServerError().body(Map.of("message", "Error interno al guardar acompañante: " + e.getMessage()));
         }
     }
 }
