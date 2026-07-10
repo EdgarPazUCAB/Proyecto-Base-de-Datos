@@ -101,7 +101,7 @@ public class SolicitudServicioController {
         return ResponseEntity.ok(solicitudServicioService.save(solicitudServicio));
     }
 
-    // --- NUEVO ENDPOINT PARA CANCELAR LA SOLICITUD ---
+    // --- CORRECCIÓN: ENDPOINT PARA CANCELAR LA SOLICITUD Y ANULAR LA FACTURA ---
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<Map<String, String>> cancelarSolicitud(@PathVariable String id) {
         SolicitudServicio solicitud = solicitudServicioService.findById(id);
@@ -109,12 +109,32 @@ public class SolicitudServicioController {
             return ResponseEntity.notFound().build();
         }
 
+        // 1. Cancelamos la solicitud
         solicitud.setEstadoActual("Cancelada");
-        solicitud.setFechaFin(java.time.LocalDate.now()); // Registramos el final explícitamente desde Java también
+        solicitud.setFechaFin(java.time.LocalDate.now());
         solicitudServicioService.save(solicitud);
 
+        // 2. Anulamos la factura si existe y cerramos el folio
+        try {
+            // Pasamos la factura a 'Anulada' solo si estaba Pendiente o Parcial (evitamos anular facturas ya Pagadas)
+            jdbcTemplate.update(
+                    "UPDATE Factura SET Estatus_factura = 'Anulada' WHERE Identificador = ? AND Estatus_factura IN ('Pendiente', 'Parcial')",
+                    id
+            );
+
+            // Cerramos el folio de consumo para que no quede 'Abierto' huérfano
+            jdbcTemplate.update(
+                    "UPDATE Folio_Consumo SET Estado_cierre = 'Cerrado' WHERE Identificador = ?",
+                    id
+            );
+
+            System.out.println("Factura anulada y Folio cerrado por cancelación de la solicitud: " + id);
+        } catch (Exception e) {
+            System.err.println("Error anulando factura al cancelar la solicitud: " + e.getMessage());
+        }
+
         Map<String, String> response = new HashMap<>();
-        response.put("mensaje", "Solicitud cancelada con éxito");
+        response.put("mensaje", "Solicitud cancelada con éxito. Las deudas pendientes han sido anuladas.");
         response.put("identificador", id);
 
         return ResponseEntity.ok(response);
