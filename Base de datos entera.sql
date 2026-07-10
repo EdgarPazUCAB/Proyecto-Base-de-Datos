@@ -1642,3 +1642,73 @@ SELECT fn_establecer_clave('V-89012345', 'Ucab2026*');
 
 -- Ejemplo de verificación de login (debería devolver TRUE):
 -- SELECT fn_verificar_clave('V-12345678', 'Ucab2026*');
+
+--TIEMPO RESOLUCIÓN DE SOLICITUD DE SERVICIO
+
+-- 1. Creación de tu función completa con la lógica exacta
+CREATE OR REPLACE FUNCTION fn_tiempo_resolucion_solicitud(p_identificador VARCHAR)
+RETURNS INTERVAL AS $$
+DECLARE
+    v_inicio    TIMESTAMP;
+    v_fin       TIMESTAMP;
+    v_dias_hab  INTEGER := 0;
+    v_cursor    DATE;
+BEGIN
+    SELECT Fecha_creacion, Fecha_Fin::TIMESTAMP
+    INTO v_inicio, v_fin
+    FROM Solicitud_Servicio
+    WHERE Identificador = p_identificador;
+
+    IF v_fin IS NULL THEN
+        RETURN NULL; -- solicitud aún abierta
+    END IF;
+
+    -- Contar días hábiles (excluye sábado=6 y domingo=0)
+    v_cursor := v_inicio::DATE;
+    WHILE v_cursor < v_fin::DATE LOOP
+        IF EXTRACT(DOW FROM v_cursor) NOT IN (0, 6) THEN
+            v_dias_hab := v_dias_hab + 1;
+        END IF;
+        v_cursor := v_cursor + INTERVAL '1 day';
+    END LOOP;
+
+    RETURN (v_dias_hab || ' days')::INTERVAL
+           + (v_fin - v_inicio::DATE::TIMESTAMP); -- suma fracción del día
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- 2. Función del Trigger que invoca a tu función anterior
+CREATE OR REPLACE FUNCTION trg_fn_calcular_resolucion()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_tiempo_calculado INTERVAL;
+BEGIN
+    -- CONDICIÓN CRÍTICA: Solo se ejecuta si el estado pasa a ser final ('Completada' o 'Cancelada')
+    -- desde un estado que NO era final. Esto previene un bucle infinito cuando este mismo trigger haga el UPDATE.
+    IF NEW.Estado_actual IN ('Completada', 'Cancelada') 
+       AND OLD.Estado_actual NOT IN ('Completada', 'Cancelada') 
+    THEN
+        
+        -- Invocamos a tu función pasando el ID de la solicitud actual
+        v_tiempo_calculado := fn_tiempo_resolucion_solicitud(NEW.Identificador);
+        
+        -- Ejecutamos la actualización directamente sobre la tabla
+        UPDATE Solicitud_Servicio
+        SET Tiempo_resolucion = v_tiempo_calculado
+        WHERE Identificador = NEW.Identificador;
+        
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- 3. Creación del Trigger (Debe ser AFTER UPDATE)
+DROP TRIGGER IF EXISTS tgr_solicitud_tiempo_resolucion ON Solicitud_Servicio;
+
+CREATE TRIGGER tgr_solicitud_tiempo_resolucion
+AFTER UPDATE ON Solicitud_Servicio
+FOR EACH ROW
+EXECUTE FUNCTION trg_fn_calcular_resolucion();

@@ -49,6 +49,25 @@ export class GestionarSolicitudes implements OnInit {
     });
   }
 
+  // --- NUEVA FUNCIÓN DE CANCELACIÓN ---
+  cancelarSolicitud(solicitud: any): void {
+    const confirmacion = window.confirm(`¿Estás seguro de que deseas cancelar la solicitud ${solicitud.identificador}?`);
+    
+    if (confirmacion) {
+      this.solicitudService.cancelarSolicitud(solicitud.identificador).subscribe({
+        next: (respuesta) => {
+          // Actualizamos el estado de manera local sin volver a llamar a toda la base de datos
+          solicitud.estadoActual = 'Cancelada';
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error al cancelar la solicitud:', err);
+          alert('Ocurrió un error al intentar cancelar la solicitud.');
+        }
+      });
+    }
+  }
+
   obtenerClaseEstado(estado: string): string {
     switch (estado) {
       case 'Pendiente': 

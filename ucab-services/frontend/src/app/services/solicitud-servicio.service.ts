@@ -6,7 +6,6 @@ export interface NuevaSolicitud {
   estadoActual: string;
   fechaInicio: string;
   fechaFin?: string | null;
-  // Le enviamos a Spring Boot los IDs de las entidades relacionadas
   miembro: { cedulaMiembro: string };
   servicio: { codigoServicio: string };
 }
@@ -25,5 +24,10 @@ export class SolicitudServicioService {
 
   obtenerSolicitudes(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  // --- NUEVA FUNCIÓN PARA LLAMAR AL ENDPOINT DE CANCELACIÓN ---
+  cancelarSolicitud(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/cancelar`, {});
   }
 }

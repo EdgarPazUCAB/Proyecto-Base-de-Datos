@@ -30,14 +30,13 @@
               <th class="py-sm px-md font-semibold">Servicio</th>
               <th class="py-sm px-md font-semibold">Fecha de Creación</th>
               <th class="py-sm px-md font-semibold text-center">Estado</th>
-            </tr>
+              <th class="py-sm px-md font-semibold text-center">Acciones</th> </tr>
           </thead>
           
           <tbody class="font-body-md text-body-md text-on-surface">
             @if (cargando) {
               <tr>
-                <td colspan="4" class="py-xl text-center text-on-surface-variant animate-pulse">
-                  <div class="flex flex-col items-center justify-center">
+                <td colspan="5" class="py-xl text-center text-on-surface-variant animate-pulse"> <div class="flex flex-col items-center justify-center">
                     <span class="material-symbols-outlined animate-spin text-[32px] text-primary mb-2">autorenew</span>
                     Cargando tu historial de solicitudes...
                   </div>
@@ -45,8 +44,7 @@
               </tr>
             } @else if (misSolicitudes.length === 0) {
               <tr>
-                <td colspan="4" class="py-xl text-center text-on-surface-variant">
-                  <div class="flex flex-col items-center justify-center">
+                <td colspan="5" class="py-xl text-center text-on-surface-variant"> <div class="flex flex-col items-center justify-center">
                     <span class="material-symbols-outlined text-[48px] text-secondary mb-2">inbox</span>
                     No tienes solicitudes registradas.
                   </div>
@@ -69,6 +67,14 @@
                           [ngClass]="obtenerClaseEstado(solicitud.estadoActual)">
                       {{ solicitud.estadoActual }}
                     </span>
+                  </td>
+                  <td class="py-md px-md text-center">
+                    @if (solicitud.estadoActual !== 'Cancelada' && solicitud.estadoActual !== 'Completada') {
+                      <button class="bg-red-500 text-white px-3 py-1 rounded-lg font-bold text-sm hover:bg-red-600 transition-colors shadow-sm"
+                              (click)="cancelarSolicitud(solicitud)">
+                        Cancelar
+                      </button>
+                    }
                   </td>
                 </tr>
               }
