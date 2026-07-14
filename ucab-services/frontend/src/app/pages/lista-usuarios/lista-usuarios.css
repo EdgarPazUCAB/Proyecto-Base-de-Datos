@@ -1,0 +1,476 @@
+/* ═══════════════════════════════════════════════════
+   DIRECTORIO DE USUARIOS — Estilos
+═══════════════════════════════════════════════════ */
+
+/* Layout principal */
+.lu-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ─── HEADER ─── */
+.lu-header {
+  background: linear-gradient(135deg, #166534 0%, #15803d 60%, #16a34a 100%);
+  color: white;
+  padding: 2rem 0;
+  box-shadow: 0 4px 20px rgba(22, 101, 52, 0.25);
+}
+
+.lu-header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lu-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lu-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-decoration: none;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.lu-back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lu-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.025em;
+}
+
+.lu-subtitle {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.lu-stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+/* ─── MAIN ─── */
+.lu-main {
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem 3rem 3rem;
+}
+
+/* ─── FILTROS ─── */
+.lu-filters-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.75rem;
+}
+
+.lu-filters-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Búsqueda */
+.lu-search-wrapper {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lu-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+.lu-search-input {
+  width: 100%;
+  padding: 0.65rem 2.5rem 0.65rem 2.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.lu-search-input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  background: white;
+}
+
+.lu-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.lu-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.lu-clear-btn:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+/* Select rol */
+.lu-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+}
+
+.lu-select-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.lu-select {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.lu-select:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  background: white;
+}
+
+/* Botón limpiar filtros */
+.lu-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  background: white;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.lu-reset-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* Botón Ver perfil completo (en tarjeta) */
+.lu-view-profile-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  padding: 0.55rem 1rem;
+  width: 100%;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.625rem;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 0.825rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lu-view-profile-btn .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+.lu-view-profile-btn:hover {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: white;
+}
+
+/* ─── ESTADOS ─── */
+.lu-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.lu-state--error {
+  color: #dc2626;
+}
+
+.lu-state--empty .lu-state-icon {
+  color: #94a3b8;
+  font-size: 4rem;
+}
+
+.lu-state-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 0;
+}
+
+.lu-state-hint {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  max-width: 380px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.lu-state-icon {
+  font-size: 3.5rem;
+  opacity: 0.5;
+}
+
+.lu-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: lu-spin 0.8s linear infinite;
+}
+
+@keyframes lu-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── GRID DE TARJETAS ─── */
+.lu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ─── TARJETA ─── */
+.lu-card {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+  animation: lu-fade-in 0.3s ease both;
+}
+
+.lu-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: #bbf7d0;
+}
+
+@keyframes lu-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Avatar */
+.lu-card-avatar {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Cuerpo de tarjeta */
+.lu-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lu-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.lu-card-name {
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Badge de rol */
+.lu-role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Detalles */
+.lu-card-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.75rem;
+}
+
+.lu-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.lu-detail-item .material-symbols-outlined {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.lu-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Estados de cuenta */
+.lu-status-active {
+  color: #16a34a;
+  font-weight: 600;
+}
+.lu-status-inactive {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* ═══════ COLORES POR ROL ═══════ */
+/* Avatar */
+.lu-card-avatar.rol-estudiante { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.lu-card-avatar.rol-egresado   { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.lu-card-avatar.rol-docente    { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.lu-card-avatar.rol-admin      { background: linear-gradient(135deg, #10b981, #065f46); }
+.lu-card-avatar.rol-sistema    { background: linear-gradient(135deg, #ef4444, #991b1b); }
+.lu-card-avatar.rol-default    { background: linear-gradient(135deg, #64748b, #334155); }
+
+/* Badge texto */
+.lu-role-badge.rol-estudiante { background: #dbeafe; color: #1d4ed8; }
+.lu-role-badge.rol-egresado   { background: #ede9fe; color: #6d28d9; }
+.lu-role-badge.rol-docente    { background: #fef3c7; color: #b45309; }
+.lu-role-badge.rol-admin      { background: #d1fae5; color: #065f46; }
+.lu-role-badge.rol-sistema    { background: #fee2e2; color: #991b1b; }
+.lu-role-badge.rol-default    { background: #f1f5f9; color: #475569; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .lu-header-content,
+  .lu-main {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .lu-stat-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.9rem;
+  }
+
+  .lu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lu-card-details {
+    grid-template-columns: 1fr;
+  }
+
+  .lu-filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lu-select-wrapper {
+    min-width: unset;
+  }
+}

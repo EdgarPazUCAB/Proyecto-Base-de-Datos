@@ -21,10 +21,12 @@ import { GestionarSolicitudes } from './pages/gestionar-solicitudes/gestionar-so
 import { ReporteResolucion } from './pages/reporte-resolucion/reporte-resolucion';
 import { ReporteConciliacion } from './pages/reporte-conciliacion/reporte-conciliacion';
 import { ReporteDemografico } from './pages/reporte-demografico/reporte-demografico';
+import { ListaUsuarios } from './pages/lista-usuarios/lista-usuarios';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: Profile },
+  { path: 'profile/:cedula', component: Profile },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'consultar-miembro', component: ConsultarMiembro },
   { path: 'anadir-vinculo-familiar', component: AnadirVinculoFamiliar },
@@ -45,5 +47,6 @@ export const routes: Routes = [
   { path: 'gestionar-solicitudes', component: GestionarSolicitudes },
   { path: 'reporte-resolucion', component: ReporteResolucion },
   { path: 'reporte-conciliacion', component: ReporteConciliacion },
-  { path: 'reporte-demografico', component: ReporteDemografico }
+  { path: 'reporte-demografico', component: ReporteDemografico },
+  { path: 'lista-usuarios', component: ListaUsuarios }
 ];

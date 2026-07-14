@@ -53,6 +53,15 @@ public class MiembroServiceImpl implements MiembroService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<MiembroDetalleDTO> listarTodos() {
+        return miembroRepository.findAll()
+                .stream()
+                .map(this::aDetalleDTO)
+                .toList();
+    }
+
     private MiembroDetalleDTO aDetalleDTO(Miembro miembro) {
         String tipoCategoria = miembro.getTipoCategoria() != null
                 ? miembro.getTipoCategoria().getTipoCategoria()

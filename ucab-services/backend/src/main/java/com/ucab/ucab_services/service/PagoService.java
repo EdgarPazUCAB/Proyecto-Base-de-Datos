@@ -1153,7 +1153,8 @@ public class PagoService {
                 return resultado;
             }
             
-            resultado.put("factura", facturas.get(0));
+            java.util.Map<String, Object> facturaRow = facturas.get(0);
+            resultado.put("factura", facturaRow);
             
             String sqlPagos = "SELECT fecha_operacion as \"fechaOperacion\", " +
                               "tipo_pago as \"tipoPago\", " +
@@ -1164,6 +1165,36 @@ public class PagoService {
             
             java.util.List<java.util.Map<String, Object>> pagos = jdbcTemplate.queryForList(sqlPagos, numeroControl);
             resultado.put("pagos", pagos);
+
+            // ── Cálculo retroactivo de la tasa BCV ──────────────────────────
+            // tasaBcv = Monto_total (Bs) ÷ suma de monto_liquidacion (USD)
+            // El monto_liquidacion representa lo que el usuario pagó en USD.
+            // Si la suma en USD > 0 podemos inferir la tasa que se usó.
+            double totalUsdPagado = pagos.stream()
+                .mapToDouble(p -> {
+                    Object m = p.get("montoLiquidacion");
+                    if (m instanceof java.math.BigDecimal) return ((java.math.BigDecimal) m).doubleValue();
+                    if (m instanceof Double) return (Double) m;
+                    if (m instanceof Number) return ((Number) m).doubleValue();
+                    return 0.0;
+                })
+                .sum();
+
+            Object montoTotalObj = facturaRow.get("montoTotal");
+            double montoTotalVes = 0.0;
+            if (montoTotalObj instanceof java.math.BigDecimal) montoTotalVes = ((java.math.BigDecimal) montoTotalObj).doubleValue();
+            else if (montoTotalObj instanceof Double) montoTotalVes = (Double) montoTotalObj;
+            else if (montoTotalObj instanceof Number) montoTotalVes = ((Number) montoTotalObj).doubleValue();
+
+            if (totalUsdPagado > 0 && montoTotalVes > 0) {
+                double tasaBcv = montoTotalVes / totalUsdPagado;
+                // Redondear a 4 decimales para mayor precisión
+                tasaBcv = Math.round(tasaBcv * 10000.0) / 10000.0;
+                resultado.put("tasaBcvUsada", tasaBcv);
+            } else {
+                resultado.put("tasaBcvUsada", null);
+            }
+            // ────────────────────────────────────────────────────────────────
             
         } catch (Exception e) {
             System.err.println("Error obteniendo detalle de factura: " + e.getMessage());

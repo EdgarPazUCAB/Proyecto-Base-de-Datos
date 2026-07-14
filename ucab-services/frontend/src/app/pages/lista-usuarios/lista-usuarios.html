@@ -1,0 +1,154 @@
+<div class="lu-page">
+
+  <!-- ── HEADER ── -->
+  <header class="lu-header">
+    <div class="lu-header-content">
+      <div class="lu-header-left">
+        <a routerLink="/profile" class="lu-back-btn">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div>
+          <h1 class="lu-title">Directorio de Usuarios</h1>
+          <p class="lu-subtitle">Consulta y filtra todos los miembros registrados en el sistema</p>
+        </div>
+      </div>
+      <div class="lu-stat-badge" *ngIf="hayFiltrosActivos">
+        <span class="material-symbols-outlined">group</span>
+        <span>{{ miembrosFiltrados.length }} de {{ miembros.length }} miembros</span>
+      </div>
+      <div class="lu-stat-badge" *ngIf="!hayFiltrosActivos">
+        <span class="material-symbols-outlined">group</span>
+        <span>{{ miembros.length }} miembros registrados</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="lu-main">
+
+    <!-- ── FILTROS ── -->
+    <section class="lu-filters-card">
+      <div class="lu-filters-row">
+
+        <!-- Búsqueda por texto -->
+        <div class="lu-search-wrapper">
+          <span class="material-symbols-outlined lu-search-icon">search</span>
+          <input
+            id="busqueda-input"
+            type="text"
+            class="lu-search-input"
+            placeholder="Buscar por nombre, apellido, cédula o correo..."
+            [(ngModel)]="busqueda"
+          />
+          <button *ngIf="busqueda" class="lu-clear-btn" (click)="busqueda = ''" title="Limpiar búsqueda">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Filtro por rol -->
+        <div class="lu-select-wrapper">
+          <span class="material-symbols-outlined lu-select-icon">badge</span>
+          <select id="rol-select" class="lu-select" [(ngModel)]="rolFiltro">
+            <option *ngFor="let r of roles" [value]="r.valor">{{ r.etiqueta }}</option>
+          </select>
+        </div>
+
+        <!-- Limpiar todo -->
+        <button *ngIf="busqueda || rolFiltro" class="lu-reset-btn" (click)="limpiarFiltros()">
+          <span class="material-symbols-outlined">filter_alt_off</span>
+          Limpiar filtros
+        </button>
+      </div>
+    </section>
+
+    <!-- ── ESTADO: CARGANDO ── -->
+    <div *ngIf="cargando" class="lu-state">
+      <div class="lu-spinner"></div>
+      <p>Cargando directorio de usuarios...</p>
+    </div>
+
+    <!-- ── ESTADO: ERROR ── -->
+    <div *ngIf="!cargando && errorMessage" class="lu-state lu-state--error">
+      <span class="material-symbols-outlined lu-state-icon">error</span>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- ── ESTADO: SIN FILTROS (pantalla inicial) ── -->
+    <div *ngIf="!cargando && !errorMessage && !hayFiltrosActivos" class="lu-state lu-state--empty">
+      <span class="material-symbols-outlined lu-state-icon">manage_search</span>
+      <p class="lu-state-title">Busca un usuario</p>
+      <p class="lu-state-hint">Escribe un nombre, apellido o cédula, o selecciona un rol para ver los resultados.</p>
+    </div>
+
+    <!-- ── ESTADO: SIN RESULTADOS CON FILTROS ── -->
+    <div *ngIf="!cargando && !errorMessage && hayFiltrosActivos && miembrosFiltrados.length === 0" class="lu-state">
+      <span class="material-symbols-outlined lu-state-icon">search_off</span>
+      <p>No se encontraron usuarios con los filtros aplicados.</p>
+      <button class="lu-reset-btn" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+
+    <!-- ── GRID DE TARJETAS ── -->
+    <div *ngIf="!cargando && !errorMessage && hayFiltrosActivos && miembrosFiltrados.length > 0" class="lu-grid">
+      <div
+        *ngFor="let m of miembrosFiltrados"
+        class="lu-card"
+      >
+        <!-- Avatar con iniciales -->
+        <div class="lu-card-avatar" [ngClass]="colorRol(m.rol)">
+          {{ iniciales(m.nombresCompletos, m.apellidosCompletos) }}
+        </div>
+
+        <!-- Info principal -->
+        <div class="lu-card-body">
+          <div class="lu-card-header-row">
+            <h3 class="lu-card-name">{{ m.nombresCompletos }} {{ m.apellidosCompletos }}</h3>
+            <span class="lu-role-badge" [ngClass]="colorRol(m.rol)">{{ etiquetaRol(m.rol) }}</span>
+          </div>
+
+          <div class="lu-card-details">
+            <div class="lu-detail-item">
+              <span class="material-symbols-outlined">badge</span>
+              <span>{{ m.cedulaMiembro }}</span>
+            </div>
+            <div class="lu-detail-item">
+              <span class="material-symbols-outlined">mail</span>
+              <span class="lu-email">{{ m.correoInstitucional }}</span>
+            </div>
+            <div class="lu-detail-item">
+              <span class="material-symbols-outlined">calendar_today</span>
+              <span>Desde {{ m.fechaApertura | date:'MMM yyyy' }}</span>
+            </div>
+            <div class="lu-detail-item">
+              <span class="material-symbols-outlined">account_circle</span>
+              <span [class.lu-status-active]="m.estadoCuenta === 'ACTIVO'" [class.lu-status-inactive]="m.estadoCuenta !== 'ACTIVO'">
+                {{ m.estadoCuenta }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Botón Ver Perfil -->
+          <a [routerLink]="['/profile', m.cedulaMiembro]" class="lu-view-profile-btn">
+            <span class="material-symbols-outlined">person</span>
+            Ver perfil completo
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 font-['Inter'] text-sm tracking-normal w-full border-t border-slate-200 dark:border-slate-800 mt-auto">
+    <div class="max-w-[1280px] mx-auto px-12 py-8 flex justify-between items-center">
+      <div class="flex items-center gap-md">
+        <span class="text-lg font-bold text-green-600 dark:text-green-400">UCAB SERVICES</span>
+        <span class="text-slate-500">© 2024 UCAB SERVICES. Universidad Católica Andrés Bello.</span>
+      </div>
+      <div class="flex gap-lg">
+        <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Aviso Legal</a>
+        <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Privacidad</a>
+        <a class="text-slate-500 hover:text-green-600 hover:underline transition-all" href="#">Términos y Condiciones</a>
+      </div>
+    </div>
+  </footer>
+
+</div>

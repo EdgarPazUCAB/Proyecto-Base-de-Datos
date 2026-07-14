@@ -30,4 +30,8 @@ export class MiembroService {
   buscarPorCedula(cedula: string): Observable<MiembroDetalle> {
     return this.http.get<MiembroDetalle>(`${this.apiUrl}/${cedula}`);
   }
+
+  listarTodos(): Observable<MiembroDetalle[]> {
+    return this.http.get<MiembroDetalle[]>(this.apiUrl);
+  }
 }

@@ -2,8 +2,20 @@
 
   <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl">
     <header class="mb-lg">
-      <h1 class="font-h1 text-h1 text-on-background">Mi Perfil</h1>
-      <p class="font-body-lg text-body-lg text-secondary mt-xs">Gestione su información personal y académica.</p>
+      <!-- Botón Volver cuando se ve el perfil de otro usuario -->
+      <div *ngIf="!esMiPropioPerfil" class="flex items-center gap-sm mb-sm">
+        <a routerLink="/lista-usuarios" class="flex items-center gap-xs text-secondary hover:text-primary transition-colors font-body-sm">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Volver al directorio
+        </a>
+      </div>
+
+      <h1 class="font-h1 text-h1 text-on-background">
+        {{ esMiPropioPerfil ? 'Mi Perfil' : 'Perfil de ' + (miembro?.nombresCompletos ?? '') }}
+      </h1>
+      <p class="font-body-lg text-body-lg text-secondary mt-xs">
+        {{ esMiPropioPerfil ? 'Gestione su información personal y académica.' : 'Información del miembro registrado en el sistema.' }}
+      </p>
     </header>
 
     <div *ngIf="cargando" class="text-center py-xl text-secondary">
@@ -44,6 +56,20 @@
               <span class="material-symbols-outlined text-[20px]">nfc</span>
               <span class="font-body-sm text-body-sm">UID Tarjeta TAI: {{ billetera.uid }}</span>
             </div>
+          </div>
+
+          <!-- Acceso al Directorio de Usuarios (solo en perfil propio) -->
+          <div *ngIf="esMiPropioPerfil" class="w-full border-t border-[#E2E8F0] mt-lg pt-md">
+            <a routerLink="/lista-usuarios" class="flex items-center justify-between w-full px-md py-sm rounded-lg bg-primary-container/10 hover:bg-primary-container/20 transition-colors group cursor-pointer no-underline">
+              <div class="flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary text-[22px] icon-filled">group</span>
+                <div class="text-left">
+                  <p class="font-body-sm text-body-sm font-semibold text-on-surface">Directorio de Usuarios</p>
+                  <p class="font-body-sm text-[11px] text-secondary">Ver todos los miembros</p>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-primary transition-colors">chevron_right</span>
+            </a>
           </div>
         </div>
       </div>
@@ -111,7 +137,7 @@
               <span class="material-symbols-outlined text-primary icon-filled">family_restroom</span>
               <h3 class="font-h3 text-h3 text-on-surface">Mis Vínculos Familiares</h3>
             </div>
-            <button routerLink="/anadir-vinculo-familiar" class="bg-primary text-on-primary font-body-sm text-body-sm py-xs px-sm md:py-sm md:px-md rounded-DEFAULT hover:opacity-90 transition-opacity cursor-pointer">
+            <button *ngIf="puedeAnadirBeneficiarios" routerLink="/anadir-vinculo-familiar" class="bg-primary text-on-primary font-body-sm text-body-sm py-xs px-sm md:py-sm md:px-md rounded-DEFAULT hover:opacity-90 transition-opacity cursor-pointer">
               + Añadir Vínculo
             </button>
           </div>

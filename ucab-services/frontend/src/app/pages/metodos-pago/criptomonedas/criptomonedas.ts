@@ -262,14 +262,16 @@ export class Criptomonedas implements OnInit {
       return;
     }
 
+    const totalPagadoUsd = this.subtotalUsd + this.ivaUsd;
+
     const payload = {
       folioId: this.folioId,
       dxid: this.dxid,
       redBlockchain: this.redBlockchain,
       billetera: this.billeteraDestino,
       tasaConversion: this.tasaActual,
-      totalPagado: this.montoAPagarVes,
-      montoTotalVes: this.totalPagarVes,
+      totalPagado: totalPagadoUsd,         // Monto en USD — se guarda como monto_liquidacion
+      montoTotalVes: this.totalPagarVes,   // Total en VES con comisión — para la Factura
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

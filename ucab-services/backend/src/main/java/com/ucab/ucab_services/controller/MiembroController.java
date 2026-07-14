@@ -29,6 +29,11 @@ public class MiembroController {
     @Autowired
     private MiembroService miembroService;
 
+    @GetMapping
+    public ResponseEntity<List<MiembroDetalleDTO>> listarTodos() {
+        return ResponseEntity.ok(miembroService.listarTodos());
+    }
+
     @GetMapping("/{cedula}")
     public ResponseEntity<?> buscarPorCedula(@PathVariable String cedula) {
         try {

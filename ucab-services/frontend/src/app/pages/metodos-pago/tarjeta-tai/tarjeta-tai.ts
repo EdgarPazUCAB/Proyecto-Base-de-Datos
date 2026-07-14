@@ -194,13 +194,14 @@ export class TarjetaTai implements OnInit {
 
     this.procesandoPago = true;
 
+    const totalPagadoUsd = this.subtotalUsd + this.ivaUsd;
+
     const payload = {
       folioId: this.folioId,
       posTerminal: this.posTerminal,
       reciboDigital: this.reciboDigital,
-      // Se pasa el totalPagado en Bs porque el backend verifica deuda en Bs.
-      totalPagado: this.montoAPagarVes,
-      montoTotalVes: this.totalPagarVes
+      totalPagado: totalPagadoUsd,         // Monto en USD — se guarda como monto_liquidacion
+      montoTotalVes: this.totalPagarVes    // Total en VES — para la Factura
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
