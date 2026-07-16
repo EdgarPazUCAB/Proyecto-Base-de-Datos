@@ -28,17 +28,6 @@
                 </select>
             </div>
         </div>
-        <div class="flex flex-col gap-xs flex-grow min-w-[200px]">
-            <label class="text-label-caps font-label-caps text-on-surface-variant">Dependencia</label>
-            <div class="relative">
-                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-secondary text-[20px]">domain</span>
-                <select [(ngModel)]="dependencia" (change)="onFilterChange()" class="w-full pl-xl pr-md py-sm bg-surface rounded border border-outline-variant text-body-md font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary appearance-none">
-                    <option value="Todas las Facultades">Todas las Facultades</option>
-                    <option value="Ingeniería">Ingeniería</option>
-                    <option value="Humanidades">Humanidades</option>
-                </select>
-            </div>
-        </div>
         <button class="bg-surface text-on-surface border border-outline-variant px-md py-sm rounded text-label-caps font-label-caps hover:bg-surface-container-low flex items-center gap-xs h-[42px]" (click)="descargarReporte('pdf')">
             <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
             Descargar PDF

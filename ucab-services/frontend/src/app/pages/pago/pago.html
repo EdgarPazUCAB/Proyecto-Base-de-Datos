@@ -270,20 +270,6 @@
               </div>
             </div>
 
-            <!-- Tasa BCV usada en el pago -->
-            @if (detalleFactura.tasaBcvUsada != null) {
-              <div class="flex items-center gap-sm bg-amber-50 border border-amber-200 rounded-lg p-md mb-lg">
-                <span class="material-symbols-outlined text-amber-600 text-[22px]">currency_exchange</span>
-                <div>
-                  <p class="text-label-caps font-label-caps text-amber-700 mb-0">TASA BCV APLICADA</p>
-                  <p class="font-bold text-amber-900 text-body-lg">
-                    Bs. {{ detalleFactura.tasaBcvUsada | number:'1.2-4' }} / USD
-                  </p>
-                  <p class="text-body-sm text-amber-700 mt-0">Tasa calculada en base al monto en Bs. vs. el monto en USD pagado.</p>
-                </div>
-              </div>
-            }
-
             <h3 class="font-h3 text-h3 text-on-surface mb-md">Abonos Aplicados</h3>
             
             @if (detalleFactura.pagos?.length > 0) {

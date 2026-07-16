@@ -24,7 +24,6 @@ export interface BeneficiarioData {
 export class ReporteDemografico implements OnInit {
   rangoFecha: string = '2024';
   tipoPersonal: string = 'Todos';
-  dependencia: string = 'Todas las Facultades';
 
   beneficiarios: BeneficiarioData[] = [];
   totalMenores: number = 0;
@@ -78,7 +77,7 @@ export class ReporteDemografico implements OnInit {
     this.cargando = true;
     this.cdr.detectChanges(); // Trigger loading state update
 
-    const url = `${this.apiBase}/datos?cedula=${usuario.cedulaMiembro}&rangoFecha=${this.rangoFecha}&tipoPersonal=${this.tipoPersonal}&dependencia=${this.dependencia}`;
+    const url = `${this.apiBase}/datos?cedula=${usuario.cedulaMiembro}&rangoFecha=${this.rangoFecha}&tipoPersonal=${this.tipoPersonal}`;
 
     this.http.get<BeneficiarioData[]>(url).subscribe({
       next: (data) => {
@@ -158,7 +157,7 @@ export class ReporteDemografico implements OnInit {
     const usuario = this.authService.obtenerUsuarioActual();
     if (!usuario || !usuario.cedulaMiembro) return;
     
-    const url = `${this.apiBase}/${formato}?cedula=${usuario.cedulaMiembro}&rangoFecha=${this.rangoFecha}&tipoPersonal=${this.tipoPersonal}&dependencia=${this.dependencia}`;
+    const url = `${this.apiBase}/${formato}?cedula=${usuario.cedulaMiembro}&rangoFecha=${this.rangoFecha}&tipoPersonal=${this.tipoPersonal}`;
     window.open(url, '_blank');
   }
 

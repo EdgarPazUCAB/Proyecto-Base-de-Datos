@@ -296,15 +296,13 @@ export class PagoMovil implements OnInit {
 
     const telefonoCompleto = `${this.telefonoPrefix}-${this.telefonoNumero}`;
 
-    const totalPagadoUsd = this.subtotalUsd + this.ivaUsd;
-
     const payload = {
       folioId: this.folioId,
       bancoEmisor: this.bancoEmisor,
       telefonoEmisor: telefonoCompleto,
       referencia: this.referencia,
-      totalPagado: totalPagadoUsd,         // Monto en USD — se guarda como monto_liquidacion
-      montoTotalVes: this.totalPagarVes    // Total en VES con comisión — para la Factura
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

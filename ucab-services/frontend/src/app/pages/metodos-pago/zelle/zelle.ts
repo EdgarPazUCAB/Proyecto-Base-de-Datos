@@ -268,15 +268,14 @@ export class Zelle implements OnInit {
       return;
     }
 
-    const totalPagadoUsd = this.subtotalUsd + this.ivaUsd;
-
     const payload = {
       folioId: this.folioId,
       nombreTitular: this.nombreTitular,
       correoOrigen: this.correoOrigen,
       codigoConfirmacion: this.codigoConfirmacion,
-      totalPagado: totalPagadoUsd,         // Monto en USD — se guarda como monto_liquidacion
-      montoTotalVes: this.totalPagarVes    // Total en VES con comisión — para la Factura
+      // Se pasa el totalPagado en Bs porque el backend verifica deuda en Bs (o en la moneda configurada).
+      totalPagado: this.montoAPagarVes,
+      montoTotalVes: this.totalPagarVes
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
