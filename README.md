@@ -1,81 +1,133 @@
-# UCAB Services
+# UCAB Services - Guía de Instalación y Configuración
 
-Plataforma de gestión académica y administrativa para la UCAB (Universidad Católica Andrés Bello). 
+¡Bienvenido al repositorio del proyecto **UCAB Services**! 
 
-Este proyecto se compone de un backend desarrollado en **Spring Boot (Java)** y un frontend desarrollado en **Angular**.
-
-## Requisitos Previos
-
-Asegúrate de tener instaladas las siguientes herramientas en tu sistema:
-
-* **Java 21**: Para ejecutar el servidor backend.
-* **Maven** (Opcional, el proyecto incluye `mvnw` que puede usarse en su lugar).
-* **PostgreSQL**: Base de datos relacional requerida por el backend.
-* **Node.js**: (Recomendado v18+ o v20+).
-* **Angular CLI** v21+: Para ejecutar comandos de Angular (`npm install -g @angular/cli`).
+Este documento es un tutorial paso a paso, detallado y claro, sobre cómo preparar tu entorno de desarrollo, instalar las dependencias necesarias y ejecutar tanto el **Backend** (Spring Boot) como el **Frontend** (Angular), además de configurar la **Base de Datos** (PostgreSQL).
 
 ---
 
-## ⚙️ Configuración del Backend (Spring Boot)
+## 📋 1. Prerrequisitos y Programas Necesarios
 
-El backend es una API REST construida con Spring Boot 4.1 y utiliza PostgreSQL como base de datos.
+Antes de comenzar, asegúrate de descargar e instalar los siguientes programas en tu computadora:
 
-### 1. Configurar la Base de Datos
-Debes asegurarte de tener un servidor de PostgreSQL en ejecución y crear una base de datos para el proyecto.
-Las credenciales por defecto se configuran en el archivo `application.properties` o `application.yml` dentro de `backend/src/main/resources`.
+1. **Java Development Kit (JDK) 21**
+   - El backend está construido utilizando Java 21.
+   - Puedes descargarlo desde [Oracle](https://www.oracle.com/java/technologies/downloads/#java21) o utilizar una distribución como [Eclipse Temurin (Adoptium)](https://adoptium.net/).
+   - Asegúrate de configurar la variable de entorno `JAVA_HOME`.
 
-### 2. Ejecutar el Servidor
-Abre una terminal, navega a la carpeta del backend y usa el Maven Wrapper incluido para compilar y ejecutar el proyecto.
+2. **Node.js y npm**
+   - El frontend requiere Node.js para ejecutar Angular. Se recomienda usar la versión LTS (v20 o superior).
+   - Descárgalo desde la [página oficial de Node.js](https://nodejs.org/). `npm` (Node Package Manager) viene incluido por defecto.
 
-En **Windows**:
-```bash
-cd backend
-mvnw.cmd spring-boot:run
-```
+3. **Angular CLI** (Opcional, pero recomendado)
+   - Una vez instalado Node.js, abre una terminal y ejecuta el siguiente comando para instalar la herramienta de línea de comandos de Angular globalmente:
+     ```bash
+     npm install -g @angular/cli
+     ```
 
-En **Linux / macOS**:
-```bash
-cd backend
-./mvnw spring-boot:run
-```
+4. **PostgreSQL**
+   - El sistema de gestión de base de datos utilizado.
+   - Descárgalo e instálalo desde su [página oficial](https://www.postgresql.org/download/).
 
-El backend se iniciará y, por defecto, escuchará en el puerto `8080` (a menos que se especifique lo contrario en la configuración).
+5. **Herramienta de Gestión de Base de Datos** (Opcional)
+   - Puedes usar **pgAdmin** (usualmente viene con PostgreSQL) o **DBeaver** para facilitar la importación y visualización del script de la base de datos.
 
----
-
-## 💻 Configuración del Frontend (Angular)
-
-El frontend está construido con Angular 21 y Node.js.
-
-### 1. Instalar Dependencias
-Abre una terminal, dirígete a la carpeta `frontend` e instala todas las dependencias listadas en el `package.json`.
-
-```bash
-cd frontend
-npm install
-```
-
-### 2. Ejecutar la Aplicación en Desarrollo
-Para iniciar el servidor de desarrollo, ejecuta:
-
-```bash
-ng serve
-```
-También puedes usar `ng serve -o` para que se abra automáticamente en tu navegador por defecto.
-
-La aplicación estará disponible en `http://localhost:4200/`. La página se recargará automáticamente cada vez que realices y guardes cambios en los archivos fuente.
+6. **IDE (Entorno de Desarrollo Integrado)**
+   - Se recomienda **Visual Studio Code** para el frontend (Angular) y **IntelliJ IDEA**, **Eclipse** o el mismo VS Code para el backend (Java Spring Boot).
 
 ---
 
-## Dependencias Principales
+## 🗄️ 2. Configuración de la Base de Datos
 
-**Frontend:**
-* `@angular/core`, `@angular/common`, `@angular/router`, etc. (v21.2.0)
-* `rxjs`
-* TailwindCSS (integrado a través del entorno de compilación de Angular en muchos proyectos modernos)
+El proyecto ya incluye los scripts necesarios para levantar la estructura de la base de datos de manera rápida.
 
-**Backend:**
-* `spring-boot-starter-webmvc`
-* `spring-boot-starter-data-jpa`
-* `postgresql` (Driver de conexión)
-* `lombok` (Para reducir código repetitivo)
+1. Abre tu gestor de base de datos (pgAdmin, DBeaver, o la consola psql).
+2. Conéctate a tu servidor PostgreSQL local (por defecto se ejecuta en el puerto `5432`).
+3. Crea una base de datos con el siguiente nombre exacto:
+   ```sql
+   CREATE DATABASE "Base_de_Datos";
+   ```
+4. **Credenciales por defecto**:
+   El backend espera que PostgreSQL tenga las siguientes credenciales (puedes cambiar esto luego):
+   - **Usuario:** `postgres`
+   - **Contraseña:** `admin`
+   *(Nota: Si usas otra contraseña, revisa la sección 3 para ver cómo configurarla localmente).*
+5. Selecciona la base de datos recién creada (`Base_de_Datos`) y abre un script o consola de consultas (Query Tool).
+6. Copia y ejecuta el contenido del archivo `Base de datos entera.sql` (ubicado en la raíz del proyecto). Esto creará todas las tablas, relaciones y estructuras necesarias.
+7. *(Opcional)* Si deseas probar el sistema con datos de prueba, puedes ejecutar también el contenido del archivo `Comandos de consulta de inserts.sql`.
+
+---
+
+## ⚙️ 3. Instalación y Ejecución del Backend (Spring Boot)
+
+El backend está ubicado en la carpeta `ucab-services/backend`. Se encarga de proveer la API REST, reportes en PDF/Excel (vía JasperReports) y la lógica de negocio.
+
+### Pasos:
+
+1. Abre una terminal y navega hasta el directorio del backend:
+   ```bash
+   cd ucab-services/backend
+   ```
+2. **Configuración Local (Opcional pero Recomendado)**:
+   Si las credenciales de tu PostgreSQL (usuario o contraseña) no son `postgres` y `admin`, **no modifiques** el archivo `application.properties` principal para no afectar el control de versiones (Git).
+   - Ve a la ruta: `src/main/resources/`
+   - Crea un archivo llamado `application-local.properties`.
+   - Agrega tus credenciales allí. Por ejemplo:
+     ```properties
+     spring.datasource.url=jdbc:postgresql://localhost:5432/Base_de_Datos
+     spring.datasource.username=TU_USUARIO
+     spring.datasource.password=TU_CONTRASEÑA
+     ```
+   El proyecto está configurado con el perfil `local` activo (`spring.profiles.active=local`), por lo que leerá tus credenciales personales automáticamente de este archivo.
+
+3. **Descarga de dependencias y compilación**:
+   El proyecto usa Maven Wrapper, lo que significa que **no necesitas instalar Maven manualmente**. Ejecuta en la terminal:
+   - **En Windows:**
+     ```cmd
+     mvnw.cmd clean install -DskipTests
+     ```
+   - **En Mac/Linux:**
+     ```bash
+     ./mvnw clean install -DskipTests
+     ```
+
+4. **Ejecutar la aplicación**:
+   - Para encender el servidor desde la consola:
+     - **En Windows:** `mvnw.cmd spring-boot:run`
+     - **En Mac/Linux:** `./mvnw spring-boot:run`
+   - Si usas un IDE como IntelliJ IDEA, simplemente abre el proyecto, busca la clase principal `UcabServicesApplication.java` y haz clic en el botón de **Play / Run**.
+
+El servidor del backend debería arrancar correctamente y estar escuchando en el puerto **8081**: `http://localhost:8081`.
+
+---
+
+## 💻 4. Instalación y Ejecución del Frontend (Angular)
+
+El frontend está ubicado en la carpeta `ucab-services/frontend`. Se encarga de la interfaz gráfica y de interactuar con la API del backend.
+
+### Pasos:
+
+1. Abre una **nueva ventana de terminal** y navega hasta el directorio del frontend:
+   ```bash
+   cd ucab-services/frontend
+   ```
+
+2. **Instalar dependencias**:
+   Ejecuta el siguiente comando para que Node.js descargue e instale todas las librerías de Angular necesarias especificadas en el archivo `package.json` (esto puede tardar unos minutos la primera vez):
+   ```bash
+   npm install
+   ```
+
+3. **Ejecutar el servidor de desarrollo**:
+   Una vez terminada la instalación, inicia el servidor ejecutando:
+   ```bash
+   npm start
+   ```
+   *(Este comando es un alias de `ng serve`)*.
+
+4. **Acceder a la aplicación**:
+   La compilación tomará unos segundos. Una vez terminada, verás un mensaje verde en la consola indicando que fue exitosa.
+   Abre tu navegador web favorito (Chrome, Firefox, Edge, Safari) e ingresa a:
+   👉 **http://localhost:4200**
+
+¡Listo! Ya deberías ver la aplicación web en funcionamiento, conectada al backend, el cual a su vez está conectado a tu base de datos local.

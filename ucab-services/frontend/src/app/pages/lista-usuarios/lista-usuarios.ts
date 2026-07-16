@@ -25,7 +25,6 @@ export class ListaUsuarios implements OnInit {
     { valor: 'EGRESADO', etiqueta: 'Egresado' },
     { valor: 'DOCENTE', etiqueta: 'Docente' },
     { valor: 'PERSONAL_ADMINISTRATIVO', etiqueta: 'Personal Administrativo' },
-    { valor: 'ADMIN_SISTEMA', etiqueta: 'Administrador' },
   ];
 
   constructor(
