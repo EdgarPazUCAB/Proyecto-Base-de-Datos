@@ -4,6 +4,14 @@
   >
     <div class="col-span-1 lg:col-span-8 flex flex-col gap-lg">
       <div class="flex flex-col gap-xs">
+        <button
+          routerLink="/pago"
+          [queryParams]="{ folio: folioId }"
+          class="mb-xs inline-flex items-center gap-xs font-body-sm text-body-sm text-secondary hover:text-primary transition-colors group w-fit"
+        >
+          <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+          Volver al pago
+        </button>
         <h1 class="font-h1 text-h1 text-on-background">Método de Pago</h1>
         <p class="font-body-lg text-body-lg text-on-surface-variant">
           Selecciona y completa los datos de tu método de pago preferido para procesar la solicitud.

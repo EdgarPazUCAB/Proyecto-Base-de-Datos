@@ -69,6 +69,14 @@
     <section class="w-full md:w-7/12 flex flex-col gap-lg">
       
       <div>
+        <button
+          routerLink="/pago"
+          [queryParams]="{ folio: folioId }"
+          class="mb-sm inline-flex items-center gap-xs font-body-sm text-body-sm text-secondary hover:text-primary transition-colors group"
+        >
+          <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+          Volver al pago
+        </button>
         <h3 class="font-body-lg text-body-lg text-on-surface mb-sm font-medium">Selecciona tu método de pago</h3>
         <div class="grid grid-cols-3 gap-sm">
           <button class="bg-surface-container-low border-2 border-primary rounded-lg p-md flex flex-col items-center gap-xs relative overflow-hidden transition-all text-primary">

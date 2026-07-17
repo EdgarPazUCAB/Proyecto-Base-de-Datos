@@ -1,6 +1,14 @@
 <div class="bg-background text-on-background min-h-screen flex flex-col antialiased">
   <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl">
     <div class="mb-lg">
+      <button
+        routerLink="/pago"
+        [queryParams]="{ folio: folioId }"
+        class="mb-xs inline-flex items-center gap-xs font-body-sm text-body-sm text-secondary hover:text-primary transition-colors group"
+      >
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+        Volver al pago
+      </button>
       <h1 class="font-h2 text-h2 text-on-surface">Procesar Pago</h1>
       <p class="font-body-md text-body-md text-on-surface-variant mt-sm">
         Complete los detalles de su método de pago para finalizar la solicitud.

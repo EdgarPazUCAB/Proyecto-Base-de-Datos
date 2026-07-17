@@ -458,41 +458,6 @@ public class PagoService {
                 }
             }
 
-            // 3. Actualizamos Folio_Consumo y Solicitud_Servicio
-            try {
-                String selectIdent =
-                    "SELECT Identificador FROM Factura WHERE Numero_control = ?";
-                String identFactura = jdbcTemplate.queryForObject(
-                    selectIdent,
-                    String.class,
-                    numeroControlFactura
-                );
-
-                if (identFactura != null) {
-                    java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                        folioConsumoRepository.findByIdentificador(
-                            identFactura
-                        );
-                    for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                        folio.setEstadoCierre("Cerrado");
-                        folioConsumoRepository.save(folio);
-                    }
-
-                    java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                        solicitudServicioRepository.findById(identFactura);
-                    if (optSolicitud.isPresent()) {
-                        com.ucab.ucab_services.entity.SolicitudServicio sol =
-                            optSolicitud.get();
-                        sol.setEstadoActual("Completada");
-                        solicitudServicioRepository.save(sol);
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(
-                    "Nota: Error al cerrar folio_consumo o solicitud: " +
-                        e.getMessage()
-                );
-            }
 
             // 4. Registramos el Pago base
             java.sql.Timestamp now = new java.sql.Timestamp(
@@ -676,41 +641,6 @@ public class PagoService {
                 }
             }
 
-            // 3. Actualizamos Folio_Consumo y Solicitud_Servicio
-            try {
-                String selectIdent =
-                    "SELECT Identificador FROM Factura WHERE Numero_control = ?";
-                String identFactura = jdbcTemplate.queryForObject(
-                    selectIdent,
-                    String.class,
-                    numeroControlFactura
-                );
-
-                if (identFactura != null) {
-                    java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                        folioConsumoRepository.findByIdentificador(
-                            identFactura
-                        );
-                    for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                        folio.setEstadoCierre("Cerrado");
-                        folioConsumoRepository.save(folio);
-                    }
-
-                    java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                        solicitudServicioRepository.findById(identFactura);
-                    if (optSolicitud.isPresent()) {
-                        com.ucab.ucab_services.entity.SolicitudServicio sol =
-                            optSolicitud.get();
-                        sol.setEstadoActual("Completada");
-                        solicitudServicioRepository.save(sol);
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(
-                    "Nota: Error al cerrar folio_consumo o solicitud: " +
-                        e.getMessage()
-                );
-            }
 
             // 4. Registramos el Pago base
             java.sql.Timestamp now = new java.sql.Timestamp(
@@ -878,16 +808,6 @@ public class PagoService {
                     // Usar el monto total en VES proporcionado por el frontend
                     totalAdeudado = montoTotalVes != null ? montoTotalVes : 0.0;
 
-                    if (monto < totalAdeudado - 1.0) {
-                        throw new RuntimeException(
-                            "El monto enviado (Bs. " +
-                                monto +
-                                ") es menor a la deuda actual (Bs. " +
-                                totalAdeudado +
-                                ")."
-                        );
-                    }
-
                     numeroControlFactura = "FCT-" + System.currentTimeMillis();
 
                     jdbcTemplate.update(
@@ -931,41 +851,6 @@ public class PagoService {
             jdbcTemplate.update(updateBilletera, nuevoSaldo, nuevoSaldo, uidBilletera);
 
 
-            // 3. Actualizamos Folio_Consumo y Solicitud_Servicio
-            try {
-                String selectIdent =
-                    "SELECT Identificador FROM Factura WHERE Numero_control = ?";
-                String identFactura = jdbcTemplate.queryForObject(
-                    selectIdent,
-                    String.class,
-                    numeroControlFactura
-                );
-
-                if (identFactura != null) {
-                    java.util.List<com.ucab.ucab_services.entity.FolioConsumo> folios =
-                        folioConsumoRepository.findByIdentificador(
-                            identFactura
-                        );
-                    for (com.ucab.ucab_services.entity.FolioConsumo folio : folios) {
-                        folio.setEstadoCierre("Cerrado");
-                        folioConsumoRepository.save(folio);
-                    }
-
-                    java.util.Optional<com.ucab.ucab_services.entity.SolicitudServicio> optSolicitud =
-                        solicitudServicioRepository.findById(identFactura);
-                    if (optSolicitud.isPresent()) {
-                        com.ucab.ucab_services.entity.SolicitudServicio sol =
-                            optSolicitud.get();
-                        sol.setEstadoActual("Completada");
-                        solicitudServicioRepository.save(sol);
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(
-                    "Nota: Error al cerrar folio_consumo o solicitud: " +
-                        e.getMessage()
-                );
-            }
 
             // 4. Registramos el Pago base
             java.sql.Timestamp now = new java.sql.Timestamp(
